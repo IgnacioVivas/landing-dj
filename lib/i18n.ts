@@ -1,0 +1,150 @@
+export type Lang = 'es' | 'en'
+
+const es = {
+  nav: {
+    bio: 'Bio',
+    releases: 'Releases',
+    shows: 'Shows',
+    media: 'Media',
+    instagram: 'Instagram',
+    contact: 'Contacto',
+    bookNow: 'Reservar',
+  },
+  hero: {
+    bookNow: 'Reservar',
+    listenNow: 'Escuchar',
+  },
+  bio: {
+    overline: 'Sobre el artista',
+    title: 'La Historia',
+    text: 'Con más de una década sobre los escenarios más importantes del planeta, NEXUS ha forjado un sonido único que fusiona lo oscuro del techno con la energía del tech house. Formado en los clubes underground de Buenos Aires, su trayectoria lo llevó a residencias en Ibiza, giras por Europa y actuaciones en los principales festivales de Latinoamérica. Su producción musical, distribuida en sellos como Drumcode y Afterlife, refleja una visión artística coherente: música profunda, poderosa y honesta.',
+    statLabels: ['Años activo', 'Shows', 'Países', 'Releases'] as string[],
+  },
+  releases: {
+    overline: 'Discografía',
+    title: 'Releases',
+    description: 'Música disponible en las principales plataformas digitales.',
+  },
+  shows: {
+    overline: 'Agenda',
+    title: 'Shows',
+    upcoming: 'Próximos shows',
+    past: 'Shows anteriores',
+    tickets: 'Tickets',
+    soldOut: 'Sold Out',
+  },
+  multimedia: {
+    overline: 'Galería',
+    title: 'Multimedia',
+    description: 'Momentos capturados en escena y fuera de ella.',
+  },
+  youtube: {
+    overline: 'Video',
+    title: 'YouTube',
+    description: 'DJ sets, documentales y contenido exclusivo.',
+    cta: 'Ver canal completo',
+  },
+  instagram: {
+    overline: 'Redes',
+    title: 'Instagram',
+  },
+  contact: {
+    overline: 'Contacto',
+    title: 'Hablemos',
+    description: '¿Querés bookearlo para tu evento? ¿Tenés un proyecto de prensa o colaboración? Escribinos.',
+    booking: 'Booking',
+    press: 'Prensa',
+    other: 'Otro',
+    bookingLabel: 'Booking',
+    pressLabel: 'Prensa',
+    namePlaceholder: 'Tu nombre',
+    messagePlaceholder: 'Tu mensaje...',
+    send: 'Enviar mensaje',
+    sending: 'Enviando...',
+    success: 'Mensaje enviado',
+    successDesc: 'Nos pondremos en contacto a la brevedad.',
+    sendAnother: 'Enviar otro mensaje',
+    socialTitle: 'Redes sociales',
+    error: 'Algo salió mal. Intentá de nuevo.',
+  },
+  footer: {
+    rights: 'Todos los derechos reservados.',
+  },
+  scrollToTop: 'ARRIBA',
+}
+
+const en = {
+  nav: {
+    bio: 'Bio',
+    releases: 'Releases',
+    shows: 'Shows',
+    media: 'Media',
+    instagram: 'Instagram',
+    contact: 'Contact',
+    bookNow: 'Book Now',
+  },
+  hero: {
+    bookNow: 'Book Now',
+    listenNow: 'Listen Now',
+  },
+  bio: {
+    overline: 'About the artist',
+    title: 'The Story',
+    text: 'With over a decade on the most important stages on the planet, NEXUS has forged a unique sound that fuses the darkness of techno with the energy of tech house. Formed in the underground clubs of Buenos Aires, his career led him to residencies in Ibiza, tours through Europe, and performances at the major festivals of Latin America. His music production, distributed on labels like Drumcode and Afterlife, reflects a coherent artistic vision: deep, powerful and honest music.',
+    statLabels: ['Years active', 'Shows', 'Countries', 'Releases'] as string[],
+  },
+  releases: {
+    overline: 'Discography',
+    title: 'Releases',
+    description: 'Music available on major digital platforms.',
+  },
+  shows: {
+    overline: 'Schedule',
+    title: 'Shows',
+    upcoming: 'Upcoming shows',
+    past: 'Past shows',
+    tickets: 'Tickets',
+    soldOut: 'Sold Out',
+  },
+  multimedia: {
+    overline: 'Gallery',
+    title: 'Multimedia',
+    description: 'Moments captured on and off stage.',
+  },
+  youtube: {
+    overline: 'Video',
+    title: 'YouTube',
+    description: 'DJ sets, documentaries and exclusive content.',
+    cta: 'Watch full channel',
+  },
+  instagram: {
+    overline: 'Social',
+    title: 'Instagram',
+  },
+  contact: {
+    overline: 'Contact',
+    title: "Let's talk",
+    description: 'Want to book for your event? Have a press or collaboration project? Write to us.',
+    booking: 'Booking',
+    press: 'Press',
+    other: 'Other',
+    bookingLabel: 'Booking',
+    pressLabel: 'Press',
+    namePlaceholder: 'Your name',
+    messagePlaceholder: 'Your message...',
+    send: 'Send message',
+    sending: 'Sending...',
+    success: 'Message sent',
+    successDesc: "We'll get back to you shortly.",
+    sendAnother: 'Send another message',
+    socialTitle: 'Social media',
+    error: 'Something went wrong. Try again.',
+  },
+  footer: {
+    rights: 'All rights reserved.',
+  },
+  scrollToTop: 'GO UP',
+} satisfies typeof es
+
+export const translations = { es, en } as const
+export type Translations = typeof es
