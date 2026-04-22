@@ -12,7 +12,7 @@ export default function Hero() {
   const { t } = useLanguage()
 
   return (
-    <section className="relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f]">
+    <section className="relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
       {/* Animated background orbs */}
       <div
         className="orb-1 absolute top-[15%] left-[10%] w-[600px] h-[600px] rounded-full pointer-events-none"
