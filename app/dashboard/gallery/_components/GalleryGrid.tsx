@@ -88,7 +88,7 @@ export default function GalleryGrid({ items: initial }: { items: GalleryDbItem[]
   async function handleConfirmUpload(caption: string, aspect: string) {
     if (!pending) return
     const result = await createGalleryItemAction(pending, caption, aspect)
-    if ('error' in result) { setError(result.error); return }
+    if ('error' in result) { setError(result.error ?? null); return }
     setItems(prev => [...prev, result.item])
     setPending(null)
     setSaved(true)
