@@ -59,7 +59,7 @@ export default function ReleaseForm({ defaultValues, onSubmit, submitLabel }: Pr
 
         <Field label="Año" error={errors.year?.message}>
           <input
-            {...register('year')}
+            {...register('year', { valueAsNumber: true })}
             type="number"
             className={inputClass}
             placeholder={String(new Date().getFullYear())}
