@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { List, X } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
-import { djConfig } from '@/lib/config'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDjData } from '@/lib/dj-context'
 import GlowButton from '@/components/ui/GlowButton'
 
 export default function Navbar() {
   const { t } = useLanguage()
+  const { name } = useDjData()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -50,7 +51,7 @@ export default function Navbar() {
           href="#"
           className="font-display text-2xl text-white tracking-wider hover:text-violet-400 transition-colors flex-shrink-0"
         >
-          {djConfig.name}
+          {name}
         </a>
 
         {/* Desktop links — absolutely centered */}

@@ -2,14 +2,15 @@
 
 import { motion } from 'motion/react'
 import { ArrowDown } from '@phosphor-icons/react'
-import { djConfig } from '@/lib/config'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDjData } from '@/lib/dj-context'
 import GlowButton from '@/components/ui/GlowButton'
 
 const ease = [0.16, 1, 0.3, 1] as const
 
 export default function Hero() {
   const { t } = useLanguage()
+  const dj = useDjData()
 
   return (
     <section className="relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
@@ -35,7 +36,7 @@ export default function Hero() {
           transition={{ duration: 0.6, ease }}
           className="font-mono text-xs tracking-[0.3em] text-slate-500 uppercase mb-6"
         >
-          {djConfig.genres.join(' · ')}
+          {dj.genres.join(' · ')}
         </motion.p>
 
         <motion.h1
@@ -45,7 +46,7 @@ export default function Hero() {
           className="font-display gradient-text leading-none tracking-tight text-glow-purple"
           style={{ fontSize: 'clamp(5rem, 20vw, 18rem)' }}
         >
-          {djConfig.name}
+          {dj.name}
         </motion.h1>
 
         <motion.p
@@ -54,7 +55,7 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.35, ease }}
           className="mt-4 font-body text-slate-400 text-base md:text-lg tracking-widest uppercase"
         >
-          {djConfig.tagline}
+          {dj.tagline}
         </motion.p>
 
         <motion.div

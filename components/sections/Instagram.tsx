@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import { InstagramLogo, ArrowSquareOut } from '@phosphor-icons/react'
-import { djConfig } from '@/lib/config'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDjData } from '@/lib/dj-context'
 import type { InstagramPost } from '@/lib/types'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
@@ -66,6 +66,7 @@ function PlaceholderGrid() {
 
 export default function Instagram() {
   const { t } = useLanguage()
+  const { instagram } = useDjData()
   const [posts, setPosts] = useState<InstagramPost[]>([])
   const [loaded, setLoaded] = useState(false)
 
@@ -99,9 +100,9 @@ export default function Instagram() {
         </AnimatedSection>
 
         <AnimatedSection delay={0.2} className="flex justify-center mt-8">
-          <GlowButton href={djConfig.instagram.profileUrl} variant="outline">
+          <GlowButton href={instagram.profileUrl ?? '#'} variant="outline">
             <InstagramLogo size={18} />
-            {djConfig.instagram.username}
+            {instagram.username ? `@${instagram.username}` : 'Instagram'}
           </GlowButton>
         </AnimatedSection>
       </div>

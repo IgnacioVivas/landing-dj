@@ -9,8 +9,8 @@ import {
   EnvelopeSimple,
   CheckCircle,
 } from '@phosphor-icons/react'
-import { djConfig } from '@/lib/config'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDjData } from '@/lib/dj-context'
 import type { ContactFormData } from '@/lib/types'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
@@ -23,6 +23,7 @@ const inputClass =
 
 export default function Contact() {
   const { t } = useLanguage()
+  const { contact, social } = useDjData()
   const [form, setForm] = useState<ContactFormData>(INITIAL)
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
@@ -64,18 +65,22 @@ export default function Contact() {
             />
 
             <AnimatedSection delay={0.1} className="space-y-4">
-              <InfoRow
-                icon={<EnvelopeSimple size={16} />}
-                label={t.contact.bookingLabel}
-                value={djConfig.contact.bookingEmail}
-                href={`mailto:${djConfig.contact.bookingEmail}`}
-              />
-              <InfoRow
-                icon={<EnvelopeSimple size={16} />}
-                label={t.contact.pressLabel}
-                value={djConfig.contact.pressEmail}
-                href={`mailto:${djConfig.contact.pressEmail}`}
-              />
+              {contact.bookingEmail && (
+                <InfoRow
+                  icon={<EnvelopeSimple size={16} />}
+                  label={t.contact.bookingLabel}
+                  value={contact.bookingEmail}
+                  href={`mailto:${contact.bookingEmail}`}
+                />
+              )}
+              {contact.pressEmail && (
+                <InfoRow
+                  icon={<EnvelopeSimple size={16} />}
+                  label={t.contact.pressLabel}
+                  value={contact.pressEmail}
+                  href={`mailto:${contact.pressEmail}`}
+                />
+              )}
             </AnimatedSection>
 
             <AnimatedSection delay={0.2}>
@@ -84,13 +89,13 @@ export default function Contact() {
               </p>
               <div className="flex gap-4">
                 {[
-                  { icon: <InstagramLogo size={20} />, href: djConfig.social.instagram },
-                  { icon: <SpotifyLogo size={20} />,   href: djConfig.social.spotify },
-                  { icon: <SoundcloudLogo size={20} />,href: djConfig.social.soundcloud },
-                ].map(({ icon, href }) => (
+                  { icon: <InstagramLogo size={20} />,  href: social.instagram },
+                  { icon: <SpotifyLogo size={20} />,    href: social.spotify },
+                  { icon: <SoundcloudLogo size={20} />, href: social.soundcloud },
+                ].filter(({ href }) => !!href).map(({ icon, href }) => (
                   <a
                     key={href}
-                    href={href}
+                    href={href!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-3 rounded-xl text-slate-500 hover:text-violet-400 transition-colors"

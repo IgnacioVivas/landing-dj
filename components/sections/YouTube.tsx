@@ -1,15 +1,17 @@
 'use client'
 
 import { YoutubeLogo } from '@phosphor-icons/react'
-import { djConfig } from '@/lib/config'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDjData } from '@/lib/dj-context'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import GlowButton from '@/components/ui/GlowButton'
 
 export default function YouTube() {
   const { t } = useLanguage()
-  const { featuredVideoId, channelUrl } = djConfig.youtube
+  const { name, youtube } = useDjData()
+  const { featuredVideoId, channelUrl } = youtube
+  if (!featuredVideoId) return null
 
   return (
     <section id="youtube" className="py-24 md:py-32 bg-[#07070f]">
@@ -32,7 +34,7 @@ export default function YouTube() {
           >
             <iframe
               src={`https://www.youtube.com/embed/${featuredVideoId}?rel=0&modestbranding=1`}
-              title={`${djConfig.name} — DJ Set`}
+              title={`${name} — DJ Set`}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="absolute inset-0 w-full h-full border-0 rounded-2xl"

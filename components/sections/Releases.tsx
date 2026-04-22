@@ -7,8 +7,8 @@ import {
   SoundcloudLogo,
   MusicNote,
 } from '@phosphor-icons/react'
-import { djConfig } from '@/lib/config'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDjData } from '@/lib/dj-context'
 import type { Release } from '@/lib/types'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
@@ -85,6 +85,7 @@ function ReleaseCard({ release, index }: { release: Release; index: number }) {
 
 export default function Releases() {
   const { t } = useLanguage()
+  const { releases } = useDjData()
 
   return (
     <section id="releases" className="py-24 md:py-32" style={{ background: '#050509' }}>
@@ -100,7 +101,7 @@ export default function Releases() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar snap-x snap-mandatory">
-          {djConfig.releases.map((release, i) => (
+          {releases.map((release, i) => (
             <div key={release.id} className="snap-start">
               <ReleaseCard release={release} index={i} />
             </div>

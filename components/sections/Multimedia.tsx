@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, ArrowsOut } from '@phosphor-icons/react'
-import { djConfig } from '@/lib/config'
+import Image from 'next/image'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDjData } from '@/lib/dj-context'
 import type { GalleryItem } from '@/lib/types'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
@@ -25,10 +26,20 @@ function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: (item: Galle
       className={`relative break-inside-avoid mb-4 rounded-xl overflow-hidden cursor-pointer group ${aspectMap[item.aspect]}`}
       onClick={() => onOpen(item)}
     >
-      <div
-        className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-        style={{ background: item.gradient }}
-      />
+      {item.imageUrl ? (
+        <Image
+          src={item.imageUrl}
+          alt={item.caption}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 768px) 50vw, 25vw"
+        />
+      ) : (
+        <div
+          className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+          style={{ background: item.gradient }}
+        />
+      )}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/50 flex flex-col items-center justify-center gap-2">
         <ArrowsOut size={22} className="text-white" />
         <p className="font-mono text-xs text-white/80 tracking-wider text-center px-4">
@@ -58,10 +69,19 @@ function Lightbox({ item, onClose }: { item: GalleryItem; onClose: () => void })
           className="relative max-w-2xl w-full rounded-2xl overflow-hidden shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
-          <div
-            className={`w-full ${aspectMap[item.aspect]}`}
-            style={{ background: item.gradient }}
-          />
+          <div className={`w-full relative ${aspectMap[item.aspect]}`}>
+            {item.imageUrl ? (
+              <Image
+                src={item.imageUrl}
+                alt={item.caption}
+                fill
+                className="object-cover"
+                sizes="672px"
+              />
+            ) : (
+              <div className="absolute inset-0" style={{ background: item.gradient }} />
+            )}
+          </div>
           <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
             <p className="font-body text-sm text-white">{item.caption}</p>
           </div>
@@ -80,6 +100,7 @@ function Lightbox({ item, onClose }: { item: GalleryItem; onClose: () => void })
 
 export default function Multimedia() {
   const { t } = useLanguage()
+  const { gallery } = useDjData()
   const [active, setActive] = useState<GalleryItem | null>(null)
 
   return (
@@ -94,7 +115,7 @@ export default function Multimedia() {
         </AnimatedSection>
 
         <div className="columns-2 md:columns-3 lg:columns-4 gap-4">
-          {djConfig.gallery.map((item) => (
+          {gallery.map((item) => (
             <GalleryCard key={item.id} item={item} onOpen={setActive} />
           ))}
         </div>

@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Auth.js required models ─────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+
+  // DJ profile
+  slug          String    @unique
+  djName        String    @default("")
+  tagline       String    @default("")
+  bioShort      String    @default("") @db.Text
+  bioFull       String    @default("") @db.Text
+  bioPhoto      String?
+  genres        String[]
+
+  // Stats displayed on the bio section
+  yearsActive   String    @default("0")
+  totalShows    String    @default("0")
+  countries     String    @default("0")
+  totalReleases String    @default("0")
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  shows         Show[]
+  releases      Release[]
+  gallery       GalleryItem[]
+  settings      DjSettings?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── DJ data models ───────────────────────────────────────────────────────────
+
+model Show {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  venue     String
+  city      String
+  country   String
+  festival  String?
+  ticketUrl String?
+  isSoldOut Boolean  @default(false)
+  isPast    Boolean  @default(false)
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Release {
+  id            String   @id @default(cuid())
+  userId        String
+  title         String
+  type          String   // "album" | "ep" | "single"
+  year          Int
+  label         String?
+  coverGradient String   @default("linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)")
+  spotifyUrl    String?
+  soundcloudUrl String?
+  appleMusicUrl String?
+  beatportUrl   String?
+  order         Int      @default(0)
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  userId    String
+  imageUrl  String?
+  gradient  String   @default("linear-gradient(160deg, #0a001a 0%, #1a0050 60%, #3a0080 100%)")
+  caption   String   @default("")
+  aspect    String   @default("square") // "portrait" | "landscape" | "square"
+  order     Int      @default(0)
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model DjSettings {
+  id                     String    @id @default(cuid())
+  userId                 String    @unique
+  youtubeChannelUrl      String?
+  featuredVideoId        String?
+  soundcloudUrl          String?
+  spotifyProfileUrl      String?
+  instagramUrl           String?
+  instagramUsername      String?
+  bookingEmail           String?
+  pressEmail             String?
+  instagramToken         String?   @db.Text
+  instagramTokenExpiresAt DateTime?
+
+  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  updatedAt              DateTime  @updatedAt
+}

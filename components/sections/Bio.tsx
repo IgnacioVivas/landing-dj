@@ -1,13 +1,14 @@
 'use client'
 
-import { djConfig } from '@/lib/config'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDjData } from '@/lib/dj-context'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 
 export default function Bio() {
   const { t } = useLanguage()
-  const { bio } = djConfig
+  const dj = useDjData()
+  const { bio } = dj
 
   return (
     <section id="bio" className="py-24 md:py-32 bg-[#07070f]">
@@ -25,7 +26,7 @@ export default function Bio() {
               />
               <div className="absolute inset-0 flex items-end p-6">
                 <span className="font-display text-4xl text-white/10 select-none">
-                  {djConfig.name}
+                  {dj.name}
                 </span>
               </div>
               {/*
@@ -43,7 +44,7 @@ export default function Bio() {
 
             <AnimatedSection delay={0.1}>
               <p className="font-body text-slate-400 text-base md:text-lg leading-relaxed">
-                {t.bio.text}
+                {bio.short || t.bio.text}
               </p>
             </AnimatedSection>
 

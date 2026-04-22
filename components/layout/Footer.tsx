@@ -6,32 +6,33 @@ import {
   SoundcloudLogo,
   YoutubeLogo,
 } from '@phosphor-icons/react'
-import { djConfig } from '@/lib/config'
 import { useLanguage } from '@/contexts/LanguageContext'
-
-const socialLinks = [
-  { icon: InstagramLogo, href: djConfig.social.instagram, label: 'Instagram' },
-  { icon: SpotifyLogo,   href: djConfig.social.spotify,   label: 'Spotify' },
-  { icon: SoundcloudLogo,href: djConfig.social.soundcloud,label: 'SoundCloud' },
-  { icon: YoutubeLogo,   href: djConfig.social.youtube,   label: 'YouTube' },
-]
+import { useDjData } from '@/lib/dj-context'
 
 export default function Footer() {
   const { t } = useLanguage()
+  const { name, social } = useDjData()
   const year = new Date().getFullYear()
+
+  const socialLinks = [
+    { icon: InstagramLogo,  href: social.instagram,  label: 'Instagram' },
+    { icon: SpotifyLogo,    href: social.spotify,    label: 'Spotify' },
+    { icon: SoundcloudLogo, href: social.soundcloud, label: 'SoundCloud' },
+    { icon: YoutubeLogo,    href: social.youtube,    label: 'YouTube' },
+  ].filter(s => !!s.href)
 
   return (
     <footer className="border-t border-white/5 bg-[#07070f]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
         <span className="font-display text-xl text-white tracking-wider">
-          {djConfig.name}
+          {name}
         </span>
 
         <div className="flex items-center gap-5">
           {socialLinks.map(({ icon: Icon, href, label }) => (
             <a
               key={label}
-              href={href}
+              href={href!}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={label}
@@ -43,7 +44,7 @@ export default function Footer() {
         </div>
 
         <p className="font-mono text-xs text-slate-600">
-          © {year} {djConfig.name}. {t.footer.rights}
+          © {year} {name}. {t.footer.rights}
         </p>
       </div>
     </footer>

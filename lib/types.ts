@@ -33,6 +33,7 @@ export interface Show {
 
 export interface GalleryItem {
   id: string
+  imageUrl?: string | null
   gradient: string
   caption: string
   aspect: AspectRatio

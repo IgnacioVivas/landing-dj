@@ -1,8 +1,8 @@
 'use client'
 
 import { CalendarBlank, MapPin, Ticket } from '@phosphor-icons/react'
-import { djConfig } from '@/lib/config'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDjData } from '@/lib/dj-context'
 import type { Show } from '@/lib/types'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
@@ -77,8 +77,9 @@ function ShowRow({ show, index, past }: { show: Show; index: number; past?: bool
 
 export default function Shows() {
   const { t } = useLanguage()
-  const upcoming = djConfig.shows.filter((s) => !s.isPast)
-  const past     = djConfig.shows.filter((s) => s.isPast)
+  const { shows } = useDjData()
+  const upcoming = shows.filter((s) => !s.isPast)
+  const past     = shows.filter((s) => s.isPast)
 
   return (
     <section id="shows" className="py-24 md:py-32 bg-[#07070f]">
