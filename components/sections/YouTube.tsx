@@ -43,7 +43,7 @@ export default function YouTube() {
         </AnimatedSection>
 
         <AnimatedSection delay={0.2} className="flex justify-center mt-8">
-          <GlowButton href={channelUrl} variant="outline">
+          <GlowButton href={channelUrl ?? undefined} variant="outline">
             <YoutubeLogo size={18} weight="fill" className="text-red-500" />
             {t.youtube.cta}
           </GlowButton>
