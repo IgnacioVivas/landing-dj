@@ -4,11 +4,11 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import { db } from '@/lib/db'
 import { verifyPassword } from '@/lib/auth-utils'
 import { loginSchema } from '@/lib/validations/auth'
+import { authConfig } from './auth.config'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(db),
-  session: { strategy: 'jwt' },
-  pages: { signIn: '/login' },
   providers: [
     Credentials({
       credentials: {
@@ -32,18 +32,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.id = user.id as string
-        token.slug = user.slug
-      }
-      return token
-    },
-    session({ session, token }) {
-      session.user.id = token.id as string
-      session.user.slug = token.slug as string
-      return session
-    },
-  },
 })
