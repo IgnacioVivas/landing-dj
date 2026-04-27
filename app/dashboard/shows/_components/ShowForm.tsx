@@ -24,7 +24,7 @@ export default function ShowForm({ defaultValues, onSubmit, submitLabel, showFly
     formState: { errors, isSubmitting },
   } = useForm<ShowInput>({
     resolver: zodResolver(showSchema),
-    defaultValues: { festival: '', ticketUrl: '', flyerUrl: '', isSoldOut: false, ...defaultValues },
+    defaultValues: { festival: '', ticketUrl: '', flyerUrl: '', address: '', isSoldOut: false, ...defaultValues },
   })
 
   const flyerUrl = watch('flyerUrl')
@@ -59,6 +59,14 @@ export default function ShowForm({ defaultValues, onSubmit, submitLabel, showFly
 
       <Field label="Festival" error={errors.festival?.message}>
         <input {...register('festival')} className={inputClass} placeholder="Creamfields (opcional)" />
+      </Field>
+
+      <Field
+        label="Dirección (para mapa)"
+        error={errors.address?.message}
+        hint="Se mostrará un link a Google Maps en la landing."
+      >
+        <input {...register('address')} className={inputClass} placeholder="Av. Corrientes 3247, CABA (opcional)" />
       </Field>
 
       <Field label="Link de tickets" error={errors.ticketUrl?.message}>

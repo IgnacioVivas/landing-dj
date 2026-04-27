@@ -27,6 +27,7 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       city:      s.city,
       country:   s.country,
       venue:     s.venue,
+      address:   s.address   ?? undefined,
       festival:  s.festival  ?? undefined,
       ticketUrl: s.ticketUrl ?? undefined,
       flyerUrl:  s.flyerUrl  ?? undefined,
@@ -74,6 +75,21 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       bookingEmail: dj.settings?.bookingEmail ?? null,
       pressEmail:   dj.settings?.pressEmail   ?? null,
     },
+    mix:      { url: dj.settings?.mixUrl ?? null },
+    pressKit: { riderUrl: dj.settings?.riderUrl ?? null, epkUrl: dj.settings?.epkUrl ?? null },
+    countdown: (() => {
+      const now = new Date()
+      const featured = dj.shows.find(s => s.isFeatured && s.date > now)
+      if (!featured) return null
+      return {
+        date:     featured.date.toISOString(),
+        venue:    featured.venue,
+        city:     featured.city,
+        country:  featured.country,
+        address:  featured.address  ?? undefined,
+        festival: featured.festival ?? undefined,
+      }
+    })(),
     theme: {
       accentColor:        dj.settings?.accentColor        ?? '#8b5cf6',
       accentColor2:       dj.settings?.accentColor2       ?? '#22d3ee',

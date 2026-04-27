@@ -48,6 +48,25 @@ const es = {
     overline: 'Redes',
     title: 'Instagram',
   },
+  mix: {
+    overline: 'Audio',
+    title: 'Mix',
+  },
+  pressKit: {
+    overline: 'Prensa',
+    title: 'Press Kit',
+    rider:    'Rider Técnico',
+    epk:      'Press Kit (EPK)',
+    download: 'Descargar',
+  },
+  countdown: {
+    overline: 'Próximo show',
+    days:     'DÍAS',
+    hours:    'HRS',
+    minutes:  'MIN',
+    seconds:  'SEG',
+    mapLink:  'Ver en mapa',
+  },
   contact: {
     overline: 'Contacto',
     title: 'Hablemos',
@@ -120,6 +139,25 @@ const en = {
   instagram: {
     overline: 'Social',
     title: 'Instagram',
+  },
+  mix: {
+    overline: 'Audio',
+    title: 'Mix',
+  },
+  pressKit: {
+    overline: 'Press',
+    title: 'Press Kit',
+    rider:    'Technical Rider',
+    epk:      'Press Kit (EPK)',
+    download: 'Download',
+  },
+  countdown: {
+    overline: 'Next show',
+    days:     'DAYS',
+    hours:    'HRS',
+    minutes:  'MIN',
+    seconds:  'SEC',
+    mapLink:  'View on map',
   },
   contact: {
     overline: 'Contact',

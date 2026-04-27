@@ -11,6 +11,10 @@ import Multimedia from '@/components/sections/Multimedia'
 import YouTube from '@/components/sections/YouTube'
 import Instagram from '@/components/sections/Instagram'
 import Contact from '@/components/sections/Contact'
+import Countdown from '@/components/sections/Countdown'
+import MixPlayer from '@/components/sections/MixPlayer'
+import PressKit from '@/components/sections/PressKit'
+import ShowsMap from '@/components/sections/ShowsMap'
 import FloatingControls from '@/components/ui/FloatingControls'
 import AnalyticsBeacon from '@/components/ui/AnalyticsBeacon'
 import PageLoader from '@/components/ui/PageLoader'
@@ -30,12 +34,16 @@ export default function DjPageLayout({ data, userId }: { data: DjPageData; userI
         <Navbar />
         <main>
           <Hero />
+          <Countdown />
           <Bio />
           <Releases />
           <Shows />
+          <ShowsMap />
           <Multimedia />
+          <MixPlayer />
           <YouTube />
           <Instagram />
+          <PressKit />
           <Contact />
         </main>
         <Footer />

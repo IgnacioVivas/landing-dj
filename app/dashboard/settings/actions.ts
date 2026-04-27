@@ -28,6 +28,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
     instagramUrl, instagramUsername, spotifyProfileUrl,
     soundcloudUrl, youtubeChannelUrl, featuredVideoId,
     bookingEmail, pressEmail,
+    mixUrl, riderUrl, epkUrl,
     accentColor, accentColor2, heroTitle, heroTitleEn, showsMode,
   } = parsed.data
 
@@ -49,6 +50,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         spotifyProfileUrl: toNull(spotifyProfileUrl), soundcloudUrl: toNull(soundcloudUrl),
         youtubeChannelUrl: toNull(youtubeChannelUrl), featuredVideoId: toNull(featuredVideoId),
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
+        mixUrl: toNull(mixUrl), riderUrl: toNull(riderUrl), epkUrl: toNull(epkUrl),
         accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), showsMode,
       },
       create: {
@@ -57,6 +59,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         spotifyProfileUrl: toNull(spotifyProfileUrl), soundcloudUrl: toNull(soundcloudUrl),
         youtubeChannelUrl: toNull(youtubeChannelUrl), featuredVideoId: toNull(featuredVideoId),
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
+        mixUrl: toNull(mixUrl), riderUrl: toNull(riderUrl), epkUrl: toNull(epkUrl),
         accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), showsMode,
       },
     }),

@@ -14,12 +14,13 @@ function extractKey(url: string) {
 }
 
 function parseShow(data: ReturnType<typeof showSchema.parse>) {
-  const { date, festival, ticketUrl, flyerUrl, ...rest } = data
+  const { date, address, festival, ticketUrl, flyerUrl, ...rest } = data
   const dateObj = new Date(date)
   return {
     ...rest,
     date:      dateObj,
     isPast:    dateObj < new Date(),
+    address:   address   || null,
     festival:  festival  || null,
     ticketUrl: ticketUrl || null,
     flyerUrl:  flyerUrl  || null,
@@ -59,6 +60,22 @@ export async function updateShowAction(id: string, data: unknown): Promise<Resul
   }
 
   await db.show.update({ where: { id }, data: newData })
+
+  return { success: true }
+}
+
+export async function toggleFeaturedAction(id: string): Promise<Result> {
+  const session = await auth()
+  if (!session?.user.id) return { error: 'No autorizado.' }
+
+  const show = await db.show.findUnique({ where: { id }, select: { userId: true, isFeatured: true } })
+  if (show?.userId !== session.user.id) return { error: 'No autorizado.' }
+
+  // Unfeature all other shows first, then toggle this one
+  await db.$transaction([
+    db.show.updateMany({ where: { userId: session.user.id }, data: { isFeatured: false } }),
+    db.show.update({ where: { id }, data: { isFeatured: !show.isFeatured } }),
+  ])
 
   return { success: true }
 }

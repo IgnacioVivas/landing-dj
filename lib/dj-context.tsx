@@ -20,10 +20,13 @@ export interface DjPageData {
   shows:    Show[]
   releases: Release[]
   gallery:  GalleryItem[]
-  youtube:  { featuredVideoId: string | null; channelUrl: string | null }
-  instagram:{ username: string | null; profileUrl: string | null }
-  social:   { instagram: string | null; spotify: string | null; soundcloud: string | null; youtube: string | null }
-  contact:  { bookingEmail: string | null; pressEmail: string | null }
+  youtube:   { featuredVideoId: string | null; channelUrl: string | null }
+  instagram: { username: string | null; profileUrl: string | null }
+  social:    { instagram: string | null; spotify: string | null; soundcloud: string | null; youtube: string | null }
+  contact:   { bookingEmail: string | null; pressEmail: string | null }
+  mix:       { url: string | null }
+  pressKit:  { riderUrl: string | null; epkUrl: string | null }
+  countdown: { date: string; venue: string; city: string; country: string; address?: string; festival?: string } | null
   theme: {
     accentColor:        string
     accentColor2:       string
@@ -70,6 +73,9 @@ function configToPageData(): DjPageData {
       bookingEmail: djConfig.contact.bookingEmail,
       pressEmail:   djConfig.contact.pressEmail,
     },
+    mix:       { url: null },
+    pressKit:  { riderUrl: null, epkUrl: null },
+    countdown: null,
     theme: {
       accentColor:        '#8b5cf6',
       accentColor2:       '#22d3ee',

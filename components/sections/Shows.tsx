@@ -54,10 +54,22 @@ function ShowRow({ show, index, past }: { show: Show; index: number; past?: bool
               </span>
             )}
           </div>
-          <p className="flex items-center gap-1.5 mt-1 font-mono text-xs text-slate-500">
-            <MapPin size={12} />
-            {show.city}, {show.country}
-          </p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1">
+            <p className="flex items-center gap-1.5 font-mono text-xs text-slate-500">
+              <MapPin size={12} />
+              {show.city}, {show.country}
+            </p>
+            {show.address && (
+              <a
+                href={`https://maps.google.com/?q=${encodeURIComponent(show.address)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[10px] text-slate-700 hover:text-slate-400 transition-colors"
+              >
+                Ver en mapa →
+              </a>
+            )}
+          </div>
         </div>
 
         {show.ticketUrl && !past && (

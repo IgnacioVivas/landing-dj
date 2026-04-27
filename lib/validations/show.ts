@@ -5,6 +5,7 @@ export const showSchema = z.object({
   venue:     z.string().min(1, 'El venue es requerido').max(100),
   city:      z.string().min(1, 'La ciudad es requerida').max(100),
   country:   z.string().min(1, 'El país es requerido').max(100),
+  address:   z.string().max(200),
   festival:  z.string().max(100),
   ticketUrl: z.union([z.literal(''), z.string().url('URL inválida')]),
   flyerUrl:  z.union([z.literal(''), z.string().url('URL inválida')]),

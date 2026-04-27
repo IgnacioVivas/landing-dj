@@ -7,10 +7,12 @@ import { useState } from 'react'
 import { settingsSchema, type SettingsInput } from '@/lib/validations/settings'
 import { updateSettingsAction } from '../actions'
 import type { UserSettings } from '@/lib/queries/user'
-import BioSection    from './BioSection'
-import StatsSection  from './StatsSection'
-import SocialSection from './SocialSection'
-import ThemeSection  from './ThemeSection'
+import BioSection      from './BioSection'
+import StatsSection    from './StatsSection'
+import SocialSection   from './SocialSection'
+import ThemeSection    from './ThemeSection'
+import MixSection      from './MixSection'
+import PressKitSection from './PressKitSection'
 
 function toDefaults(d: UserSettings): SettingsInput {
   return {
@@ -34,6 +36,9 @@ function toDefaults(d: UserSettings): SettingsInput {
     featuredVideoId:   d.settings?.featuredVideoId    ?? '',
     bookingEmail:      d.settings?.bookingEmail       ?? '',
     pressEmail:        d.settings?.pressEmail         ?? '',
+    mixUrl:            d.settings?.mixUrl             ?? '',
+    riderUrl:          d.settings?.riderUrl           ?? '',
+    epkUrl:            d.settings?.epkUrl             ?? '',
     accentColor:       d.settings?.accentColor        ?? '#8b5cf6',
     accentColor2:      d.settings?.accentColor2       ?? '#22d3ee',
     heroTitle:         d.settings?.heroTitle           ?? '',
@@ -79,9 +84,11 @@ export default function SettingsForm({ data }: { data: UserSettings }) {
         initialHeroMobileUrl={data.settings?.heroImageMobileUrl ?? null}
         initialBioUrl={data.bioPhoto ?? null}
       />
-      <BioSection    register={register} errors={errors} watch={watch} />
-      <StatsSection  register={register} errors={errors} />
-      <SocialSection register={register} errors={errors} />
+      <BioSection      register={register} errors={errors} watch={watch} />
+      <StatsSection    register={register} errors={errors} />
+      <SocialSection   register={register} errors={errors} />
+      <MixSection      register={register} errors={errors} />
+      <PressKitSection register={register} errors={errors} />
 
       <div className="flex items-center gap-4 pb-12 border-t border-white/5 pt-6">
         <button

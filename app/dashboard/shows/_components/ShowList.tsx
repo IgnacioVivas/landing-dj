@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Plus } from '@phosphor-icons/react'
 import type { ShowItem } from '@/lib/queries/shows'
 import type { ShowInput } from '@/lib/validations/show'
-import { createShowAction, updateShowAction, deleteShowAction } from '../actions'
+import { createShowAction, updateShowAction, deleteShowAction, toggleFeaturedAction } from '../actions'
 import ShowDialog from '@/app/dashboard/_components/Dialog'
 import ShowForm from './ShowForm'
 import ShowCard from './ShowCard'
@@ -17,6 +17,7 @@ function toFormValues(show: ShowItem): ShowInput {
     venue:     show.venue,
     city:      show.city,
     country:   show.country,
+    address:   show.address   ?? '',
     festival:  show.festival  ?? '',
     ticketUrl: show.ticketUrl ?? '',
     flyerUrl:  show.flyerUrl  ?? '',
@@ -63,6 +64,12 @@ export default function ShowList({ shows, showsMode }: Props) {
     router.refresh()
   }
 
+  async function handleFeature(id: string) {
+    const result = await toggleFeaturedAction(id)
+    if ('error' in result) { setError(result.error); return }
+    router.refresh()
+  }
+
   const upcoming = shows.filter(s => s.date >= new Date())
   const past      = shows.filter(s => s.date <  new Date())
 
@@ -104,6 +111,7 @@ export default function ShowList({ shows, showsMode }: Props) {
               <ShowCard key={show.id} show={show} showsMode={showsMode}
                 onEdit={s => { setError(null); setDialog({ mode: 'edit', show: s }) }}
                 onDelete={handleDelete}
+                onFeature={handleFeature}
               />
             ))}
           </div>
@@ -118,6 +126,7 @@ export default function ShowList({ shows, showsMode }: Props) {
               <ShowCard key={show.id} show={show} showsMode={showsMode}
                 onEdit={s => { setError(null); setDialog({ mode: 'edit', show: s }) }}
                 onDelete={handleDelete}
+                onFeature={handleFeature}
               />
             ))}
           </div>

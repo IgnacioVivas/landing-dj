@@ -98,17 +98,19 @@ model VerificationToken {
 // ─── DJ data models ───────────────────────────────────────────────────────────
 
 model Show {
-  id        String   @id @default(cuid())
-  userId    String
-  date      DateTime
-  venue     String
-  city      String
-  country   String
-  festival  String?
-  ticketUrl String?
-  flyerUrl  String?
-  isSoldOut Boolean  @default(false)
-  isPast    Boolean  @default(false)
+  id         String   @id @default(cuid())
+  userId     String
+  date       DateTime
+  venue      String
+  city       String
+  country    String
+  address    String?
+  festival   String?
+  ticketUrl  String?
+  flyerUrl   String?
+  isSoldOut  Boolean  @default(false)
+  isPast     Boolean  @default(false)
+  isFeatured Boolean  @default(false)
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -192,6 +194,11 @@ model DjSettings {
   pressEmail             String?
   instagramToken         String?   @db.Text
   instagramTokenExpiresAt DateTime?
+
+  // Mix / Press Kit
+  mixUrl    String?
+  riderUrl  String?
+  epkUrl    String?
 
   // Theme
   accentColor            String    @default("#8b5cf6")

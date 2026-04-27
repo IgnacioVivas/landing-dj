@@ -26,6 +26,7 @@ export interface Show {
   city: string
   country: string
   venue: string
+  address?: string
   festival?: string
   ticketUrl?: string
   flyerUrl?: string
