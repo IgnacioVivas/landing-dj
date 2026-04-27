@@ -12,23 +12,36 @@ import YouTube from '@/components/sections/YouTube'
 import Instagram from '@/components/sections/Instagram'
 import Contact from '@/components/sections/Contact'
 import FloatingControls from '@/components/ui/FloatingControls'
+import AnalyticsBeacon from '@/components/ui/AnalyticsBeacon'
+import PageLoader from '@/components/ui/PageLoader'
 
-export default function DjPageLayout({ data }: { data: DjPageData }) {
+export default function DjPageLayout({ data, userId }: { data: DjPageData; userId: string }) {
+  const { accentColor, accentColor2 } = data.theme
   return (
-    <DjProvider data={data}>
-      <Navbar />
-      <main>
-        <Hero />
-        <Bio />
-        <Releases />
-        <Shows />
-        <Multimedia />
-        <YouTube />
-        <Instagram />
-        <Contact />
-      </main>
-      <Footer />
-      <FloatingControls />
-    </DjProvider>
+    <>
+      <style>{`
+        :root {
+          --dj-accent:  ${accentColor};
+          --dj-accent2: ${accentColor2};
+        }
+      `}</style>
+      <DjProvider data={data}>
+        <PageLoader />
+        <Navbar />
+        <main>
+          <Hero />
+          <Bio />
+          <Releases />
+          <Shows />
+          <Multimedia />
+          <YouTube />
+          <Instagram />
+          <Contact />
+        </main>
+        <Footer />
+        <FloatingControls />
+        <AnalyticsBeacon userId={userId} />
+      </DjProvider>
+    </>
   )
 }

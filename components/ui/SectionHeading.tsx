@@ -21,7 +21,7 @@ export default function SectionHeading({
   return (
     <div className={cn(isCenter && 'text-center', className)}>
       <AnimatedSection>
-        <p className="font-mono text-xs tracking-[0.25em] text-violet-400 uppercase mb-3">
+        <p className="font-mono text-xs tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--dj-accent)' }}>
           — {overline}
         </p>
       </AnimatedSection>

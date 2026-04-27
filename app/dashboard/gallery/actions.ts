@@ -8,6 +8,8 @@ type Result = { error: string } | { success: true }
 
 const utapi = new UTApi()
 
+const GALLERY_LIMIT = 12
+
 export async function createGalleryItemAction(
   imageUrl: string,
   caption: string,
@@ -17,6 +19,12 @@ export async function createGalleryItemAction(
   if (!session?.user.id) return { error: 'No autorizado.' }
 
   const count = await db.galleryItem.count({ where: { userId: session.user.id } })
+  if (count >= GALLERY_LIMIT) {
+    // Delete the just-uploaded file since we won't use it
+    const key = imageUrl.split('/f/').pop()
+    if (key) await utapi.deleteFiles(key).catch(() => null)
+    return { error: `Límite de ${GALLERY_LIMIT} imágenes alcanzado.` }
+  }
 
   const item = await db.galleryItem.create({
     data: { userId: session.user.id, imageUrl, caption, aspect, order: count },
@@ -28,6 +36,7 @@ export async function createGalleryItemAction(
 export async function updateGalleryItemAction(
   id: string,
   caption: string,
+  captionEn: string,
   aspect: string,
 ): Promise<Result> {
   const session = await auth()
@@ -36,7 +45,7 @@ export async function updateGalleryItemAction(
   const item = await db.galleryItem.findUnique({ where: { id }, select: { userId: true } })
   if (item?.userId !== session.user.id) return { error: 'No autorizado.' }
 
-  await db.galleryItem.update({ where: { id }, data: { caption, aspect } })
+  await db.galleryItem.update({ where: { id }, data: { caption, captionEn, aspect } })
 
   return { success: true }
 }

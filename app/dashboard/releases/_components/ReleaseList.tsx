@@ -9,6 +9,7 @@ import { createReleaseAction, updateReleaseAction, deleteReleaseAction, reorderR
 import Dialog from '@/app/dashboard/_components/Dialog'
 import ReleaseForm from './ReleaseForm'
 import ReleaseCard from './ReleaseCard'
+import BackButton from '@/app/dashboard/_components/BackButton'
 
 function toFormValues(r: ReleaseItem): ReleaseInput {
   return {
@@ -17,6 +18,7 @@ function toFormValues(r: ReleaseItem): ReleaseInput {
     year:          r.year,
     label:         r.label         ?? '',
     coverGradient: r.coverGradient,
+    coverImageUrl: r.coverImageUrl  ?? '',
     spotifyUrl:    r.spotifyUrl    ?? '',
     soundcloudUrl: r.soundcloudUrl ?? '',
     appleMusicUrl: r.appleMusicUrl ?? '',
@@ -40,8 +42,8 @@ export default function ReleaseList({ releases: initial }: { releases: ReleaseIt
   async function handleCreate(data: ReleaseInput) {
     const result = await createReleaseAction(data)
     if ('error' in result) { setError(result.error); return }
+    setReleases(prev => [...prev, result.item])
     close()
-    router.refresh()
   }
 
   async function handleUpdate(data: ReleaseInput) {
@@ -56,7 +58,7 @@ export default function ReleaseList({ releases: initial }: { releases: ReleaseIt
     if (!confirm('¿Eliminar este lanzamiento?')) return
     const result = await deleteReleaseAction(id)
     if ('error' in result) { setError(result.error); return }
-    router.refresh()
+    setReleases(prev => prev.filter(r => r.id !== id))
   }
 
   async function handleMove(id: string, dir: 'up' | 'down') {
@@ -75,6 +77,8 @@ export default function ReleaseList({ releases: initial }: { releases: ReleaseIt
 
   return (
     <>
+      <BackButton />
+
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="font-display text-4xl text-white tracking-wider mb-1">Releases</h2>
@@ -82,7 +86,7 @@ export default function ReleaseList({ releases: initial }: { releases: ReleaseIt
         </div>
         <button
           onClick={() => { setError(null); setDialog({ mode: 'create' }) }}
-          className="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white font-body text-sm font-medium px-4 py-2.5 rounded-lg transition-colors"
+          className="btn-accent flex items-center gap-2 text-white font-body text-sm font-medium px-4 py-2.5 rounded-lg"
         >
           <Plus size={15} weight="bold" />
           Agregar

@@ -7,6 +7,7 @@ export const showSchema = z.object({
   country:   z.string().min(1, 'El país es requerido').max(100),
   festival:  z.string().max(100),
   ticketUrl: z.union([z.literal(''), z.string().url('URL inválida')]),
+  flyerUrl:  z.union([z.literal(''), z.string().url('URL inválida')]),
   isSoldOut: z.boolean(),
 })
 

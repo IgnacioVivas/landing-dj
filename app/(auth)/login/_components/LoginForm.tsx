@@ -3,17 +3,16 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { loginSchema, type LoginInput } from '@/lib/validations/auth'
+import PasswordInput from '@/components/ui/PasswordInput'
 
 const inputClass =
   'bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-body text-sm placeholder:text-slate-700 focus:outline-none focus:border-violet-500/60 transition-colors w-full'
 
 export default function LoginForm() {
   const router = useRouter()
-  const params = useSearchParams()
-  const justRegistered = params.get('registered') === '1'
   const [serverError, setServerError] = useState<string | null>(null)
 
   const {
@@ -43,12 +42,6 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-      {justRegistered && (
-        <p className="font-mono text-xs text-cyan-400 text-center">
-          Cuenta creada. Ingresá con tus datos.
-        </p>
-      )}
-
       <div className="flex flex-col gap-1.5">
         <label className="font-mono text-xs text-slate-500 tracking-widest uppercase">
           Email
@@ -69,12 +62,11 @@ export default function LoginForm() {
         <label className="font-mono text-xs text-slate-500 tracking-widest uppercase">
           Contraseña
         </label>
-        <input
+        <PasswordInput
           {...register('password')}
-          type="password"
           autoComplete="current-password"
           placeholder="••••••••"
-          className={inputClass}
+          inputClassName={inputClass}
         />
         {errors.password && (
           <p className="font-mono text-xs text-red-400">{errors.password.message}</p>
@@ -92,13 +84,6 @@ export default function LoginForm() {
       >
         {isSubmitting ? 'Entrando...' : 'Entrar'}
       </button>
-
-      <p className="text-center font-mono text-xs text-slate-600">
-        ¿No tenés cuenta?{' '}
-        <a href="/register" className="text-violet-400 hover:text-violet-300 transition-colors">
-          Crear una
-        </a>
-      </p>
     </form>
   )
 }

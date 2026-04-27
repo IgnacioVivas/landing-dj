@@ -20,15 +20,20 @@
   --foreground: #f1f5f9;
   --radius: 0.625rem;
 
-  /* DJ palette */
-  --dj-purple: #8b5cf6;
-  --dj-purple-dim: rgba(139, 92, 246, 0.15);
-  --dj-purple-glow: rgba(139, 92, 246, 0.35);
-  --dj-cyan: #22d3ee;
-  --dj-cyan-dim: rgba(34, 211, 238, 0.1);
-  --dj-surface: rgba(255, 255, 255, 0.04);
+  /* DJ accent — overridden per-DJ via DjPageLayout style injection */
+  --dj-accent:  #8b5cf6;
+  --dj-accent2: #22d3ee;
+
+  /* Derived (update automatically when accent changes) */
+  --dj-purple:      var(--dj-accent);
+  --dj-purple-dim:  color-mix(in srgb, var(--dj-accent) 15%, transparent);
+  --dj-purple-glow: color-mix(in srgb, var(--dj-accent) 35%, transparent);
+  --dj-cyan:        var(--dj-accent2);
+  --dj-cyan-dim:    color-mix(in srgb, var(--dj-accent2) 10%, transparent);
+
+  --dj-surface:       rgba(255, 255, 255, 0.04);
   --dj-surface-hover: rgba(255, 255, 255, 0.07);
-  --dj-border: rgba(255, 255, 255, 0.08);
+  --dj-border:        rgba(255, 255, 255, 0.08);
 }
 
 html {
@@ -49,6 +54,38 @@ html {
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  label[for],
+  label:has(input) {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* ─── Dashboard card hover ──────────────────────────────────── */
+.card-link-title {
+  transition: color 0.2s ease;
+}
+.card-link:hover .card-link-title {
+  color: var(--card-accent);
+}
+
+/* ─── Accent button ─────────────────────────────────────────── */
+.btn-accent {
+  background-color: var(--dj-accent);
+  transition: filter 0.15s ease, opacity 0.15s ease;
+}
+.btn-accent:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+.btn-accent:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────────── */
@@ -95,7 +132,7 @@ html {
 
 /* ─── Gradient text ──────────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #22d3ee 100%);
+  background: linear-gradient(135deg, #ffffff 0%, color-mix(in srgb, var(--dj-accent) 70%, white) 50%, var(--dj-accent2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -103,11 +140,17 @@ html {
 
 /* ─── Glow utilities ─────────────────────────────────────────── */
 .glow-purple {
-  box-shadow: 0 0 30px rgba(139, 92, 246, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 30px color-mix(in srgb, var(--dj-accent) 40%, transparent),
+              0 0 60px color-mix(in srgb, var(--dj-accent) 20%, transparent);
+}
+.glow-accent {
+  box-shadow: 0 0 30px color-mix(in srgb, var(--dj-accent) 40%, transparent),
+              0 0 60px color-mix(in srgb, var(--dj-accent) 20%, transparent);
 }
 .glow-cyan {
-  box-shadow: 0 0 30px rgba(34, 211, 238, 0.3), 0 0 60px rgba(34, 211, 238, 0.15);
+  box-shadow: 0 0 30px color-mix(in srgb, var(--dj-accent2) 30%, transparent),
+              0 0 60px color-mix(in srgb, var(--dj-accent2) 15%, transparent);
 }
 .text-glow-purple {
-  text-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+  text-shadow: 0 0 30px color-mix(in srgb, var(--dj-accent) 60%, transparent);
 }

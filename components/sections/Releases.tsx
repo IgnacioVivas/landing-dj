@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'motion/react'
+import Image from 'next/image'
 import {
   SpotifyLogo,
   ApplePodcastsLogo,
@@ -24,10 +25,22 @@ function ReleaseCard({ release, index }: { release: Release; index: number }) {
     >
       {/* Cover art */}
       <div className="relative w-60 h-60 rounded-xl overflow-hidden mb-4">
-        <div
-          className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-          style={{ background: release.coverGradient }}
-        />
+        {release.coverImageUrl ? (
+          <Image
+            src={release.coverImageUrl}
+            alt={release.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="240px"
+          />
+        ) : (
+          <div
+            className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+            style={{ background: release.coverGradient }}
+          />
+        )}
+
+        {/* Hover overlay with links */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-sm">
           <div className="flex gap-3">
             {release.links.spotify && (
@@ -56,13 +69,15 @@ function ReleaseCard({ release, index }: { release: Release; index: number }) {
             )}
           </div>
         </div>
-        <div className="absolute inset-0 rounded-xl ring-1 ring-white/10" />
+
+        {/* Decorative ring — pointer-events-none so it never blocks link clicks */}
+        <div className="absolute inset-0 rounded-xl ring-1 ring-white/10 pointer-events-none" />
       </div>
 
       {/* Info */}
       <div className="space-y-1">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] tracking-widest text-violet-400 uppercase">
+          <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: 'var(--dj-accent)' }}>
             {release.type.toUpperCase()}
           </span>
           {release.label && (
@@ -86,6 +101,8 @@ function ReleaseCard({ release, index }: { release: Release; index: number }) {
 export default function Releases() {
   const { t } = useLanguage()
   const { releases } = useDjData()
+
+  if (!releases.length) return null
 
   return (
     <section id="releases" className="py-24 md:py-32" style={{ background: '#050509' }}>

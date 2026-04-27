@@ -8,6 +8,7 @@ export const releaseSchema = z.object({
   year:          z.number().int().min(1970, 'Año inválido').max(new Date().getFullYear() + 1, 'Año inválido'),
   label:         z.string().max(100),
   coverGradient: z.string().min(1),
+  coverImageUrl: optionalUrl,
   spotifyUrl:    optionalUrl,
   soundcloudUrl: optionalUrl,
   appleMusicUrl: optionalUrl,

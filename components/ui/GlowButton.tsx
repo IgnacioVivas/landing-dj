@@ -19,12 +19,9 @@ const base =
   'relative inline-flex items-center justify-center gap-2 font-body font-semibold text-sm tracking-wide px-7 py-3.5 rounded-full transition-all duration-200 cursor-pointer'
 
 const variants: Record<Variant, string> = {
-  primary:
-    'bg-violet-600 text-white hover:bg-violet-500 glow-purple hover:glow-purple',
-  outline:
-    'border border-white/20 text-white hover:border-violet-400 hover:bg-white/5',
-  ghost:
-    'text-slate-400 hover:text-white hover:bg-white/5',
+  primary: 'text-white glow-accent',
+  outline: 'border border-white/20 text-white hover:bg-white/5',
+  ghost:   'text-slate-400 hover:text-white hover:bg-white/5',
 }
 
 export default function GlowButton({
@@ -37,12 +34,14 @@ export default function GlowButton({
   disabled,
 }: Props) {
   const classes = cn(base, variants[variant], disabled && 'opacity-50 pointer-events-none', className)
+  const accentStyle = variant === 'primary' ? { backgroundColor: 'var(--dj-accent)' } : undefined
 
   if (href) {
     return (
       <motion.a
         href={href}
         className={classes}
+        style={accentStyle}
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
       >
@@ -57,6 +56,7 @@ export default function GlowButton({
       onClick={onClick}
       disabled={disabled}
       className={classes}
+      style={accentStyle}
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
     >

@@ -11,12 +11,16 @@ const optionalEmail = z.union([
 ])
 
 export const settingsSchema = z.object({
-  // Bio
-  djName:   z.string().min(2, 'Mínimo 2 caracteres').max(40, 'Máximo 40 caracteres'),
-  tagline:  z.string().max(100, 'Máximo 100 caracteres'),
-  bioShort: z.string().max(300, 'Máximo 300 caracteres'),
-  bioFull:  z.string().max(2000, 'Máximo 2000 caracteres'),
-  genres:   z.string().max(200),
+  // Bio (español)
+  djName:     z.string().min(2, 'Mínimo 2 caracteres').max(40, 'Máximo 40 caracteres'),
+  tagline:    z.string().max(100, 'Máximo 100 caracteres'),
+  bioShort:   z.string().max(600, 'Máximo 600 caracteres'),
+  bioFull:    z.string().max(2000, 'Máximo 2000 caracteres'),
+  genres:     z.string().max(200),
+  // Bio (english)
+  taglineEn:  z.string().max(100),
+  bioShortEn: z.string().max(600),
+  bioFullEn:  z.string().max(2000),
 
   // Stats
   yearsActive:   z.string(),
@@ -35,6 +39,13 @@ export const settingsSchema = z.object({
   // Booking
   bookingEmail: optionalEmail,
   pressEmail:   optionalEmail,
+
+  // Theme
+  accentColor:  z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Color inválido'),
+  accentColor2: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Color inválido'),
+  heroTitle:    z.string().max(100),
+  heroTitleEn:  z.string().max(100),
+  showsMode:    z.enum(['list', 'flyer']),
 })
 
 export type SettingsInput = z.infer<typeof settingsSchema>

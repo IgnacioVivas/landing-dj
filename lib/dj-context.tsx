@@ -5,13 +5,17 @@ import { djConfig } from './config'
 import type { Show, Release, GalleryItem, ReleaseType, AspectRatio } from './types'
 
 export interface DjPageData {
-  name:     string
-  tagline:  string
-  genres:   string[]
+  name:       string
+  tagline:    string
+  taglineEn:  string
+  genres:     string[]
   bio: {
-    short: string
-    full:  string
-    stats: { label: string; value: string }[]
+    short:      string
+    shortEn:    string
+    full:       string
+    fullEn:     string
+    stats:      { label: string; value: string }[]
+    photoUrl:   string | null
   }
   shows:    Show[]
   releases: Release[]
@@ -20,6 +24,15 @@ export interface DjPageData {
   instagram:{ username: string | null; profileUrl: string | null }
   social:   { instagram: string | null; spotify: string | null; soundcloud: string | null; youtube: string | null }
   contact:  { bookingEmail: string | null; pressEmail: string | null }
+  theme: {
+    accentColor:        string
+    accentColor2:       string
+    heroImageUrl:       string | null
+    heroImageMobileUrl: string | null
+    heroTitle:          string | null
+    heroTitleEn:        string | null
+  }
+  showsMode: 'list' | 'flyer'
 }
 
 const DjContext = createContext<DjPageData | null>(null)
@@ -30,13 +43,17 @@ export function DjProvider({ data, children }: { data: DjPageData; children: Rea
 
 function configToPageData(): DjPageData {
   return {
-    name:    djConfig.name,
-    tagline: djConfig.tagline,
-    genres:  djConfig.genres,
+    name:       djConfig.name,
+    tagline:    djConfig.tagline,
+    taglineEn:  '',
+    genres:     djConfig.genres,
     bio: {
-      short: djConfig.bio.short,
-      full:  djConfig.bio.full,
-      stats: djConfig.bio.stats,
+      short:    djConfig.bio.short,
+      shortEn:  '',
+      full:     djConfig.bio.full,
+      fullEn:   '',
+      stats:    djConfig.bio.stats,
+      photoUrl: null,
     },
     shows:    djConfig.shows as Show[],
     releases: djConfig.releases as Release[],
@@ -53,6 +70,15 @@ function configToPageData(): DjPageData {
       bookingEmail: djConfig.contact.bookingEmail,
       pressEmail:   djConfig.contact.pressEmail,
     },
+    theme: {
+      accentColor:        '#8b5cf6',
+      accentColor2:       '#22d3ee',
+      heroImageUrl:       null,
+      heroImageMobileUrl: null,
+      heroTitle:          null,
+      heroTitleEn:        null,
+    },
+    showsMode: 'list',
   }
 }
 

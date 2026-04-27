@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { PencilSimple, Trash, ArrowUp, ArrowDown } from '@phosphor-icons/react/dist/ssr'
 import type { ReleaseItem } from '@/lib/queries/releases'
 
@@ -19,10 +20,19 @@ export default function ReleaseCard({ release, isFirst, isLast, onEdit, onDelete
       style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
     >
       {/* Cover preview */}
-      <div
-        className="w-12 h-12 rounded-lg shrink-0"
-        style={{ background: release.coverGradient }}
-      />
+      <div className="relative w-12 h-12 rounded-lg shrink-0 overflow-hidden">
+        {release.coverImageUrl ? (
+          <Image
+            src={release.coverImageUrl}
+            alt={release.title}
+            fill
+            className="object-cover"
+            sizes="48px"
+          />
+        ) : (
+          <div className="absolute inset-0" style={{ background: release.coverGradient }} />
+        )}
+      </div>
 
       {/* Info */}
       <div className="flex-1 min-w-0">

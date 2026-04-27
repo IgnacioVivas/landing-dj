@@ -5,9 +5,12 @@ import { useRouter } from 'next/navigation'
 import type { GalleryDbItem } from '@/lib/queries/gallery'
 import { createGalleryItemAction, updateGalleryItemAction, deleteGalleryItemAction, reorderGalleryAction } from '../actions'
 import Dialog from '@/app/dashboard/_components/Dialog'
-import { Field, inputClass } from '@/app/dashboard/_components/Field'
+import { Field, inputClass, selectClass, SelectWrapper } from '@/app/dashboard/_components/Field'
 import GalleryUploader from './GalleryUploader'
 import GalleryItemCard from './GalleryItemCard'
+import BackButton from '@/app/dashboard/_components/BackButton'
+
+const GALLERY_LIMIT = 12
 
 const ASPECT_OPTIONS = [
   { value: 'square',    label: 'Cuadrado (1:1)' },
@@ -15,7 +18,7 @@ const ASPECT_OPTIONS = [
   { value: 'landscape', label: 'Landscape (4:3)' },
 ]
 
-type EditState = { id: string; caption: string; aspect: string } | null
+type EditState = { id: string; caption: string; captionEn: string; aspect: string } | null
 
 function EditDialog({
   state,
@@ -24,22 +27,23 @@ function EditDialog({
 }: {
   state: EditState
   onClose: () => void
-  onSave: (caption: string, aspect: string) => Promise<void>
+  onSave: (caption: string, captionEn: string, aspect: string) => Promise<void>
 }) {
-  const [caption, setCaption] = useState(state?.caption ?? '')
-  const [aspect,  setAspect]  = useState(state?.aspect  ?? 'square')
-  const [saving,  setSaving]  = useState(false)
+  const [caption,   setCaption]   = useState(state?.caption   ?? '')
+  const [captionEn, setCaptionEn] = useState(state?.captionEn ?? '')
+  const [aspect,    setAspect]    = useState(state?.aspect    ?? 'square')
+  const [saving,    setSaving]    = useState(false)
 
   async function handleSave() {
     setSaving(true)
-    await onSave(caption, aspect)
+    await onSave(caption, captionEn, aspect)
     setSaving(false)
   }
 
   return (
     <Dialog open={!!state} onClose={onClose} title="Editar imagen">
       <div className="flex flex-col gap-4">
-        <Field label="Caption">
+        <Field label="Caption (Español)">
           <input
             value={caption}
             onChange={e => setCaption(e.target.value)}
@@ -47,21 +51,31 @@ function EditDialog({
             placeholder="Berghain, Berlín 2025"
           />
         </Field>
-        <Field label="Formato">
-          <select
-            value={aspect}
-            onChange={e => setAspect(e.target.value)}
+        <Field label="Caption (English)" hint="Optional — shown when visitors switch to English.">
+          <input
+            value={captionEn}
+            onChange={e => setCaptionEn(e.target.value)}
             className={inputClass}
-          >
-            {ASPECT_OPTIONS.map(o => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
+            placeholder="Berghain, Berlin 2025"
+          />
+        </Field>
+        <Field label="Formato">
+          <SelectWrapper>
+            <select
+              value={aspect}
+              onChange={e => setAspect(e.target.value)}
+              className={selectClass}
+            >
+              {ASPECT_OPTIONS.map(o => (
+                <option key={o.value} value={o.value} className="bg-[#07070f]">{o.label}</option>
+              ))}
+            </select>
+          </SelectWrapper>
         </Field>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-body font-medium py-3 rounded-lg transition-colors"
+          className="btn-accent text-white font-body font-medium py-3 rounded-lg"
         >
           {saving ? 'Guardando...' : 'Guardar'}
         </button>
@@ -80,28 +94,31 @@ export default function GalleryGrid({ items: initial }: { items: GalleryDbItem[]
 
   const closeEdit = useCallback(() => setEditing(null), [])
 
-  // Called right after Uploadthing finishes — opens caption/aspect dialog
   function handleUploaded(url: string) {
     setPending(url)
   }
 
-  async function handleConfirmUpload(caption: string, aspect: string) {
+  async function handleConfirmUpload(caption: string, captionEn: string, aspect: string) {
     if (!pending) return
     const result = await createGalleryItemAction(pending, caption, aspect)
     if ('error' in result) { setError(result.error ?? null); return }
-    setItems(prev => [...prev, result.item])
+    // Update captionEn separately if provided
+    if (captionEn) {
+      await updateGalleryItemAction(result.item.id, caption, captionEn, aspect)
+    }
+    setItems(prev => [...prev, { ...result.item, captionEn }])
     setPending(null)
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
     router.refresh()
   }
 
-  async function handleSaveEdit(caption: string, aspect: string) {
+  async function handleSaveEdit(caption: string, captionEn: string, aspect: string) {
     if (!editing) return
-    const result = await updateGalleryItemAction(editing.id, caption, aspect)
+    const result = await updateGalleryItemAction(editing.id, caption, captionEn, aspect)
     if ('error' in result) { setError(result.error); return }
+    setItems(prev => prev.map(i => i.id === editing.id ? { ...i, caption, captionEn, aspect } : i))
     closeEdit()
-    router.refresh()
   }
 
   async function handleDelete(id: string) {
@@ -125,14 +142,22 @@ export default function GalleryGrid({ items: initial }: { items: GalleryDbItem[]
 
   return (
     <>
+      <BackButton />
+
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="font-display text-4xl text-white tracking-wider mb-1">Galería</h2>
           <p className="font-mono text-xs text-slate-500">
-            Las fotos se comprimen automáticamente antes de subirse.
+            Las fotos se comprimen automáticamente.{' '}
+            <span className={items.length >= GALLERY_LIMIT ? 'text-red-400' : 'text-slate-600'}>
+              {items.length}/{GALLERY_LIMIT} imágenes
+            </span>
           </p>
         </div>
-        <GalleryUploader onUploaded={handleUploaded} />
+        {items.length < GALLERY_LIMIT && <GalleryUploader onUploaded={handleUploaded} />}
+        {items.length >= GALLERY_LIMIT && (
+          <p className="font-mono text-xs text-red-400">Límite alcanzado</p>
+        )}
       </div>
 
       {error && <p className="font-mono text-xs text-red-400 mb-4">{error}</p>}
@@ -151,24 +176,18 @@ export default function GalleryGrid({ items: initial }: { items: GalleryDbItem[]
             item={item}
             isFirst={i === 0}
             isLast={i === items.length - 1}
-            onEdit={it => setEditing({ id: it.id, caption: it.caption, aspect: it.aspect })}
+            onEdit={it => setEditing({ id: it.id, caption: it.caption, captionEn: it.captionEn, aspect: it.aspect })}
             onDelete={handleDelete}
             onMove={handleMove}
           />
         ))}
       </div>
 
-      {/* Edit caption/aspect dialog */}
-      <EditDialog
-        state={editing}
-        onClose={closeEdit}
-        onSave={handleSaveEdit}
-      />
+      <EditDialog state={editing} onClose={closeEdit} onSave={handleSaveEdit} />
 
-      {/* New upload: confirm caption/aspect before saving to DB */}
       {pending && (
         <EditDialog
-          state={{ id: '', caption: '', aspect: 'square' }}
+          state={{ id: '', caption: '', captionEn: '', aspect: 'square' }}
           onClose={() => setPending(null)}
           onSave={handleConfirmUpload}
         />

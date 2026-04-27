@@ -1,14 +1,20 @@
 'use client'
 
+import { useState } from 'react'
+import Image from 'next/image'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDjData } from '@/lib/dj-context'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 
 export default function Bio() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const dj = useDjData()
   const { bio } = dj
+  const [expanded, setExpanded] = useState(false)
+
+  const displayShort = lang === 'en' ? (bio.shortEn || bio.short) : bio.short
+  const displayFull  = lang === 'en' ? (bio.fullEn  || bio.full)  : bio.full
 
   return (
     <section id="bio" className="py-24 md:py-32 bg-[#07070f]">
@@ -17,24 +23,26 @@ export default function Bio() {
           {/* Photo */}
           <AnimatedSection direction="left">
             <div className="relative aspect-[3/4] rounded-2xl overflow-hidden max-w-md mx-auto lg:mx-0">
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    'linear-gradient(160deg, #0d0221 0%, #1a0050 40%, #2d0080 70%, #3a00a0 100%)',
-                }}
-              />
-              <div className="absolute inset-0 flex items-end p-6">
-                <span className="font-display text-4xl text-white/10 select-none">
-                  {dj.name}
-                </span>
-              </div>
-              {/*
-                Replace the gradient above with a real photo:
-                import Image from 'next/image'
-                <Image src={bio.photo} alt={djConfig.name} fill className="object-cover" />
-              */}
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-violet-500/20" />
+              {bio.photoUrl ? (
+                <Image
+                  src={bio.photoUrl}
+                  alt={dj.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              ) : (
+                <>
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: 'linear-gradient(160deg, #0d0221 0%, #1a0050 40%, #2d0080 70%, #3a00a0 100%)' }}
+                  />
+                  <div className="absolute inset-0 flex items-end p-6">
+                    <span className="font-display text-4xl text-white/10 select-none">{dj.name}</span>
+                  </div>
+                </>
+              )}
+              <div className="absolute inset-0 rounded-2xl" style={{ boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--dj-accent) 20%, transparent)' }} />
             </div>
           </AnimatedSection>
 
@@ -43,9 +51,30 @@ export default function Bio() {
             <SectionHeading overline={t.bio.overline} title={t.bio.title} />
 
             <AnimatedSection delay={0.1}>
-              <p className="font-body text-slate-400 text-base md:text-lg leading-relaxed">
-                {bio.short || t.bio.text}
-              </p>
+              <div>
+                <p className="font-body text-slate-400 text-base md:text-lg leading-relaxed">
+                  {displayShort || t.bio.text}
+                </p>
+
+                {displayFull && (
+                  <>
+                    {expanded && (
+                      <p className="font-body text-slate-400 text-base md:text-lg leading-relaxed mt-4">
+                        {displayFull}
+                      </p>
+                    )}
+                    <button
+                      onClick={() => setExpanded(v => !v)}
+                      className="mt-3 font-mono text-xs transition-colors"
+                      style={{ color: 'var(--dj-accent)' }}
+                    >
+                      {lang === 'en'
+                        ? (expanded ? 'Read less ↑' : 'Read more ↓')
+                        : (expanded ? 'Leer menos ↑' : 'Leer más ↓')}
+                    </button>
+                  </>
+                )}
+              </div>
             </AnimatedSection>
 
             {/* Stats */}
@@ -54,12 +83,9 @@ export default function Bio() {
                 <AnimatedSection key={i} delay={0.15 + i * 0.07}>
                   <div
                     className="flex flex-col gap-1 p-4 rounded-xl"
-                    style={{
-                      background: 'var(--dj-surface)',
-                      border: '1px solid var(--dj-border)',
-                    }}
+                    style={{ background: 'var(--dj-surface)', border: '1px solid var(--dj-border)' }}
                   >
-                    <span className="font-display text-3xl text-violet-400 leading-none">
+                    <span className="font-display text-3xl leading-none" style={{ color: 'var(--dj-accent)' }}>
                       {stat.value}
                     </span>
                     <span className="font-mono text-xs text-slate-500 tracking-wider uppercase">

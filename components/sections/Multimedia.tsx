@@ -17,6 +17,9 @@ const aspectMap = {
 }
 
 function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: (item: GalleryItem) => void }) {
+  const { lang } = useLanguage()
+  const caption = lang === 'en' ? (item.captionEn || item.caption) : item.caption
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.96 }}
@@ -29,7 +32,7 @@ function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: (item: Galle
       {item.imageUrl ? (
         <Image
           src={item.imageUrl}
-          alt={item.caption}
+          alt={caption}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           sizes="(max-width: 768px) 50vw, 25vw"
@@ -42,16 +45,21 @@ function GalleryCard({ item, onOpen }: { item: GalleryItem; onOpen: (item: Galle
       )}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/50 flex flex-col items-center justify-center gap-2">
         <ArrowsOut size={22} className="text-white" />
-        <p className="font-mono text-xs text-white/80 tracking-wider text-center px-4">
-          {item.caption}
-        </p>
+        {caption && (
+          <p className="font-mono text-xs text-white/80 tracking-wider text-center px-4">
+            {caption}
+          </p>
+        )}
       </div>
-      <div className="absolute inset-0 rounded-xl ring-1 ring-white/5" />
+      <div className="absolute inset-0 rounded-xl ring-1 ring-white/5 pointer-events-none" />
     </motion.div>
   )
 }
 
 function Lightbox({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
+  const { lang } = useLanguage()
+  const caption = lang === 'en' ? (item.captionEn || item.caption) : item.caption
+
   return (
     <AnimatePresence>
       <motion.div
@@ -82,9 +90,11 @@ function Lightbox({ item, onClose }: { item: GalleryItem; onClose: () => void })
               <div className="absolute inset-0" style={{ background: item.gradient }} />
             )}
           </div>
-          <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-            <p className="font-body text-sm text-white">{item.caption}</p>
-          </div>
+          {caption && (
+            <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+              <p className="font-body text-sm text-white">{caption}</p>
+            </div>
+          )}
           <button
             onClick={onClose}
             className="absolute top-3 right-3 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
@@ -102,6 +112,8 @@ export default function Multimedia() {
   const { t } = useLanguage()
   const { gallery } = useDjData()
   const [active, setActive] = useState<GalleryItem | null>(null)
+
+  if (!gallery.length) return null
 
   return (
     <section id="media" className="py-24 md:py-32" style={{ background: '#050509' }}>

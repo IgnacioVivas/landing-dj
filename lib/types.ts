@@ -14,6 +14,7 @@ export interface Release {
   title: string
   year: number
   coverGradient: string
+  coverImageUrl?: string
   type: ReleaseType
   label?: string
   links: StreamingLinks
@@ -27,6 +28,7 @@ export interface Show {
   venue: string
   festival?: string
   ticketUrl?: string
+  flyerUrl?: string
   isSoldOut?: boolean
   isPast?: boolean
 }
@@ -36,6 +38,7 @@ export interface GalleryItem {
   imageUrl?: string | null
   gradient: string
   caption: string
+  captionEn: string
   aspect: AspectRatio
 }
 

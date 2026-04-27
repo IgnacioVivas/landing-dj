@@ -1,8 +1,17 @@
 import { auth } from '@/auth'
+import { db } from '@/lib/db'
 import DashboardCards from './_components/DashboardCards'
 
 export default async function DashboardPage() {
   const session = await auth()
+  const userId  = session!.user.id
+
+  const [upcomingShows, releases, gallery, totalViews] = await Promise.all([
+    db.show.count({ where: { userId, isPast: false } }),
+    db.release.count({ where: { userId } }),
+    db.galleryItem.count({ where: { userId } }),
+    db.pageView.count({ where: { userId } }),
+  ])
 
   return (
     <div>
@@ -15,7 +24,7 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      <DashboardCards />
+      <DashboardCards counts={{ upcomingShows, releases, gallery, totalViews }} />
     </div>
   )
 }

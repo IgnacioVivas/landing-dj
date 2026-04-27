@@ -2,6 +2,7 @@
 
 import { motion } from 'motion/react'
 import { ArrowDown } from '@phosphor-icons/react'
+import Image from 'next/image'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDjData } from '@/lib/dj-context'
 import GlowButton from '@/components/ui/GlowButton'
@@ -9,11 +10,40 @@ import GlowButton from '@/components/ui/GlowButton'
 const ease = [0.16, 1, 0.3, 1] as const
 
 export default function Hero() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const dj = useDjData()
+  const { heroImageUrl, heroImageMobileUrl, heroTitle, heroTitleEn } = dj.theme
+
+  const displayTitle   = lang === 'en' ? (heroTitleEn || heroTitle || dj.name) : (heroTitle || dj.name)
+  const displayTagline = lang === 'en' ? (dj.taglineEn || dj.tagline) : dj.tagline
 
   return (
     <section className="relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
+      {/* Background photos */}
+      {heroImageUrl && (
+        <Image
+          src={heroImageUrl}
+          alt=""
+          fill
+          className={`object-cover ${heroImageMobileUrl ? 'hidden md:block' : ''}`}
+          priority
+          sizes="100vw"
+        />
+      )}
+      {heroImageMobileUrl && (
+        <Image
+          src={heroImageMobileUrl}
+          alt=""
+          fill
+          className="object-cover md:hidden"
+          priority
+          sizes="100vw"
+        />
+      )}
+      {(heroImageUrl || heroImageMobileUrl) && (
+        <div className="absolute inset-0 bg-[#07070f]/75" />
+      )}
+
       {/* Animated background orbs */}
       <div
         className="orb-1 absolute top-[15%] left-[10%] w-[600px] h-[600px] rounded-full pointer-events-none"
@@ -25,7 +55,7 @@ export default function Hero() {
       />
       <div
         className="orb-3 absolute top-[35%] right-[20%] w-[300px] h-[300px] rounded-full pointer-events-none"
-        style={{ background: 'rgba(139, 92, 246, 0.06)', filter: 'blur(80px)' }}
+        style={{ background: 'color-mix(in srgb, var(--dj-accent) 6%, transparent)', filter: 'blur(80px)' }}
       />
 
       {/* Content */}
@@ -46,7 +76,7 @@ export default function Hero() {
           className="font-display gradient-text leading-none tracking-tight text-glow-purple"
           style={{ fontSize: 'clamp(5rem, 20vw, 18rem)' }}
         >
-          {dj.name}
+          {displayTitle}
         </motion.h1>
 
         <motion.p
@@ -55,7 +85,7 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.35, ease }}
           className="mt-4 font-body text-slate-400 text-base md:text-lg tracking-widest uppercase"
         >
-          {dj.tagline}
+          {displayTagline}
         </motion.p>
 
         <motion.div

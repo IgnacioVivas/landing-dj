@@ -19,7 +19,7 @@ import GlowButton from '@/components/ui/GlowButton'
 const INITIAL: ContactFormData = { name: '', email: '', type: 'booking', message: '' }
 
 const inputClass =
-  'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 font-body text-sm focus:outline-none focus:border-violet-500/60 transition-colors'
+  'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 font-body text-sm focus:outline-none transition-colors'
 
 export default function Contact() {
   const { t } = useLanguage()
@@ -98,8 +98,10 @@ export default function Contact() {
                     href={href!}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3 rounded-xl text-slate-500 hover:text-violet-400 transition-colors"
+                    className="p-3 rounded-xl text-slate-500 transition-colors"
                     style={{ background: 'var(--dj-surface)', border: '1px solid var(--dj-border)' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--dj-accent)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '')}
                   >
                     {icon}
                   </a>
@@ -116,7 +118,7 @@ export default function Contact() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="flex flex-col items-center justify-center gap-4 h-full min-h-64 text-center"
               >
-                <CheckCircle size={48} className="text-violet-400" />
+                <CheckCircle size={48} style={{ color: 'var(--dj-accent)' }} />
                 <h3 className="font-display text-3xl text-white">{t.contact.success}</h3>
                 <p className="font-body text-slate-400 text-sm">{t.contact.successDesc}</p>
                 <GlowButton variant="ghost" onClick={() => { setForm(INITIAL); setStatus('idle') }}>
@@ -143,21 +145,18 @@ export default function Contact() {
                   />
                 </div>
 
+                {/* Type tabs */}
                 <div className="flex gap-2">
                   {TYPES.map((type) => (
                     <button
                       key={type.value}
                       type="button"
                       onClick={() => set('type', type.value)}
-                      className={`flex-1 py-2.5 rounded-xl font-mono text-xs tracking-wider uppercase transition-all duration-200 ${
-                        form.type === type.value
-                          ? 'bg-violet-600 text-white'
-                          : 'text-slate-500 hover:text-white'
-                      }`}
+                      className="flex-1 py-2.5 rounded-xl font-mono text-xs tracking-wider uppercase transition-all duration-200"
                       style={
-                        form.type !== type.value
-                          ? { background: 'var(--dj-surface)', border: '1px solid var(--dj-border)' }
-                          : {}
+                        form.type === type.value
+                          ? { backgroundColor: 'var(--dj-accent)', color: 'white' }
+                          : { background: 'var(--dj-surface)', border: '1px solid var(--dj-border)', color: '#64748b' }
                       }
                     >
                       {type.label}
@@ -204,7 +203,7 @@ function InfoRow({
       className="flex items-center gap-3 p-4 rounded-xl group transition-colors hover:bg-white/[0.03]"
       style={{ border: '1px solid var(--dj-border)' }}
     >
-      <span className="text-violet-400">{icon}</span>
+      <span style={{ color: 'var(--dj-accent)' }}>{icon}</span>
       <div>
         <p className="font-mono text-[10px] tracking-widest text-slate-600 uppercase">{label}</p>
         <p className="font-body text-sm text-slate-300 group-hover:text-white transition-colors">

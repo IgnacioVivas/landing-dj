@@ -63,7 +63,8 @@ export default function FloatingControls() {
 						transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
 						onClick={launch}
 						aria-label="Scroll to top"
-						className="flex flex-col items-center gap-2.5 px-3 pt-4 pb-3 rounded-2xl bg-violet-600 cursor-pointer glow-purple select-none"
+						className="flex flex-col items-center gap-2.5 px-3 pt-4 pb-3 rounded-2xl cursor-pointer glow-accent select-none"
+						style={{ backgroundColor: 'var(--dj-accent)' }}
 						whileHover={{ scale: 1.06 }}
 						whileTap={{ scale: 0.91 }}
 					>

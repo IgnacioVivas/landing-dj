@@ -6,6 +6,17 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  DJ
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  SUSPENDED
+}
+
 // ─── Auth.js required models ─────────────────────────────────────────────────
 
 model User {
@@ -15,13 +26,17 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  role          Role      @default(DJ)
 
   // DJ profile
   slug          String    @unique
   djName        String    @default("")
   tagline       String    @default("")
+  taglineEn     String    @default("")
   bioShort      String    @default("") @db.Text
+  bioShortEn    String    @default("") @db.Text
   bioFull       String    @default("") @db.Text
+  bioFullEn     String    @default("") @db.Text
   bioPhoto      String?
   genres        String[]
 
@@ -38,6 +53,8 @@ model User {
   releases      Release[]
   gallery       GalleryItem[]
   settings      DjSettings?
+  subscription  Subscription?
+  pageViews     PageView[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -89,6 +106,7 @@ model Show {
   country   String
   festival  String?
   ticketUrl String?
+  flyerUrl  String?
   isSoldOut Boolean  @default(false)
   isPast    Boolean  @default(false)
 
@@ -106,6 +124,7 @@ model Release {
   year          Int
   label         String?
   coverGradient String   @default("linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)")
+  coverImageUrl String?
   spotifyUrl    String?
   soundcloudUrl String?
   appleMusicUrl String?
@@ -124,12 +143,40 @@ model GalleryItem {
   imageUrl  String?
   gradient  String   @default("linear-gradient(160deg, #0a001a 0%, #1a0050 60%, #3a0080 100%)")
   caption   String   @default("")
+  captionEn String   @default("")
   aspect    String   @default("square") // "portrait" | "landscape" | "square"
   order     Int      @default(0)
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+}
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String             @unique
+  status    SubscriptionStatus @default(ACTIVE)
+  startDate DateTime
+  expiresAt DateTime
+  notes     String             @default("") @db.Text
+
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+model PageView {
+  id        String   @id @default(cuid())
+  userId    String
+  device    String   @default("desktop") // "mobile" | "tablet" | "desktop"
+  country   String?  // ISO 3166-1 alpha-2 code, e.g. "AR", "US"
+  ip        String?  // for rate-limit deduplication
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }
 
 model DjSettings {
@@ -145,6 +192,15 @@ model DjSettings {
   pressEmail             String?
   instagramToken         String?   @db.Text
   instagramTokenExpiresAt DateTime?
+
+  // Theme
+  accentColor            String    @default("#8b5cf6")
+  accentColor2           String    @default("#22d3ee")
+  heroImageUrl           String?
+  heroImageMobileUrl     String?
+  heroTitle              String?
+  heroTitleEn            String?
+  showsMode              String    @default("list")
 
   user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 

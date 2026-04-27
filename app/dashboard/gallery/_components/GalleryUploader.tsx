@@ -56,7 +56,7 @@ export default function GalleryUploader({ onUploaded }: Props) {
       <button
         onClick={() => inputRef.current?.click()}
         disabled={loading}
-        className="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-body text-sm font-medium px-4 py-2.5 rounded-lg transition-colors"
+        className="btn-accent flex items-center gap-2 text-white font-body text-sm font-medium px-4 py-2.5 rounded-lg"
       >
         <CloudArrowUp size={16} weight="bold" />
         {label}

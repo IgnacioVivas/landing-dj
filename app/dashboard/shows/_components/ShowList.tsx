@@ -9,6 +9,7 @@ import { createShowAction, updateShowAction, deleteShowAction } from '../actions
 import ShowDialog from '@/app/dashboard/_components/Dialog'
 import ShowForm from './ShowForm'
 import ShowCard from './ShowCard'
+import BackButton from '@/app/dashboard/_components/BackButton'
 
 function toFormValues(show: ShowItem): ShowInput {
   return {
@@ -18,6 +19,7 @@ function toFormValues(show: ShowItem): ShowInput {
     country:   show.country,
     festival:  show.festival  ?? '',
     ticketUrl: show.ticketUrl ?? '',
+    flyerUrl:  show.flyerUrl  ?? '',
     isSoldOut: show.isSoldOut,
   }
 }
@@ -27,7 +29,12 @@ type DialogState =
   | { mode: 'create' }
   | { mode: 'edit'; show: ShowItem }
 
-export default function ShowList({ shows }: { shows: ShowItem[] }) {
+type Props = {
+  shows: ShowItem[]
+  showsMode: 'list' | 'flyer'
+}
+
+export default function ShowList({ shows, showsMode }: Props) {
   const router = useRouter()
   const [dialog, setDialog] = useState<DialogState>({ mode: 'closed' })
   const [error, setError] = useState<string | null>(null)
@@ -61,40 +68,40 @@ export default function ShowList({ shows }: { shows: ShowItem[] }) {
 
   return (
     <>
+      <BackButton />
+
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="font-display text-4xl text-white tracking-wider mb-1">Shows</h2>
-          <p className="font-mono text-xs text-slate-500">Gestioná tus fechas y eventos.</p>
+          <p className="font-mono text-xs text-slate-500">
+            Modo: <span className="text-slate-400">{showsMode === 'flyer' ? 'Flyers' : 'Lista'}</span>
+            {' · '}
+            <a href="/dashboard/settings" className="text-violet-400 hover:text-violet-300 transition-colors">
+              Cambiar en Configuración
+            </a>
+          </p>
         </div>
         <button
           onClick={() => { setError(null); setDialog({ mode: 'create' }) }}
-          className="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white font-body text-sm font-medium px-4 py-2.5 rounded-lg transition-colors"
+          className="btn-accent flex items-center gap-2 text-white font-body text-sm font-medium px-4 py-2.5 rounded-lg"
         >
           <Plus size={15} weight="bold" />
           Agregar
         </button>
       </div>
 
-      {error && (
-        <p className="font-mono text-xs text-red-400 mb-4">{error}</p>
-      )}
+      {error && <p className="font-mono text-xs text-red-400 mb-4">{error}</p>}
 
       {shows.length === 0 && (
-        <p className="font-mono text-xs text-slate-600 text-center py-16">
-          No hay shows todavía.
-        </p>
+        <p className="font-mono text-xs text-slate-600 text-center py-16">No hay shows todavía.</p>
       )}
 
       {upcoming.length > 0 && (
         <section className="mb-8">
-          <p className="font-mono text-xs text-slate-600 tracking-widest uppercase mb-3">
-            Próximos
-          </p>
+          <p className="font-mono text-xs text-slate-600 tracking-widest uppercase mb-3">Próximos</p>
           <div className="flex flex-col gap-2">
             {upcoming.map(show => (
-              <ShowCard
-                key={show.id}
-                show={show}
+              <ShowCard key={show.id} show={show} showsMode={showsMode}
                 onEdit={s => { setError(null); setDialog({ mode: 'edit', show: s }) }}
                 onDelete={handleDelete}
               />
@@ -105,14 +112,10 @@ export default function ShowList({ shows }: { shows: ShowItem[] }) {
 
       {past.length > 0 && (
         <section>
-          <p className="font-mono text-xs text-slate-600 tracking-widest uppercase mb-3">
-            Pasados
-          </p>
+          <p className="font-mono text-xs text-slate-600 tracking-widest uppercase mb-3">Pasados</p>
           <div className="flex flex-col gap-2">
             {past.map(show => (
-              <ShowCard
-                key={show.id}
-                show={show}
+              <ShowCard key={show.id} show={show} showsMode={showsMode}
                 onEdit={s => { setError(null); setDialog({ mode: 'edit', show: s }) }}
                 onDelete={handleDelete}
               />
@@ -127,7 +130,7 @@ export default function ShowList({ shows }: { shows: ShowItem[] }) {
         title={dialog.mode === 'edit' ? 'Editar show' : 'Nuevo show'}
       >
         {dialog.mode === 'create' && (
-          <ShowForm onSubmit={handleCreate} submitLabel="Agregar show" />
+          <ShowForm onSubmit={handleCreate} submitLabel="Agregar show" showFlyerUpload={showsMode === 'flyer'} />
         )}
         {dialog.mode === 'edit' && (
           <ShowForm
@@ -135,6 +138,7 @@ export default function ShowList({ shows }: { shows: ShowItem[] }) {
             defaultValues={toFormValues(dialog.show)}
             onSubmit={handleUpdate}
             submitLabel="Guardar cambios"
+            showFlyerUpload={showsMode === 'flyer'}
           />
         )}
       </ShowDialog>

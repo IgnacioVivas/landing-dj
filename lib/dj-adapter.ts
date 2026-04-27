@@ -4,12 +4,16 @@ import type { ReleaseType, AspectRatio } from './types'
 
 export function dbToDjPageData(dj: DjWithData): DjPageData {
   return {
-    name:    dj.djName,
-    tagline: dj.tagline,
-    genres:  dj.genres,
+    name:      dj.djName,
+    tagline:   dj.tagline,
+    taglineEn: dj.taglineEn,
+    genres:    dj.genres,
     bio: {
-      short: dj.bioShort,
-      full:  dj.bioFull,
+      short:    dj.bioShort,
+      shortEn:  dj.bioShortEn,
+      full:     dj.bioFull,
+      fullEn:   dj.bioFullEn,
+      photoUrl: dj.bioPhoto ?? null,
       stats: [
         { label: 'Años activo', value: dj.yearsActive   },
         { label: 'Shows',       value: dj.totalShows    },
@@ -25,16 +29,18 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       venue:     s.venue,
       festival:  s.festival  ?? undefined,
       ticketUrl: s.ticketUrl ?? undefined,
+      flyerUrl:  s.flyerUrl  ?? undefined,
       isSoldOut: s.isSoldOut,
       isPast:    s.date < new Date(),
     })),
     releases: dj.releases.map(r => ({
-      id:           r.id,
-      title:        r.title,
-      year:         r.year,
-      coverGradient:r.coverGradient,
-      type:         r.type as ReleaseType,
-      label:        r.label ?? undefined,
+      id:            r.id,
+      title:         r.title,
+      year:          r.year,
+      coverGradient: r.coverGradient,
+      coverImageUrl: r.coverImageUrl ?? undefined,
+      type:          r.type as ReleaseType,
+      label:         r.label ?? undefined,
       links: {
         spotify:    r.spotifyUrl    ?? undefined,
         soundcloud: r.soundcloudUrl ?? undefined,
@@ -43,11 +49,12 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       },
     })),
     gallery: dj.gallery.map(g => ({
-      id:       g.id,
-      imageUrl: g.imageUrl ?? null,
-      gradient: g.gradient,
-      caption:  g.caption,
-      aspect:   g.aspect as AspectRatio,
+      id:        g.id,
+      imageUrl:  g.imageUrl ?? null,
+      gradient:  g.gradient,
+      caption:   g.caption,
+      captionEn: g.captionEn,
+      aspect:    g.aspect as AspectRatio,
     })),
     youtube: {
       featuredVideoId: dj.settings?.featuredVideoId  ?? null,
@@ -67,5 +74,14 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       bookingEmail: dj.settings?.bookingEmail ?? null,
       pressEmail:   dj.settings?.pressEmail   ?? null,
     },
+    theme: {
+      accentColor:        dj.settings?.accentColor        ?? '#8b5cf6',
+      accentColor2:       dj.settings?.accentColor2       ?? '#22d3ee',
+      heroImageUrl:       dj.settings?.heroImageUrl       ?? null,
+      heroImageMobileUrl: dj.settings?.heroImageMobileUrl ?? null,
+      heroTitle:          dj.settings?.heroTitle          ?? null,
+      heroTitleEn:        dj.settings?.heroTitleEn        ?? null,
+    },
+    showsMode: (dj.settings?.showsMode ?? 'list') as 'list' | 'flyer',
   }
 }

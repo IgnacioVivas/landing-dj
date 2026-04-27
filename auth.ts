@@ -21,14 +21,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const user = await db.user.findUnique({
           where: { email: parsed.data.email },
-          select: { id: true, email: true, djName: true, slug: true, password: true },
+          select: { id: true, email: true, djName: true, slug: true, password: true, role: true },
         })
         if (!user?.password) return null
 
         const valid = await verifyPassword(parsed.data.password, user.password)
         if (!valid) return null
 
-        return { id: user.id, email: user.email, name: user.djName, slug: user.slug }
+        return { id: user.id, email: user.email, name: user.djName, slug: user.slug, role: user.role }
       },
     }),
   ],
