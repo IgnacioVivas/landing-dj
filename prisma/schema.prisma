@@ -143,6 +143,7 @@ model GalleryItem {
   id        String   @id @default(cuid())
   userId    String
   imageUrl  String?
+  videoUrl  String?
   gradient  String   @default("linear-gradient(160deg, #0a001a 0%, #1a0050 60%, #3a0080 100%)")
   caption   String   @default("")
   captionEn String   @default("")
@@ -185,7 +186,8 @@ model DjSettings {
   id                     String    @id @default(cuid())
   userId                 String    @unique
   youtubeChannelUrl      String?
-  featuredVideoId        String?
+  youtubeVideoIds        String[]
+  metaPixelId            String?
   soundcloudUrl          String?
   spotifyProfileUrl      String?
   instagramUrl           String?
@@ -207,6 +209,10 @@ model DjSettings {
   heroImageMobileUrl     String?
   heroTitle              String?
   heroTitleEn            String?
+  heroOverlay            Boolean   @default(true)
+  heroLayout             String    @default("center")
+  showStats              Boolean   @default(true)
+  galleryMode            String    @default("grid")
   showsMode              String    @default("list")
 
   user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)

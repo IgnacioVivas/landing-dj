@@ -1,24 +1,43 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { List, X } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDjData } from '@/lib/dj-context'
 import GlowButton from '@/components/ui/GlowButton'
+import HeroSocialLinks from '@/components/ui/HeroSocialLinks'
 
 export default function Navbar() {
   const { t } = useLanguage()
-  const { name } = useDjData()
-  const [scrolled, setScrolled] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const dj = useDjData()
+  const isIntegrated = dj.theme.heroLayout === 'integrated'
+
+  const [scrolled,    setScrolled]    = useState(false)
+  const [hidden,      setHidden]      = useState(false)
+  const [atTop,       setAtTop]       = useState(true)
+  const [pastHero,    setPastHero]    = useState(false)
+  const [mobileOpen,  setMobileOpen]  = useState(false)
+  const lastY = useRef(0)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60)
+    const onScroll = () => {
+      const y = window.scrollY
+      const goingDown = y > lastY.current
+      setAtTop(y < 10)
+      setScrolled(y > 60)
+      setHidden(goingDown && y > 60)
+      if (isIntegrated) setPastHero(y > window.innerHeight * 0.7)
+      lastY.current = y
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  }, [isIntegrated])
+
+  useEffect(() => {
+    if (!atTop) setMobileOpen(false)
+  }, [atTop])
 
   const navLinks = [
     { label: t.nav.bio,       href: '#bio' },
@@ -29,29 +48,34 @@ export default function Navbar() {
     { label: t.nav.contact,   href: '#contact' },
   ]
 
+  // Compute translate class:
+  // - integrated + in hero → completely hidden (all screens)
+  // - scrolling down on mobile (center mode, or integrated past hero) → mobile only hidden
+  // - otherwise → visible
+  const withinHero = isIntegrated && !pastHero
+  const translateClass = withinHero
+    ? '-translate-y-full'
+    : hidden
+      ? '-translate-y-full md:translate-y-0'
+      : 'translate-y-0'
+
   return (
     <header
       className={cn(
-        'fixed top-0 inset-x-0 z-50 border-b transition-all duration-500',
+        'fixed top-0 inset-x-0 z-50 border-b transition-all duration-300',
         scrolled
           ? 'bg-[#07070f]/85 backdrop-blur-xl border-white/5'
           : 'bg-transparent border-transparent',
+        translateClass,
       )}
     >
-      {/*
-        3-column layout with absolute center:
-        - Logo: left (natural flow)
-        - Nav links: absolute, centered relative to the full nav width
-        - Right side: ml-auto (Book Now + lang flags)
-        This avoids the centering drift caused by unequal left/right widths.
-      */}
       <nav className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
         {/* Logo */}
         <a
           href="#"
           className="font-display text-2xl text-white tracking-wider hover:text-violet-400 transition-colors flex-shrink-0"
         >
-          {name}
+          {dj.name}
         </a>
 
         {/* Desktop links — absolutely centered */}
@@ -68,26 +92,38 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Right side: CTA */}
-        <div className="ml-auto hidden md:flex items-center flex-shrink-0">
+        {/* Desktop right: social icons + CTA */}
+        <div className="ml-auto hidden md:flex items-center gap-3 flex-shrink-0">
+          {(dj.social.instagram || dj.social.spotify || dj.social.soundcloud || dj.social.youtube) && (
+            <div className="pr-3 border-r border-white/10">
+              <HeroSocialLinks social={dj.social} size={18} />
+            </div>
+          )}
           <GlowButton href="#contact" variant="primary">
             {t.nav.bookNow}
           </GlowButton>
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          className="ml-auto md:hidden text-white p-1"
-          onClick={() => setMobileOpen((o) => !o)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X size={24} /> : <List size={24} />}
-        </button>
+        {/* Mobile right: contact button + hamburger only at top */}
+        <div className="ml-auto md:hidden flex items-center gap-2">
+          <GlowButton href="#contact" variant="primary" className="px-4 py-2 text-xs">
+            {t.nav.bookNow}
+          </GlowButton>
+          {atTop && (
+            <button
+              className="text-white p-1"
+              onClick={() => setMobileOpen(o => !o)}
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X size={24} /> : <List size={24} />}
+            </button>
+          )}
+        </div>
       </nav>
 
       {/* Mobile menu */}
       <AnimatePresence>
-        {mobileOpen && (
+        {mobileOpen && atTop && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -112,10 +148,8 @@ export default function Navbar() {
                 </motion.div>
               ))}
 
-              <div className="pt-2">
-                <GlowButton href="#contact" className="w-full" onClick={() => setMobileOpen(false)}>
-                  {t.nav.bookNow}
-                </GlowButton>
+              <div className="pt-2 border-t border-white/5 mt-1">
+                <HeroSocialLinks social={dj.social} size={22} />
               </div>
             </div>
           </motion.div>

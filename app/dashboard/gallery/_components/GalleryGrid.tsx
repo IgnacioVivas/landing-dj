@@ -6,7 +6,7 @@ import type { GalleryDbItem } from '@/lib/queries/gallery'
 import { createGalleryItemAction, updateGalleryItemAction, deleteGalleryItemAction, reorderGalleryAction } from '../actions'
 import Dialog from '@/app/dashboard/_components/Dialog'
 import { Field, inputClass, selectClass, SelectWrapper } from '@/app/dashboard/_components/Field'
-import GalleryUploader from './GalleryUploader'
+import GalleryUploader, { type UploadResult } from './GalleryUploader'
 import GalleryItemCard from './GalleryItemCard'
 import BackButton from '@/app/dashboard/_components/BackButton'
 
@@ -24,10 +24,12 @@ function EditDialog({
   state,
   onClose,
   onSave,
+  title = 'Editar elemento',
 }: {
   state: EditState
   onClose: () => void
   onSave: (caption: string, captionEn: string, aspect: string) => Promise<void>
+  title?: string
 }) {
   const [caption,   setCaption]   = useState(state?.caption   ?? '')
   const [captionEn, setCaptionEn] = useState(state?.captionEn ?? '')
@@ -41,7 +43,7 @@ function EditDialog({
   }
 
   return (
-    <Dialog open={!!state} onClose={onClose} title="Editar imagen">
+    <Dialog open={!!state} onClose={onClose} title={title}>
       <div className="flex flex-col gap-4">
         <Field label="Caption (Español)">
           <input
@@ -88,19 +90,21 @@ export default function GalleryGrid({ items: initial }: { items: GalleryDbItem[]
   const router  = useRouter()
   const [items,   setItems]   = useState(initial)
   const [editing, setEditing] = useState<EditState>(null)
-  const [pending, setPending] = useState<string | null>(null)
+  const [pending, setPending] = useState<UploadResult | null>(null)
   const [error,   setError]   = useState<string | null>(null)
   const [saved,   setSaved]   = useState(false)
 
   const closeEdit = useCallback(() => setEditing(null), [])
 
-  function handleUploaded(url: string) {
-    setPending(url)
+  function handleUploaded(result: UploadResult) {
+    setPending(result)
   }
 
   async function handleConfirmUpload(caption: string, captionEn: string, aspect: string) {
     if (!pending) return
-    const result = await createGalleryItemAction(pending, caption, aspect)
+    const imageUrl = pending.mediaType === 'image' ? pending.url : null
+    const videoUrl = pending.mediaType === 'video' ? pending.url : null
+    const result = await createGalleryItemAction(imageUrl, videoUrl, caption, aspect)
     if ('error' in result) { setError(result.error ?? null); return }
     // Update captionEn separately if provided
     if (captionEn) {
@@ -148,10 +152,13 @@ export default function GalleryGrid({ items: initial }: { items: GalleryDbItem[]
         <div>
           <h2 className="font-display text-4xl text-white tracking-wider mb-1">Galería</h2>
           <p className="font-mono text-xs text-slate-500">
-            Las fotos se comprimen automáticamente.{' '}
+            Fotos comprimidas automáticamente · Vídeos hasta 64 MB.{' '}
             <span className={items.length >= GALLERY_LIMIT ? 'text-red-400' : 'text-slate-600'}>
-              {items.length}/{GALLERY_LIMIT} imágenes
+              {items.length}/{GALLERY_LIMIT} elementos
             </span>
+          </p>
+          <p className="font-mono text-xs text-slate-600 mt-0.5">
+            Carrusel: tamaño recomendado <span className="text-slate-500">900 × 1200 px (portrait 3:4)</span>
           </p>
         </div>
         {items.length < GALLERY_LIMIT && <GalleryUploader onUploaded={handleUploaded} />}
@@ -165,7 +172,7 @@ export default function GalleryGrid({ items: initial }: { items: GalleryDbItem[]
 
       {items.length === 0 && (
         <p className="font-mono text-xs text-slate-600 text-center py-16">
-          No hay fotos todavía.
+          No hay elementos todavía.
         </p>
       )}
 
@@ -190,6 +197,7 @@ export default function GalleryGrid({ items: initial }: { items: GalleryDbItem[]
           state={{ id: '', caption: '', captionEn: '', aspect: 'square' }}
           onClose={() => setPending(null)}
           onSave={handleConfirmUpload}
+          title={`Agregar ${pending.mediaType === 'video' ? 'video' : 'foto'}`}
         />
       )}
     </>

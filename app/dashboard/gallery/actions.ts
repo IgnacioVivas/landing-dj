@@ -10,8 +10,13 @@ const utapi = new UTApi()
 
 const GALLERY_LIMIT = 12
 
+function extractKey(url: string) {
+  return url.split('/f/').pop()
+}
+
 export async function createGalleryItemAction(
-  imageUrl: string,
+  imageUrl: string | null,
+  videoUrl: string | null,
   caption: string,
   aspect: string,
 ) {
@@ -20,14 +25,16 @@ export async function createGalleryItemAction(
 
   const count = await db.galleryItem.count({ where: { userId: session.user.id } })
   if (count >= GALLERY_LIMIT) {
-    // Delete the just-uploaded file since we won't use it
-    const key = imageUrl.split('/f/').pop()
-    if (key) await utapi.deleteFiles(key).catch(() => null)
-    return { error: `Límite de ${GALLERY_LIMIT} imágenes alcanzado.` }
+    const url = imageUrl ?? videoUrl
+    if (url) {
+      const key = extractKey(url)
+      if (key) await utapi.deleteFiles(key).catch(() => null)
+    }
+    return { error: `Límite de ${GALLERY_LIMIT} elementos alcanzado.` }
   }
 
   const item = await db.galleryItem.create({
-    data: { userId: session.user.id, imageUrl, caption, aspect, order: count },
+    data: { userId: session.user.id, imageUrl, videoUrl, caption, aspect, order: count },
   })
 
   return { success: true as const, item }
@@ -56,15 +63,15 @@ export async function deleteGalleryItemAction(id: string): Promise<Result> {
 
   const item = await db.galleryItem.findUnique({
     where: { id },
-    select: { userId: true, imageUrl: true },
+    select: { userId: true, imageUrl: true, videoUrl: true },
   })
   if (item?.userId !== session.user.id) return { error: 'No autorizado.' }
 
-  // Delete from Uploadthing storage
-  if (item.imageUrl) {
-    const key = item.imageUrl.split('/f/').pop()
-    if (key) await utapi.deleteFiles(key).catch(() => null)
-  }
+  const keys = [item.imageUrl, item.videoUrl]
+    .filter(Boolean)
+    .map(url => extractKey(url!))
+    .filter(Boolean) as string[]
+  if (keys.length) await utapi.deleteFiles(keys).catch(() => null)
 
   await db.galleryItem.delete({ where: { id } })
 

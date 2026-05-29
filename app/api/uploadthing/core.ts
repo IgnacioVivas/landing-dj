@@ -17,6 +17,10 @@ export const ourFileRouter = {
     .middleware(authMiddleware)
     .onUploadComplete(onComplete),
 
+  galleryVideo: f({ video: { maxFileSize: '64MB', maxFileCount: 1 } })
+    .middleware(authMiddleware)
+    .onUploadComplete(onComplete),
+
   djPhoto: f({ image: { maxFileSize: '8MB', maxFileCount: 1 } })
     .middleware(authMiddleware)
     .onUploadComplete(onComplete),

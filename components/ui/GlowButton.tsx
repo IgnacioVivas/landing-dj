@@ -40,6 +40,7 @@ export default function GlowButton({
     return (
       <motion.a
         href={href}
+        onClick={onClick}
         className={classes}
         style={accentStyle}
         whileHover={{ scale: 1.03 }}

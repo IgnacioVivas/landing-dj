@@ -20,7 +20,8 @@ export async function getUserSettings(userId: string) {
       settings: {
         select: {
           youtubeChannelUrl:  true,
-          featuredVideoId:    true,
+          youtubeVideoIds:    true,
+          metaPixelId:        true,
           soundcloudUrl:      true,
           spotifyProfileUrl:  true,
           instagramUrl:       true,
@@ -36,6 +37,10 @@ export async function getUserSettings(userId: string) {
           heroImageMobileUrl:     true,
           heroTitle:              true,
           heroTitleEn:            true,
+          heroOverlay:            true,
+          heroLayout:             true,
+          showStats:              true,
+          galleryMode:            true,
           showsMode:              true,
         },
       },

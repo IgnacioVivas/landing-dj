@@ -18,6 +18,7 @@ import ShowsMap from '@/components/sections/ShowsMap'
 import FloatingControls from '@/components/ui/FloatingControls'
 import AnalyticsBeacon from '@/components/ui/AnalyticsBeacon'
 import PageLoader from '@/components/ui/PageLoader'
+import MetaPixel from '@/components/MetaPixel'
 
 export default function DjPageLayout({ data, userId }: { data: DjPageData; userId: string }) {
   const { accentColor, accentColor2 } = data.theme
@@ -49,6 +50,7 @@ export default function DjPageLayout({ data, userId }: { data: DjPageData; userI
         <Footer />
         <FloatingControls />
         <AnalyticsBeacon userId={userId} />
+        {data.metaPixelId && <MetaPixel pixelId={data.metaPixelId} />}
       </DjProvider>
     </>
   )

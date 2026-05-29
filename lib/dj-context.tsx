@@ -20,7 +20,7 @@ export interface DjPageData {
   shows:    Show[]
   releases: Release[]
   gallery:  GalleryItem[]
-  youtube:   { featuredVideoId: string | null; channelUrl: string | null }
+  youtube:   { videoIds: string[]; channelUrl: string | null }
   instagram: { username: string | null; profileUrl: string | null }
   social:    { instagram: string | null; spotify: string | null; soundcloud: string | null; youtube: string | null }
   contact:   { bookingEmail: string | null; pressEmail: string | null }
@@ -34,8 +34,13 @@ export interface DjPageData {
     heroImageMobileUrl: string | null
     heroTitle:          string | null
     heroTitleEn:        string | null
+    heroOverlay:        boolean
+    heroLayout:         'center' | 'integrated'
   }
-  showsMode: 'list' | 'flyer'
+  showsMode:   'list' | 'flyer'
+  showStats:   boolean
+  galleryMode: 'grid' | 'carousel'
+  metaPixelId: string | null
 }
 
 const DjContext = createContext<DjPageData | null>(null)
@@ -61,7 +66,7 @@ function configToPageData(): DjPageData {
     shows:    djConfig.shows as Show[],
     releases: djConfig.releases as Release[],
     gallery:  djConfig.gallery as GalleryItem[],
-    youtube:  { featuredVideoId: djConfig.youtube.featuredVideoId, channelUrl: djConfig.youtube.channelUrl },
+    youtube:  { videoIds: [djConfig.youtube.featuredVideoId].filter(Boolean), channelUrl: djConfig.youtube.channelUrl },
     instagram:{ username: djConfig.instagram.username.replace('@', ''), profileUrl: djConfig.instagram.profileUrl },
     social: {
       instagram:  djConfig.social.instagram,
@@ -83,8 +88,13 @@ function configToPageData(): DjPageData {
       heroImageMobileUrl: null,
       heroTitle:          null,
       heroTitleEn:        null,
+      heroOverlay:        true,
+      heroLayout:         'center',
     },
-    showsMode: 'list',
+    showsMode:   'list',
+    showStats:   true,
+    galleryMode: 'grid',
+    metaPixelId: null,
   }
 }
 

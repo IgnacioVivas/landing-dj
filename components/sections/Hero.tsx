@@ -6,20 +6,31 @@ import Image from 'next/image'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDjData } from '@/lib/dj-context'
 import GlowButton from '@/components/ui/GlowButton'
+import HeroSocialLinks from '@/components/ui/HeroSocialLinks'
+import { trackLead } from '@/lib/meta-pixel'
 
 const ease = [0.16, 1, 0.3, 1] as const
 
 export default function Hero() {
   const { t, lang } = useLanguage()
   const dj = useDjData()
-  const { heroImageUrl, heroImageMobileUrl, heroTitle, heroTitleEn } = dj.theme
+  const { heroImageUrl, heroImageMobileUrl, heroTitle, heroTitleEn, heroOverlay, heroLayout } = dj.theme
 
   const displayTitle   = lang === 'en' ? (heroTitleEn || heroTitle || dj.name) : (heroTitle || dj.name)
   const displayTagline = lang === 'en' ? (dj.taglineEn || dj.tagline) : dj.tagline
 
-  return (
-    <section className="relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
-      {/* Background photos */}
+  const navLinks = [
+    { label: t.nav.bio,      href: '#bio' },
+    { label: t.nav.releases, href: '#releases' },
+    { label: t.nav.shows,    href: '#shows' },
+    { label: t.nav.media,    href: '#media' },
+    { label: t.nav.contact,  href: '#contact' },
+  ]
+
+  const hasImage = Boolean(heroImageUrl || heroImageMobileUrl)
+
+  const bgImages = (
+    <>
       {heroImageUrl && (
         <Image
           src={heroImageUrl}
@@ -40,11 +51,11 @@ export default function Hero() {
           sizes="100vw"
         />
       )}
-      {(heroImageUrl || heroImageMobileUrl) && (
-        <div className="absolute inset-0 bg-[#07070f]/75" />
-      )}
+    </>
+  )
 
-      {/* Animated background orbs */}
+  const orbs = (
+    <>
       <div
         className="orb-1 absolute top-[15%] left-[10%] w-[600px] h-[600px] rounded-full pointer-events-none"
         style={{ background: 'var(--dj-purple-dim)', filter: 'blur(120px)' }}
@@ -57,8 +68,86 @@ export default function Hero() {
         className="orb-3 absolute top-[35%] right-[20%] w-[300px] h-[300px] rounded-full pointer-events-none"
         style={{ background: 'color-mix(in srgb, var(--dj-accent) 6%, transparent)', filter: 'blur(80px)' }}
       />
+    </>
+  )
 
-      {/* Content */}
+  if (heroLayout === 'integrated') {
+    return (
+      <section className="relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
+        {bgImages}
+        {hasImage && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
+        {orbs}
+
+        {/* Centered content */}
+        <div className="relative z-10 flex flex-col items-center text-center px-4">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="font-mono text-xs tracking-[0.3em] text-slate-500 uppercase mb-4"
+          >
+            {dj.genres.join(' · ')}
+          </motion.p>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.1, ease }}
+            className="font-display gradient-text leading-none tracking-tight text-glow-purple"
+            style={{ fontSize: 'clamp(4rem, 16vw, 12rem)' }}
+          >
+            {displayTitle}
+          </motion.h1>
+
+          {displayTagline && (
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.3, ease }}
+              className="mt-3 font-body text-slate-400 text-base md:text-lg tracking-widest uppercase"
+            >
+              {displayTagline}
+            </motion.p>
+          )}
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.45, ease }}
+            className="flex flex-wrap items-center justify-center gap-4 mt-6"
+          >
+            <GlowButton href="#contact" onClick={trackLead}>{t.hero.bookNow}</GlowButton>
+            <HeroSocialLinks social={dj.social} size={24} />
+          </motion.div>
+
+          <motion.nav
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6, ease }}
+            className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-6 pt-5 border-t border-white/10"
+          >
+            {navLinks.map(link => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="font-body text-xs text-slate-500 hover:text-white transition-colors tracking-widest uppercase"
+              >
+                {link.label}
+              </a>
+            ))}
+          </motion.nav>
+        </div>
+      </section>
+    )
+  }
+
+  // Default: classic centered layout
+  return (
+    <section className="relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
+      {bgImages}
+      {hasImage && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
+      {orbs}
+
       <div className="relative z-10 flex flex-col items-center text-center px-4">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -99,7 +188,6 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
       <motion.a
         href="#bio"
         initial={{ opacity: 0 }}

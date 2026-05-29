@@ -34,7 +34,8 @@ export const settingsSchema = z.object({
   spotifyProfileUrl: optionalUrl,
   soundcloudUrl:     optionalUrl,
   youtubeChannelUrl: optionalUrl,
-  featuredVideoId:   z.string().max(20),
+  youtubeVideoIds:   z.array(z.string().max(200)).max(10),
+  metaPixelId:       z.string().max(20),
 
   // Booking
   bookingEmail: optionalEmail,
@@ -50,6 +51,10 @@ export const settingsSchema = z.object({
   accentColor2: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Color inválido'),
   heroTitle:    z.string().max(100),
   heroTitleEn:  z.string().max(100),
+  heroOverlay:  z.boolean(),
+  heroLayout:   z.enum(['center', 'integrated']),
+  showStats:    z.boolean(),
+  galleryMode:  z.enum(['grid', 'carousel']),
   showsMode:    z.enum(['list', 'flyer']),
 })
 

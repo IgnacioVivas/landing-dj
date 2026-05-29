@@ -10,7 +10,7 @@ import AnimatedSection from '@/components/ui/AnimatedSection'
 export default function Bio() {
   const { t, lang } = useLanguage()
   const dj = useDjData()
-  const { bio } = dj
+  const { bio, showStats } = dj
   const [expanded, setExpanded] = useState(false)
 
   const displayShort = lang === 'en' ? (bio.shortEn || bio.short) : bio.short
@@ -78,23 +78,25 @@ export default function Bio() {
             </AnimatedSection>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-4 pt-4">
-              {bio.stats.map((stat, i) => (
-                <AnimatedSection key={i} delay={0.15 + i * 0.07}>
-                  <div
-                    className="flex flex-col gap-1 p-4 rounded-xl"
-                    style={{ background: 'var(--dj-surface)', border: '1px solid var(--dj-border)' }}
-                  >
-                    <span className="font-display text-3xl leading-none" style={{ color: 'var(--dj-accent)' }}>
-                      {stat.value}
-                    </span>
-                    <span className="font-mono text-xs text-slate-500 tracking-wider uppercase">
-                      {t.bio.statLabels[i] ?? stat.label}
-                    </span>
-                  </div>
-                </AnimatedSection>
-              ))}
-            </div>
+            {showStats && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-4 pt-4">
+                {bio.stats.map((stat, i) => (
+                  <AnimatedSection key={i} delay={0.15 + i * 0.07}>
+                    <div
+                      className="flex flex-col gap-1 p-4 rounded-xl"
+                      style={{ background: 'var(--dj-surface)', border: '1px solid var(--dj-border)' }}
+                    >
+                      <span className="font-display text-3xl leading-none" style={{ color: 'var(--dj-accent)' }}>
+                        {stat.value}
+                      </span>
+                      <span className="font-mono text-xs text-slate-500 tracking-wider uppercase">
+                        {t.bio.statLabels[i] ?? stat.label}
+                      </span>
+                    </div>
+                  </AnimatedSection>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

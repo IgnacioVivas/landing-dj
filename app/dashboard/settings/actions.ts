@@ -6,6 +6,7 @@ import { settingsSchema } from '@/lib/validations/settings'
 import { changePasswordSchema } from '@/lib/validations/auth'
 import { hashPassword, verifyPassword } from '@/lib/auth-utils'
 import { UTApi } from 'uploadthing/server'
+import { extractYouTubeId } from '@/lib/youtube'
 
 type ActionResult = { error: string } | { success: true }
 
@@ -26,14 +27,17 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
     djName, tagline, taglineEn, bioShort, bioShortEn, bioFull, bioFullEn, genres,
     yearsActive, totalShows, countries, totalReleases,
     instagramUrl, instagramUsername, spotifyProfileUrl,
-    soundcloudUrl, youtubeChannelUrl, featuredVideoId,
+    soundcloudUrl, youtubeChannelUrl, youtubeVideoIds, metaPixelId,
     bookingEmail, pressEmail,
     mixUrl, riderUrl, epkUrl,
-    accentColor, accentColor2, heroTitle, heroTitleEn, showsMode,
+    accentColor, accentColor2, heroTitle, heroTitleEn, heroOverlay, heroLayout, showStats, galleryMode, showsMode,
   } = parsed.data
 
-  const genresArray = genres.split(',').map(g => g.trim()).filter(Boolean)
-  const toNull = (v: string) => v || null
+  const genresArray  = genres.split(',').map(g => g.trim()).filter(Boolean)
+  const toNull       = (v: string) => v || null
+  const cleanVideoIds = youtubeVideoIds
+    .map(v => extractYouTubeId(v) ?? v)
+    .filter(id => /^[a-zA-Z0-9_-]{11}$/.test(id))
 
   await db.$transaction([
     db.user.update({
@@ -48,19 +52,19 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
       update: {
         instagramUrl: toNull(instagramUrl), instagramUsername: toNull(instagramUsername),
         spotifyProfileUrl: toNull(spotifyProfileUrl), soundcloudUrl: toNull(soundcloudUrl),
-        youtubeChannelUrl: toNull(youtubeChannelUrl), featuredVideoId: toNull(featuredVideoId),
+        youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds, metaPixelId: toNull(metaPixelId),
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
         mixUrl: toNull(mixUrl), riderUrl: toNull(riderUrl), epkUrl: toNull(epkUrl),
-        accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), showsMode,
+        accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroOverlay, heroLayout, showStats, galleryMode, showsMode,
       },
       create: {
         userId: session.user.id,
         instagramUrl: toNull(instagramUrl), instagramUsername: toNull(instagramUsername),
         spotifyProfileUrl: toNull(spotifyProfileUrl), soundcloudUrl: toNull(soundcloudUrl),
-        youtubeChannelUrl: toNull(youtubeChannelUrl), featuredVideoId: toNull(featuredVideoId),
+        youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds, metaPixelId: toNull(metaPixelId),
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
         mixUrl: toNull(mixUrl), riderUrl: toNull(riderUrl), epkUrl: toNull(epkUrl),
-        accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), showsMode,
+        accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroOverlay, heroLayout, showStats, galleryMode, showsMode,
       },
     }),
   ])

@@ -33,7 +33,8 @@ function toDefaults(d: UserSettings): SettingsInput {
     spotifyProfileUrl: d.settings?.spotifyProfileUrl  ?? '',
     soundcloudUrl:     d.settings?.soundcloudUrl      ?? '',
     youtubeChannelUrl: d.settings?.youtubeChannelUrl  ?? '',
-    featuredVideoId:   d.settings?.featuredVideoId    ?? '',
+    youtubeVideoIds:   d.settings?.youtubeVideoIds    ?? [],
+    metaPixelId:       d.settings?.metaPixelId        ?? '',
     bookingEmail:      d.settings?.bookingEmail       ?? '',
     pressEmail:        d.settings?.pressEmail         ?? '',
     mixUrl:            d.settings?.mixUrl             ?? '',
@@ -43,6 +44,10 @@ function toDefaults(d: UserSettings): SettingsInput {
     accentColor2:      d.settings?.accentColor2       ?? '#22d3ee',
     heroTitle:         d.settings?.heroTitle           ?? '',
     heroTitleEn:       d.settings?.heroTitleEn         ?? '',
+    heroOverlay:       d.settings?.heroOverlay         ?? true,
+    heroLayout:        (d.settings?.heroLayout         ?? 'center') as 'center' | 'integrated',
+    showStats:         d.settings?.showStats           ?? true,
+    galleryMode:       (d.settings?.galleryMode        ?? 'grid') as 'grid' | 'carousel',
     showsMode:         (d.settings?.showsMode         ?? 'list') as 'list' | 'flyer',
   }
 }
@@ -57,6 +62,7 @@ export default function SettingsForm({ data }: { data: UserSettings }) {
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<SettingsInput>({
     resolver: zodResolver(settingsSchema),
@@ -85,8 +91,8 @@ export default function SettingsForm({ data }: { data: UserSettings }) {
         initialBioUrl={data.bioPhoto ?? null}
       />
       <BioSection      register={register} errors={errors} watch={watch} />
-      <StatsSection    register={register} errors={errors} />
-      <SocialSection   register={register} errors={errors} />
+      <StatsSection    register={register} errors={errors} watch={watch} />
+      <SocialSection   register={register} errors={errors} watch={watch} setValue={setValue} />
       <MixSection      register={register} errors={errors} />
       <PressKitSection register={register} errors={errors} />
 
