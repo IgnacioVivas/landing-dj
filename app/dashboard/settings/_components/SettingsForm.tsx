@@ -37,7 +37,11 @@ function toDefaults(d: UserSettings): SettingsInput {
     metaPixelId:       d.settings?.metaPixelId        ?? '',
     bookingEmail:      d.settings?.bookingEmail       ?? '',
     pressEmail:        d.settings?.pressEmail         ?? '',
-    mixUrl:            d.settings?.mixUrl             ?? '',
+    mixUrls: [
+      d.settings?.mixUrls[0] ?? '',
+      d.settings?.mixUrls[1] ?? '',
+      d.settings?.mixUrls[2] ?? '',
+    ],
     riderUrl:          d.settings?.riderUrl           ?? '',
     epkUrl:            d.settings?.epkUrl             ?? '',
     accentColor:       d.settings?.accentColor        ?? '#8b5cf6',

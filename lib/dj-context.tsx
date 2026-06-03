@@ -24,8 +24,8 @@ export interface DjPageData {
   instagram: { username: string | null; profileUrl: string | null }
   social:    { instagram: string | null; spotify: string | null; soundcloud: string | null; youtube: string | null }
   contact:   { bookingEmail: string | null; pressEmail: string | null }
-  mix:       { url: string | null }
-  pressKit:  { riderUrl: string | null; epkUrl: string | null }
+  mix:       { urls: string[] }
+  pressKit:  { riderUrl: string | null; epkUrl: string | null; passwordRequired: boolean }
   countdown: { date: string; venue: string; city: string; country: string; address?: string; festival?: string } | null
   theme: {
     accentColor:        string
@@ -78,8 +78,8 @@ function configToPageData(): DjPageData {
       bookingEmail: djConfig.contact.bookingEmail,
       pressEmail:   djConfig.contact.pressEmail,
     },
-    mix:       { url: null },
-    pressKit:  { riderUrl: null, epkUrl: null },
+    mix:       { urls: [] },
+    pressKit:  { riderUrl: null, epkUrl: null, passwordRequired: false },
     countdown: null,
     theme: {
       accentColor:        '#8b5cf6',

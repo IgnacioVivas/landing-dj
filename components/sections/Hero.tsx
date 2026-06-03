@@ -73,18 +73,19 @@ export default function Hero() {
 
   if (heroLayout === 'integrated') {
     return (
-      <section className="relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
+      <section className="relative flex flex-col items-center justify-end md:justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
         {bgImages}
         {hasImage && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
+        {/* Extra bottom gradient on mobile so the text sits on a darker base */}
+        <div className="absolute bottom-0 inset-x-0 h-2/5 bg-gradient-to-t from-[#07070f]/80 to-transparent md:hidden pointer-events-none" />
         {orbs}
 
-        {/* Centered content */}
-        <div className="relative z-10 flex flex-col items-center text-center px-4">
+        <div className="relative z-10 flex flex-col items-center text-center px-4 pb-10 md:pb-0">
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease }}
-            className="font-mono text-xs tracking-[0.3em] text-slate-500 uppercase mb-4"
+            className="font-mono text-xs tracking-[0.3em] text-white md:text-slate-500 uppercase mb-4"
           >
             {dj.genres.join(' · ')}
           </motion.p>
@@ -104,7 +105,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3, ease }}
-              className="mt-3 font-body text-slate-400 text-base md:text-lg tracking-widest uppercase"
+              className="mt-3 font-body text-white md:text-slate-400 text-base md:text-lg tracking-widest uppercase"
             >
               {displayTagline}
             </motion.p>
@@ -130,7 +131,7 @@ export default function Hero() {
               <a
                 key={link.href}
                 href={link.href}
-                className="font-body text-xs text-slate-500 hover:text-white transition-colors tracking-widest uppercase"
+                className="font-body text-xs text-white md:text-slate-500 hover:text-white transition-colors tracking-widest uppercase"
               >
                 {link.label}
               </a>

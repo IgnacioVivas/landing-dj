@@ -11,6 +11,11 @@ export default function PageLoader() {
   const [visible, setVisible] = useState(true)
 
   useEffect(() => {
+    // While the loader covers the screen, silently scroll to top and clear any hash
+    window.scrollTo(0, 0)
+    if (window.location.hash) {
+      history.replaceState(null, '', window.location.pathname + window.location.search)
+    }
     const t = setTimeout(() => setVisible(false), 1000)
     return () => clearTimeout(t)
   }, [])

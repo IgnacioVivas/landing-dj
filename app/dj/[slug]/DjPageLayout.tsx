@@ -9,7 +9,6 @@ import Releases from '@/components/sections/Releases'
 import Shows from '@/components/sections/Shows'
 import Multimedia from '@/components/sections/Multimedia'
 import YouTube from '@/components/sections/YouTube'
-import Instagram from '@/components/sections/Instagram'
 import Contact from '@/components/sections/Contact'
 import Countdown from '@/components/sections/Countdown'
 import MixPlayer from '@/components/sections/MixPlayer'
@@ -22,6 +21,7 @@ import MetaPixel from '@/components/MetaPixel'
 
 export default function DjPageLayout({ data, userId }: { data: DjPageData; userId: string }) {
   const { accentColor, accentColor2 } = data.theme
+
   return (
     <>
       <style>{`
@@ -43,7 +43,6 @@ export default function DjPageLayout({ data, userId }: { data: DjPageData; userI
           <Multimedia />
           <MixPlayer />
           <YouTube />
-          <Instagram />
           <PressKit />
           <Contact />
         </main>

@@ -76,8 +76,12 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       bookingEmail: dj.settings?.bookingEmail ?? null,
       pressEmail:   dj.settings?.pressEmail   ?? null,
     },
-    mix:      { url: dj.settings?.mixUrl ?? null },
-    pressKit: { riderUrl: dj.settings?.riderUrl ?? null, epkUrl: dj.settings?.epkUrl ?? null },
+    mix:      { urls: dj.settings?.mixUrls ?? [] },
+    pressKit: {
+      riderUrl:         dj.settings?.riderUrl ?? null,
+      epkUrl:           dj.settings?.epkUrl   ?? null,
+      passwordRequired: !!dj.settings?.pressKitPassword,
+    },
     countdown: (() => {
       const now = new Date()
       const featured = dj.shows.find(s => s.isFeatured && s.date > now)

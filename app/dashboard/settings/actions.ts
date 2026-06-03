@@ -29,9 +29,11 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
     instagramUrl, instagramUsername, spotifyProfileUrl,
     soundcloudUrl, youtubeChannelUrl, youtubeVideoIds, metaPixelId,
     bookingEmail, pressEmail,
-    mixUrl, riderUrl, epkUrl,
+    mixUrls, riderUrl, epkUrl,
     accentColor, accentColor2, heroTitle, heroTitleEn, heroOverlay, heroLayout, showStats, galleryMode, showsMode,
   } = parsed.data
+
+  const cleanMixUrls = mixUrls.map(u => u.trim()).filter(Boolean)
 
   const genresArray  = genres.split(',').map(g => g.trim()).filter(Boolean)
   const toNull       = (v: string) => v || null
@@ -54,7 +56,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         spotifyProfileUrl: toNull(spotifyProfileUrl), soundcloudUrl: toNull(soundcloudUrl),
         youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds, metaPixelId: toNull(metaPixelId),
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
-        mixUrl: toNull(mixUrl), riderUrl: toNull(riderUrl), epkUrl: toNull(epkUrl),
+        mixUrls: cleanMixUrls, riderUrl: toNull(riderUrl), epkUrl: toNull(epkUrl),
         accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroOverlay, heroLayout, showStats, galleryMode, showsMode,
       },
       create: {
@@ -63,7 +65,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         spotifyProfileUrl: toNull(spotifyProfileUrl), soundcloudUrl: toNull(soundcloudUrl),
         youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds, metaPixelId: toNull(metaPixelId),
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
-        mixUrl: toNull(mixUrl), riderUrl: toNull(riderUrl), epkUrl: toNull(epkUrl),
+        mixUrls: cleanMixUrls, riderUrl: toNull(riderUrl), epkUrl: toNull(epkUrl),
         accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroOverlay, heroLayout, showStats, galleryMode, showsMode,
       },
     }),

@@ -42,7 +42,7 @@ export const settingsSchema = z.object({
   pressEmail:   optionalEmail,
 
   // Mix / Press Kit
-  mixUrl:   optionalUrl,
+  mixUrls:  z.array(optionalUrl).max(3),
   riderUrl: optionalUrl,
   epkUrl:   optionalUrl,
 

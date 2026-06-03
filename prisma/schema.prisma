@@ -198,9 +198,10 @@ model DjSettings {
   instagramTokenExpiresAt DateTime?
 
   // Mix / Press Kit
-  mixUrl    String?
-  riderUrl  String?
-  epkUrl    String?
+  mixUrls           String[]
+  riderUrl          String?
+  epkUrl            String?
+  pressKitPassword  String?
 
   // Theme
   accentColor            String    @default("#8b5cf6")

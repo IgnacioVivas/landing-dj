@@ -1,4 +1,4 @@
-import { CalendarBlank, MusicNote, Images, Gear, ChartBar } from '@phosphor-icons/react/dist/ssr'
+import { CalendarBlank, MusicNote, Images, Gear, ChartBar, FileLock } from '@phosphor-icons/react/dist/ssr'
 
 type Counts = {
   upcomingShows: number
@@ -48,12 +48,20 @@ export default function DashboardCards({ counts }: { counts: Counts }) {
       accentVar:   '--dj-accent2',
     },
     {
+      Icon:        FileLock,
+      title:       'Press Kit',
+      description: 'Contraseña de acceso para periodistas y prensa.',
+      stat:        null,
+      href:        '/dashboard/presskit',
+      accentVar:   '--dj-accent',
+    },
+    {
       Icon:        Gear,
       title:       'Configuración',
       description: 'Bio, redes sociales, YouTube, Instagram.',
       stat:        null,
       href:        '/dashboard/settings',
-      accentVar:   '--dj-accent',
+      accentVar:   '--dj-accent2',
     },
   ]
 

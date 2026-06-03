@@ -28,7 +28,7 @@ export async function getUserSettings(userId: string) {
           instagramUsername:  true,
           bookingEmail:       true,
           pressEmail:         true,
-          mixUrl:             true,
+          mixUrls:            true,
           riderUrl:           true,
           epkUrl:             true,
           accentColor:            true,

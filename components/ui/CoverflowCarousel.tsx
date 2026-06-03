@@ -26,6 +26,7 @@ export default function CoverflowCarousel({ items, onOpen }: Props) {
   const [current, setCurrent]    = useState(0)
   const [spacing, setSpacing]    = useState(340)
   const containerRef             = useRef<HTMLDivElement>(null)
+  const touchStartX              = useRef<number | null>(null)
 
   useEffect(() => {
     const update = () => {
@@ -40,6 +41,17 @@ export default function CoverflowCarousel({ items, onOpen }: Props) {
 
   const prev = () => setCurrent(c => (c - 1 + items.length) % items.length)
   const next = () => setCurrent(c => (c + 1) % items.length)
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null) return
+    const delta = e.changedTouches[0].clientX - touchStartX.current
+    if (Math.abs(delta) > 50) delta < 0 ? next() : prev()
+    touchStartX.current = null
+  }
 
   // Build visible slots — deduplicate when gallery has fewer than 5 items
   const visibleSlots: { item: GalleryItem; offset: number }[] = []
@@ -56,7 +68,13 @@ export default function CoverflowCarousel({ items, onOpen }: Props) {
   const transition = { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] } as const
 
   return (
-    <div ref={containerRef} className="relative select-none" style={{ height: CARD_HEIGHT + 80 }}>
+    <div
+      ref={containerRef}
+      className="relative select-none"
+      style={{ height: CARD_HEIGHT + 80 }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Cards */}
       <div className="absolute inset-0 overflow-hidden">
         <AnimatePresence>
