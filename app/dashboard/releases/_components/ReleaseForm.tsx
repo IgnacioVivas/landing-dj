@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { releaseSchema, type ReleaseInput } from '@/lib/validations/release'
 import { Field, inputClass, selectClass, SelectWrapper } from '@/app/dashboard/_components/Field'
 import GradientPicker from './GradientPicker'
+import imageCompression from 'browser-image-compression'
 import { uploadFile } from '@/lib/uploadthing'
 
 const DEFAULT_GRADIENT = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'
@@ -48,21 +49,23 @@ export default function ReleaseForm({ defaultValues, onSubmit, submitLabel }: Pr
 
   const coverImageUrl                   = watch('coverImageUrl')
   const [uploadError, setUploadError]   = useState<string | null>(null)
-  const [isUploading, setIsUploading]   = useState(false)
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'compressing' | 'uploading'>('idle')
 
   async function handleCoverFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     e.target.value = ''
-    setIsUploading(true)
+    setUploadStatus('compressing')
     setUploadError(null)
     try {
-      const url = await uploadFile(file)
+      const compressed = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true })
+      setUploadStatus('uploading')
+      const url = await uploadFile(new File([compressed], file.name, { type: compressed.type }))
       setValue('coverImageUrl', url, { shouldDirty: true })
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : 'Error al subir')
     } finally {
-      setIsUploading(false)
+      setUploadStatus('idle')
     }
   }
 
@@ -115,14 +118,14 @@ export default function ReleaseForm({ defaultValues, onSubmit, submitLabel }: Pr
                 type="file"
                 accept="image/*"
                 className="sr-only"
-                disabled={isUploading}
+                disabled={uploadStatus !== 'idle'}
                 onChange={handleCoverFile}
               />
               <span
                 className="inline-flex items-center font-mono text-xs px-3 py-2 rounded-lg transition-colors"
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: isUploading ? '#475569' : '#e2e8f0' }}
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: uploadStatus !== 'idle' ? '#475569' : '#e2e8f0' }}
               >
-                {isUploading ? 'Subiendo...' : coverImageUrl ? 'Cambiar imagen' : 'Subir imagen'}
+                {uploadStatus === 'compressing' ? 'Comprimiendo...' : uploadStatus === 'uploading' ? 'Subiendo...' : coverImageUrl ? 'Cambiar imagen' : 'Subir imagen'}
               </span>
             </label>
             {coverImageUrl && (
@@ -165,7 +168,7 @@ export default function ReleaseForm({ defaultValues, onSubmit, submitLabel }: Pr
 
       <button
         type="submit"
-        disabled={isSubmitting || isUploading}
+        disabled={isSubmitting || uploadStatus !== 'idle'}
         className="btn-accent mt-2 disabled:opacity-50 disabled:cursor-not-allowed text-white font-body font-medium py-3 rounded-lg"
       >
         {isSubmitting ? 'Guardando...' : submitLabel}

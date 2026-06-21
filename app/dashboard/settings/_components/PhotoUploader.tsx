@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import imageCompression from 'browser-image-compression'
 import { uploadFile } from '@/lib/uploadthing'
 
 type Props = {
@@ -16,17 +17,19 @@ export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'asp
   const router      = useRouter()
   const [url, setUrl]         = useState<string | null>(initialUrl)
   const [error, setError]     = useState<string | null>(null)
-  const [uploading, setUploading] = useState(false)
+  const [status, setStatus]   = useState<'idle' | 'compressing' | 'uploading'>('idle')
   const [removing, setRemoving]   = useState(false)
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     e.target.value = ''
-    setUploading(true)
+    setStatus('compressing')
     setError(null)
     try {
-      const newUrl = await uploadFile(file)
+      const compressed = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true })
+      setStatus('uploading')
+      const newUrl = await uploadFile(new File([compressed], file.name, { type: compressed.type }))
       const result = await onSave(newUrl)
       if ('error' in result) { setError(result.error); return }
       setUrl(newUrl)
@@ -34,7 +37,7 @@ export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'asp
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al subir')
     } finally {
-      setUploading(false)
+      setStatus('idle')
     }
   }
 
@@ -71,21 +74,21 @@ export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'asp
             type="file"
             accept="image/*"
             className="sr-only"
-            disabled={uploading}
+            disabled={status !== 'idle'}
             onChange={handleFile}
           />
           <span
             className="inline-flex items-center font-mono text-xs px-3 py-2 rounded-lg transition-colors"
-            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: uploading ? '#475569' : '#e2e8f0' }}
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: status !== 'idle' ? '#475569' : '#e2e8f0' }}
           >
-            {uploading ? 'Subiendo...' : 'Cambiar foto'}
+            {status === 'compressing' ? 'Comprimiendo...' : status === 'uploading' ? 'Subiendo...' : 'Cambiar foto'}
           </span>
         </label>
 
         {url && (
           <button
             type="button"
-            disabled={removing}
+            disabled={removing || status !== 'idle'}
             onClick={handleRemove}
             className="font-mono text-xs px-3 py-2 rounded-lg text-red-400 hover:text-red-300 transition-colors disabled:opacity-50"
             style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}

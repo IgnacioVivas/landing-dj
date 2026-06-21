@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import { showSchema, type ShowInput } from '@/lib/validations/show'
 import { Field, inputClass } from '@/app/dashboard/_components/Field'
+import imageCompression from 'browser-image-compression'
 import { uploadFile } from '@/lib/uploadthing'
 
 type Props = {
@@ -29,21 +30,23 @@ export default function ShowForm({ defaultValues, onSubmit, submitLabel, showFly
 
   const flyerUrl                    = watch('flyerUrl')
   const [uploadError, setUploadError] = useState<string | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'compressing' | 'uploading'>('idle')
 
   async function handleFlyerFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     e.target.value = ''
-    setIsUploading(true)
+    setUploadStatus('compressing')
     setUploadError(null)
     try {
-      const url = await uploadFile(file)
+      const compressed = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true })
+      setUploadStatus('uploading')
+      const url = await uploadFile(new File([compressed], file.name, { type: compressed.type }))
       setValue('flyerUrl', url, { shouldDirty: true })
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : 'Error al subir')
     } finally {
-      setIsUploading(false)
+      setUploadStatus('idle')
     }
   }
 
@@ -97,14 +100,14 @@ export default function ShowForm({ defaultValues, onSubmit, submitLabel, showFly
                   type="file"
                   accept="image/*"
                   className="sr-only"
-                  disabled={isUploading}
+                  disabled={uploadStatus !== 'idle'}
                   onChange={handleFlyerFile}
                 />
                 <span
                   className="inline-flex items-center font-mono text-xs px-3 py-2 rounded-lg transition-colors"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: isUploading ? '#475569' : '#e2e8f0' }}
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: uploadStatus !== 'idle' ? '#475569' : '#e2e8f0' }}
                 >
-                  {isUploading ? 'Subiendo...' : flyerUrl ? 'Cambiar flyer' : 'Subir flyer'}
+                  {uploadStatus === 'compressing' ? 'Comprimiendo...' : uploadStatus === 'uploading' ? 'Subiendo...' : flyerUrl ? 'Cambiar flyer' : 'Subir flyer'}
                 </span>
               </label>
               {flyerUrl && (
@@ -130,7 +133,7 @@ export default function ShowForm({ defaultValues, onSubmit, submitLabel, showFly
 
       <button
         type="submit"
-        disabled={isSubmitting || isUploading}
+        disabled={isSubmitting || uploadStatus !== 'idle'}
         className="btn-accent mt-2 text-white font-body font-medium py-3 rounded-lg"
       >
         {isSubmitting ? 'Guardando...' : submitLabel}
