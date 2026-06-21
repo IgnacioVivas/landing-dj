@@ -2,17 +2,11 @@
 
 import { auth } from '@/auth'
 import { db } from '@/lib/db'
-import { UTApi } from 'uploadthing/server'
+import { deleteFile } from '@/lib/storage'
 
 type Result = { error: string } | { success: true }
 
-const utapi = new UTApi()
-
 const GALLERY_LIMIT = 12
-
-function extractKey(url: string) {
-  return url.split('/f/').pop()
-}
 
 export async function createGalleryItemAction(
   imageUrl: string | null,
@@ -25,11 +19,7 @@ export async function createGalleryItemAction(
 
   const count = await db.galleryItem.count({ where: { userId: session.user.id } })
   if (count >= GALLERY_LIMIT) {
-    const url = imageUrl ?? videoUrl
-    if (url) {
-      const key = extractKey(url)
-      if (key) await utapi.deleteFiles(key).catch(() => null)
-    }
+    await deleteFile(imageUrl ?? videoUrl)
     return { error: `Límite de ${GALLERY_LIMIT} elementos alcanzado.` }
   }
 
@@ -67,12 +57,7 @@ export async function deleteGalleryItemAction(id: string): Promise<Result> {
   })
   if (item?.userId !== session.user.id) return { error: 'No autorizado.' }
 
-  const keys = [item.imageUrl, item.videoUrl]
-    .filter(Boolean)
-    .map(url => extractKey(url!))
-    .filter(Boolean) as string[]
-  if (keys.length) await utapi.deleteFiles(keys).catch(() => null)
-
+  await Promise.all([deleteFile(item.imageUrl), deleteFile(item.videoUrl)])
   await db.galleryItem.delete({ where: { id } })
 
   return { success: true }

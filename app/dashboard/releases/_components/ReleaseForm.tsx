@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import { releaseSchema, type ReleaseInput } from '@/lib/validations/release'
 import { Field, inputClass, selectClass, SelectWrapper } from '@/app/dashboard/_components/Field'
 import GradientPicker from './GradientPicker'
-import { useUploadThing } from '@/lib/uploadthing'
+import { uploadFile } from '@/lib/uploadthing'
 
 const DEFAULT_GRADIENT = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'
 
@@ -46,16 +46,25 @@ export default function ReleaseForm({ defaultValues, onSubmit, submitLabel }: Pr
     },
   })
 
-  const coverImageUrl = watch('coverImageUrl')
-  const [uploadError, setUploadError] = useState<string | null>(null)
+  const coverImageUrl                   = watch('coverImageUrl')
+  const [uploadError, setUploadError]   = useState<string | null>(null)
+  const [isUploading, setIsUploading]   = useState(false)
 
-  const { startUpload, isUploading } = useUploadThing('djPhoto', {
-    onClientUploadComplete: useCallback((res: { ufsUrl: string }[]) => {
-      const url = res[0]?.ufsUrl
-      if (url) setValue('coverImageUrl', url, { shouldDirty: true })
-    }, [setValue]),
-    onUploadError: (err: Error) => setUploadError(err.message),
-  })
+  async function handleCoverFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    setIsUploading(true)
+    setUploadError(null)
+    try {
+      const url = await uploadFile(file)
+      setValue('coverImageUrl', url, { shouldDirty: true })
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Error al subir')
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -92,7 +101,6 @@ export default function ReleaseForm({ defaultValues, onSubmit, submitLabel }: Pr
         <GradientPicker setValue={setValue} watch={watch} />
       </Field>
 
-      {/* Cover image upload */}
       <div className="flex flex-col gap-2">
         <p className="font-mono text-xs text-slate-500 tracking-widest uppercase">Imagen de portada</p>
         <div className="flex items-start gap-3">
@@ -108,11 +116,7 @@ export default function ReleaseForm({ defaultValues, onSubmit, submitLabel }: Pr
                 accept="image/*"
                 className="sr-only"
                 disabled={isUploading}
-                onChange={e => {
-                  const file = e.target.files?.[0]
-                  if (file) startUpload([file])
-                  e.target.value = ''
-                }}
+                onChange={handleCoverFile}
               />
               <span
                 className="inline-flex items-center font-mono text-xs px-3 py-2 rounded-lg transition-colors"

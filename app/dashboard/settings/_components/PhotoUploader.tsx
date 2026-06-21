@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { useUploadThing } from '@/lib/uploadthing'
+import { uploadFile } from '@/lib/uploadthing'
 
 type Props = {
   label: string
@@ -13,23 +13,30 @@ type Props = {
 }
 
 export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'aspect-square' }: Props) {
-  const router = useRouter()
-  const [url, setUrl] = useState<string | null>(initialUrl)
-  const [error, setError] = useState<string | null>(null)
-  const [removing, setRemoving] = useState(false)
+  const router      = useRouter()
+  const [url, setUrl]         = useState<string | null>(initialUrl)
+  const [error, setError]     = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [removing, setRemoving]   = useState(false)
 
-  const { startUpload, isUploading } = useUploadThing('djPhoto', {
-    onClientUploadComplete: useCallback(async (res: { ufsUrl: string }[]) => {
-      const newUrl = res[0]?.ufsUrl
-      if (!newUrl) return
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    setUploading(true)
+    setError(null)
+    try {
+      const newUrl = await uploadFile(file)
       const result = await onSave(newUrl)
       if ('error' in result) { setError(result.error); return }
       setUrl(newUrl)
-      setError(null)
       router.refresh()
-    }, [onSave, router]),
-    onUploadError: (err: Error) => setError(err.message),
-  })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al subir')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   async function handleRemove() {
     setRemoving(true)
@@ -45,8 +52,10 @@ export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'asp
     <div className="flex flex-col gap-2">
       <p className="font-mono text-xs text-slate-500 tracking-widest uppercase">{label}</p>
 
-      <div className={`relative ${aspect} w-40 rounded-xl overflow-hidden`}
-        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+      <div
+        className={`relative ${aspect} w-40 rounded-xl overflow-hidden`}
+        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+      >
         {url ? (
           <Image src={url} alt={label} fill className="object-cover" sizes="160px" />
         ) : (
@@ -62,16 +71,14 @@ export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'asp
             type="file"
             accept="image/*"
             className="sr-only"
-            disabled={isUploading}
-            onChange={e => {
-              const file = e.target.files?.[0]
-              if (file) startUpload([file])
-              e.target.value = ''
-            }}
+            disabled={uploading}
+            onChange={handleFile}
           />
-          <span className="inline-flex items-center font-mono text-xs px-3 py-2 rounded-lg transition-colors"
-            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: isUploading ? '#475569' : '#e2e8f0' }}>
-            {isUploading ? 'Subiendo...' : 'Cambiar foto'}
+          <span
+            className="inline-flex items-center font-mono text-xs px-3 py-2 rounded-lg transition-colors"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: uploading ? '#475569' : '#e2e8f0' }}
+          >
+            {uploading ? 'Subiendo...' : 'Cambiar foto'}
           </span>
         </label>
 

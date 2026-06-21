@@ -1,4 +1,4 @@
-import { createRouteHandler } from 'uploadthing/next'
-import { ourFileRouter } from './core'
-
-export const { GET, POST } = createRouteHandler({ router: ourFileRouter })
+// Replaced by /api/upload
+import { NextResponse } from 'next/server'
+export function GET()  { return NextResponse.json({ error: 'Not found' }, { status: 404 }) }
+export function POST() { return NextResponse.json({ error: 'Not found' }, { status: 404 }) }

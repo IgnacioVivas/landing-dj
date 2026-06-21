@@ -3,17 +3,11 @@
 import { auth } from '@/auth'
 import { db } from '@/lib/db'
 import { releaseSchema } from '@/lib/validations/release'
-import { UTApi } from 'uploadthing/server'
+import { deleteFile } from '@/lib/storage'
 import type { ReleaseItem } from '@/lib/queries/releases'
 
 type Result       = { error: string } | { success: true }
 type CreateResult = { error: string } | { item: ReleaseItem }
-
-const utapi = new UTApi()
-
-function extractKey(url: string) {
-  return url.split('/f/').pop()
-}
 
 async function assertOwner(releaseId: string, userId: string): Promise<boolean> {
   const r = await db.release.findUnique({ where: { id: releaseId }, select: { userId: true } })
@@ -59,12 +53,10 @@ export async function updateReleaseAction(id: string, data: unknown): Promise<Re
 
   const { label, coverImageUrl, spotifyUrl, soundcloudUrl, appleMusicUrl, beatportUrl, ...rest } = parsed.data
 
-  // Delete old cover image from Uploadthing if it changed
   const current = await db.release.findUnique({ where: { id }, select: { coverImageUrl: true } })
   const newCover = coverImageUrl || null
   if (current?.coverImageUrl && current.coverImageUrl !== newCover) {
-    const key = extractKey(current.coverImageUrl)
-    if (key) await utapi.deleteFiles(key).catch(() => null)
+    await deleteFile(current.coverImageUrl)
   }
 
   await db.release.update({
@@ -90,11 +82,7 @@ export async function deleteReleaseAction(id: string): Promise<Result> {
   if (!(await assertOwner(id, session.user.id))) return { error: 'No autorizado.' }
 
   const release = await db.release.findUnique({ where: { id }, select: { coverImageUrl: true } })
-  if (release?.coverImageUrl) {
-    const key = extractKey(release.coverImageUrl)
-    if (key) await utapi.deleteFiles(key).catch(() => null)
-  }
-
+  await deleteFile(release?.coverImageUrl)
   await db.release.delete({ where: { id } })
 
   return { success: true }
@@ -123,11 +111,7 @@ export async function deleteReleaseCoverAction(releaseId: string): Promise<Resul
   if (!(await assertOwner(releaseId, session.user.id))) return { error: 'No autorizado.' }
 
   const release = await db.release.findUnique({ where: { id: releaseId }, select: { coverImageUrl: true } })
-  if (release?.coverImageUrl) {
-    const key = extractKey(release.coverImageUrl)
-    if (key) await utapi.deleteFiles(key).catch(() => null)
-  }
-
+  await deleteFile(release?.coverImageUrl)
   await db.release.update({ where: { id: releaseId }, data: { coverImageUrl: null } })
 
   return { success: true }

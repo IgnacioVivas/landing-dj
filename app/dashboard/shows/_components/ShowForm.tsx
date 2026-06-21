@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import { showSchema, type ShowInput } from '@/lib/validations/show'
 import { Field, inputClass } from '@/app/dashboard/_components/Field'
-import { useUploadThing } from '@/lib/uploadthing'
+import { uploadFile } from '@/lib/uploadthing'
 
 type Props = {
   defaultValues?: Partial<ShowInput>
@@ -27,16 +27,25 @@ export default function ShowForm({ defaultValues, onSubmit, submitLabel, showFly
     defaultValues: { festival: '', ticketUrl: '', flyerUrl: '', address: '', isSoldOut: false, ...defaultValues },
   })
 
-  const flyerUrl = watch('flyerUrl')
+  const flyerUrl                    = watch('flyerUrl')
   const [uploadError, setUploadError] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
-  const { startUpload, isUploading } = useUploadThing('djPhoto', {
-    onClientUploadComplete: useCallback((res: { ufsUrl: string }[]) => {
-      const url = res[0]?.ufsUrl
-      if (url) setValue('flyerUrl', url, { shouldDirty: true })
-    }, [setValue]),
-    onUploadError: (err: Error) => setUploadError(err.message),
-  })
+  async function handleFlyerFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    setIsUploading(true)
+    setUploadError(null)
+    try {
+      const url = await uploadFile(file)
+      setValue('flyerUrl', url, { shouldDirty: true })
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Error al subir')
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -89,11 +98,7 @@ export default function ShowForm({ defaultValues, onSubmit, submitLabel, showFly
                   accept="image/*"
                   className="sr-only"
                   disabled={isUploading}
-                  onChange={e => {
-                    const file = e.target.files?.[0]
-                    if (file) startUpload([file])
-                    e.target.value = ''
-                  }}
+                  onChange={handleFlyerFile}
                 />
                 <span
                   className="inline-flex items-center font-mono text-xs px-3 py-2 rounded-lg transition-colors"
@@ -114,7 +119,6 @@ export default function ShowForm({ defaultValues, onSubmit, submitLabel, showFly
             </div>
           </div>
           {uploadError && <p className="font-mono text-xs text-red-400">{uploadError}</p>}
-          {/* hidden input to register flyerUrl in form */}
           <input type="hidden" {...register('flyerUrl')} />
         </div>
       )}

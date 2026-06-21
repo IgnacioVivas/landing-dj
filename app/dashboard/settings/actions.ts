@@ -5,16 +5,10 @@ import { db } from '@/lib/db'
 import { settingsSchema } from '@/lib/validations/settings'
 import { changePasswordSchema } from '@/lib/validations/auth'
 import { hashPassword, verifyPassword } from '@/lib/auth-utils'
-import { UTApi } from 'uploadthing/server'
+import { deleteFile } from '@/lib/storage'
 import { extractYouTubeId } from '@/lib/youtube'
 
 type ActionResult = { error: string } | { success: true }
-
-const utapi = new UTApi()
-
-function extractKey(url: string) {
-  return url.split('/f/').pop()
-}
 
 export async function updateSettingsAction(data: unknown): Promise<ActionResult> {
   const session = await auth()
@@ -33,10 +27,9 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
     accentColor, accentColor2, heroTitle, heroTitleEn, heroOverlay, heroLayout, showStats, galleryMode, showsMode,
   } = parsed.data
 
-  const cleanMixUrls = mixUrls.map(u => u.trim()).filter(Boolean)
-
-  const genresArray  = genres.split(',').map(g => g.trim()).filter(Boolean)
-  const toNull       = (v: string) => v || null
+  const cleanMixUrls  = mixUrls.map(u => u.trim()).filter(Boolean)
+  const genresArray   = genres.split(',').map(g => g.trim()).filter(Boolean)
+  const toNull        = (v: string) => v || null
   const cleanVideoIds = youtubeVideoIds
     .map(v => extractYouTubeId(v) ?? v)
     .filter(id => /^[a-zA-Z0-9_-]{11}$/.test(id))
@@ -82,10 +75,7 @@ export async function updateHeroPhotoAction(url: string | null): Promise<ActionR
     where: { userId: session.user.id },
     select: { heroImageUrl: true },
   })
-  if (current?.heroImageUrl) {
-    const key = extractKey(current.heroImageUrl)
-    if (key) await utapi.deleteFiles(key).catch(() => null)
-  }
+  await deleteFile(current?.heroImageUrl)
 
   await db.djSettings.upsert({
     where:  { userId: session.user.id },
@@ -104,10 +94,7 @@ export async function updateHeroMobilePhotoAction(url: string | null): Promise<A
     where: { userId: session.user.id },
     select: { heroImageMobileUrl: true },
   })
-  if (current?.heroImageMobileUrl) {
-    const key = extractKey(current.heroImageMobileUrl)
-    if (key) await utapi.deleteFiles(key).catch(() => null)
-  }
+  await deleteFile(current?.heroImageMobileUrl)
 
   await db.djSettings.upsert({
     where:  { userId: session.user.id },
@@ -126,10 +113,7 @@ export async function updateBioPhotoAction(url: string | null): Promise<ActionRe
     where: { id: session.user.id },
     select: { bioPhoto: true },
   })
-  if (current?.bioPhoto) {
-    const key = extractKey(current.bioPhoto)
-    if (key) await utapi.deleteFiles(key).catch(() => null)
-  }
+  await deleteFile(current?.bioPhoto)
 
   await db.user.update({
     where: { id: session.user.id },

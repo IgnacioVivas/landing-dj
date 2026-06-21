@@ -3,15 +3,9 @@
 import { auth } from '@/auth'
 import { db } from '@/lib/db'
 import { showSchema } from '@/lib/validations/show'
-import { UTApi } from 'uploadthing/server'
+import { deleteFile } from '@/lib/storage'
 
 type Result = { error: string } | { success: true }
-
-const utapi = new UTApi()
-
-function extractKey(url: string) {
-  return url.split('/f/').pop()
-}
 
 function parseShow(data: ReturnType<typeof showSchema.parse>) {
   const { date, address, festival, ticketUrl, flyerUrl, ...rest } = data
@@ -53,10 +47,8 @@ export async function updateShowAction(id: string, data: unknown): Promise<Resul
 
   const newData = parseShow(parsed.data)
 
-  // Delete old flyer from Uploadthing if it changed
   if (show.flyerUrl && show.flyerUrl !== newData.flyerUrl) {
-    const key = extractKey(show.flyerUrl)
-    if (key) await utapi.deleteFiles(key).catch(() => null)
+    await deleteFile(show.flyerUrl)
   }
 
   await db.show.update({ where: { id }, data: newData })
@@ -71,7 +63,6 @@ export async function toggleFeaturedAction(id: string): Promise<Result> {
   const show = await db.show.findUnique({ where: { id }, select: { userId: true, isFeatured: true } })
   if (show?.userId !== session.user.id) return { error: 'No autorizado.' }
 
-  // Unfeature all other shows first, then toggle this one
   await db.$transaction([
     db.show.updateMany({ where: { userId: session.user.id }, data: { isFeatured: false } }),
     db.show.update({ where: { id }, data: { isFeatured: !show.isFeatured } }),
@@ -87,12 +78,7 @@ export async function deleteShowAction(id: string): Promise<Result> {
   const show = await db.show.findUnique({ where: { id }, select: { userId: true, flyerUrl: true } })
   if (show?.userId !== session.user.id) return { error: 'No autorizado.' }
 
-  // Delete flyer from Uploadthing storage
-  if (show.flyerUrl) {
-    const key = extractKey(show.flyerUrl)
-    if (key) await utapi.deleteFiles(key).catch(() => null)
-  }
-
+  await deleteFile(show.flyerUrl)
   await db.show.delete({ where: { id } })
 
   return { success: true }
