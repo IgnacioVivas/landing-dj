@@ -1,18 +1,16 @@
 'use client'
 
-import { signOut } from 'next-auth/react'
+import { handleSignOut } from '@/lib/actions/auth'
 
 export default function SignOutButton() {
   return (
-    <button
-      onClick={async () => {
-        await signOut({ redirect: false })
-        const domain = process.env.NEXT_PUBLIC_DOMAIN
-        window.location.href = domain ? `https://login.${domain}` : '/login'
-      }}
-      className="font-mono text-xs text-slate-600 hover:text-red-400 transition-colors tracking-widest uppercase"
-    >
-      Salir
-    </button>
+    <form action={handleSignOut}>
+      <button
+        type="submit"
+        className="font-mono text-xs text-slate-600 hover:text-red-400 transition-colors tracking-widest uppercase"
+      >
+        Salir
+      </button>
+    </form>
   )
 }
