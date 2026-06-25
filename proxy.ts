@@ -6,72 +6,43 @@ import type { NextRequest } from 'next/server'
 const { auth } = NextAuth(authConfig)
 
 const PLATFORM_DOMAIN = process.env.NEXT_PUBLIC_DOMAIN ?? ''
+const APP_SUBDOMAIN   = 'app'
 
-function getSubdomain(hostname: string): string | null {
+function getDjSubdomain(hostname: string): string | null {
   if (!PLATFORM_DOMAIN) return null
   if (hostname === 'localhost' || hostname === '127.0.0.1') return null
   if (!hostname.endsWith(`.${PLATFORM_DOMAIN}`)) return null
   const sub = hostname.slice(0, -(PLATFORM_DOMAIN.length + 1))
-  return sub && sub !== 'www' ? sub : null
-}
-
-function resolveRewrite(subdomain: string, pathname: string): string | null {
-  if (pathname.startsWith('/api/')) return null
-
-  if (subdomain === 'login') {
-    return pathname === '/' ? '/login' : null
-  }
-  if (subdomain === 'dashboard') {
-    if (pathname.startsWith('/dashboard')) return null
-    return pathname === '/' ? '/dashboard' : `/dashboard${pathname}`
-  }
-  if (subdomain === 'admin') {
-    if (pathname.startsWith('/admin')) return null
-    return pathname === '/' ? '/admin' : `/admin${pathname}`
-  }
-  // DJ subdomain — only rewrite root
-  if (pathname === '/') return `/dj/${subdomain}`
-  return null
+  if (!sub || sub === 'www' || sub === APP_SUBDOMAIN) return null
+  return sub
 }
 
 export const proxy = auth((req) => {
   const hostname  = (req.headers.get('host') ?? '').split(':')[0]
-  const subdomain = getSubdomain(hostname)
   const pathname  = req.nextUrl.pathname
   const isLoggedIn = !!req.auth
   const role       = req.auth?.user?.role
 
-  const rewritePath   = subdomain ? resolveRewrite(subdomain, pathname) : null
-  const effectivePath = rewritePath ?? pathname
-
-  // Unauthenticated — redirect to login subdomain
-  if ((effectivePath.startsWith('/dashboard') || effectivePath.startsWith('/admin')) && !isLoggedIn) {
-    const target = PLATFORM_DOMAIN
-      ? `https://login.${PLATFORM_DOMAIN}`
-      : new URL('/login', req.nextUrl.origin).href
-    return NextResponse.redirect(target)
-  }
-
-  // Non-admin trying to access admin
-  if (effectivePath.startsWith('/admin') && role !== 'ADMIN') {
-    const target = PLATFORM_DOMAIN
-      ? `https://dashboard.${PLATFORM_DOMAIN}`
-      : new URL('/dashboard', req.nextUrl.origin).href
-    return NextResponse.redirect(target)
-  }
-
-  // Already logged in visiting login
-  if (effectivePath.startsWith('/login') && isLoggedIn) {
-    const target = PLATFORM_DOMAIN
-      ? `https://dashboard.${PLATFORM_DOMAIN}`
-      : new URL('/dashboard', req.nextUrl.origin).href
-    return NextResponse.redirect(target)
-  }
-
-  if (rewritePath) {
+  // DJ subdomain → rewrite root to /dj/[slug]
+  const dj = getDjSubdomain(hostname)
+  if (dj && pathname === '/') {
     const url      = req.nextUrl.clone()
-    url.pathname   = rewritePath
+    url.pathname   = `/dj/${dj}`
     return NextResponse.rewrite(url)
+  }
+
+  // API routes: always pass through
+  if (pathname.startsWith('/api/')) return
+
+  // Auth guards (app subdomain and localhost)
+  if ((pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) && !isLoggedIn) {
+    return NextResponse.redirect(new URL('/login', req.nextUrl.origin))
+  }
+  if (pathname.startsWith('/admin') && role !== 'ADMIN') {
+    return NextResponse.redirect(new URL('/dashboard', req.nextUrl.origin))
+  }
+  if (pathname === '/login' && isLoggedIn) {
+    return NextResponse.redirect(new URL('/dashboard', req.nextUrl.origin))
   }
 })
 

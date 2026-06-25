@@ -36,12 +36,7 @@ export default function LoginForm() {
       return
     }
 
-    const domain = process.env.NEXT_PUBLIC_DOMAIN
-    if (domain) {
-      window.location.href = `https://dashboard.${domain}`
-    } else {
-      router.push('/dashboard')
-    }
+    router.push('/dashboard')
     router.refresh()
   }
 

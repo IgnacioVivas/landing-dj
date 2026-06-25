@@ -8,8 +8,7 @@ export const metadata = { title: 'Admin Panel' }
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const session = await auth()
-  const domain = process.env.NEXT_PUBLIC_DOMAIN
-  if (!session || session.user.role !== 'ADMIN') redirect(domain ? `https://dashboard.${domain}` : '/dashboard')
+  if (!session || session.user.role !== 'ADMIN') redirect('/dashboard')
 
   return (
     <div className="min-h-screen bg-[#07070f]">
@@ -36,12 +35,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             >
               Usuarios
             </Link>
-            <a
-              href={domain ? `https://dashboard.${domain}` : '/dashboard'}
+            <Link
+              href="/dashboard"
               className="font-mono text-xs text-slate-500 hover:text-slate-300 transition-colors"
             >
               Mi Dashboard
-            </a>
+            </Link>
           </nav>
         </div>
         <SignOutButton />

@@ -6,25 +6,9 @@ import { verifyPassword } from '@/lib/auth-utils'
 import { loginSchema } from '@/lib/validations/auth'
 import { authConfig } from './auth.config'
 
-const domain = process.env.NEXT_PUBLIC_DOMAIN
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
-  ...(domain && {
-    cookies: {
-      sessionToken: {
-        name: '__Secure-authjs.session-token',
-        options: {
-          httpOnly: true,
-          sameSite: 'lax' as const,
-          path: '/',
-          secure: true,
-          domain: `.${domain}`,
-        },
-      },
-    },
-  }),
   providers: [
     Credentials({
       credentials: {
