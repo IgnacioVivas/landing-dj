@@ -16,6 +16,8 @@ function getSubdomain(hostname: string): string | null {
 }
 
 function resolveRewrite(subdomain: string, pathname: string): string | null {
+  if (pathname.startsWith('/api/')) return null
+
   if (subdomain === 'login') {
     return pathname === '/' ? '/login' : null
   }
