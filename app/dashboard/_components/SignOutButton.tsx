@@ -1,12 +1,12 @@
 'use client'
 
-import { signOut } from 'next-auth/react'
+import { clearSession } from '@/lib/actions/auth'
 
 export default function SignOutButton() {
   return (
     <button
       onClick={async () => {
-        await signOut({ redirect: false })
+        await clearSession()
         const domain = process.env.NEXT_PUBLIC_DOMAIN
         window.location.href = domain ? `https://login.${domain}` : '/login'
       }}
