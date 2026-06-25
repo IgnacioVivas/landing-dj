@@ -12,7 +12,8 @@ export const metadata = {
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const session = await auth()
-  if (!session) redirect('/login')
+  const domain = process.env.NEXT_PUBLIC_DOMAIN
+  if (!session) redirect(domain ? `https://login.${domain}` : '/login')
 
   const [settings, sub] = await Promise.all([
     db.djSettings.findUnique({
@@ -57,20 +58,20 @@ export default async function DashboardLayout({ children }: { children: ReactNod
 
         <div className="flex items-center gap-6">
           {session.user.role === 'ADMIN' && (
-            <Link
-              href="/admin"
+            <a
+              href={domain ? `https://admin.${domain}` : '/admin'}
               className="font-mono text-xs text-slate-500 hover:text-slate-300 transition-colors"
             >
               Admin ↗
-            </Link>
+            </a>
           )}
           <a
-            href={`/dj/${session.user.slug}`}
+            href={domain ? `https://${session.user.slug}.${domain}` : `/dj/${session.user.slug}`}
             target="_blank"
             rel="noopener noreferrer"
             className="font-mono text-xs text-slate-500 hover:text-slate-300 transition-colors"
           >
-            /dj/{session.user.slug} ↗
+            {session.user.slug}.{domain ?? 'localhost'} ↗
           </a>
           <SignOutButton />
         </div>
