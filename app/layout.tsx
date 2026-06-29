@@ -24,13 +24,12 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'NEXUS — Electronic Music Producer & DJ',
-  description:
-    'Official website of NEXUS. Electronic music producer and DJ. Bookings, releases, upcoming shows and more.',
+  title: 'Hypek — Presskits profesionales para DJs',
+  description: 'Creá tu landing page y presskit profesional como DJ. Hypek.',
   openGraph: {
     type: 'website',
-    title: 'NEXUS — Electronic Music Producer & DJ',
-    description: 'Official website of NEXUS.',
+    title: 'Hypek — Presskits profesionales para DJs',
+    description: 'Creá tu landing page y presskit profesional como DJ. Hypek.',
   },
 }
 

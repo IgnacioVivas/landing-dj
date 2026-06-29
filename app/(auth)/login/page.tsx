@@ -2,7 +2,12 @@ import { Suspense } from 'react'
 import LoginForm from './_components/LoginForm'
 
 export const metadata = {
-  title: 'Acceso — DJ Panel',
+  title: 'Acceso — Hypek',
+  description: 'Acceso privado al panel de DJ.',
+  openGraph: {
+    title: 'Hypek — Panel de DJ',
+    description: 'Acceso privado.',
+  },
 }
 
 export default function LoginPage() {
