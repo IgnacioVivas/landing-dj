@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import imageCompression from 'browser-image-compression'
 import { uploadFile } from '@/lib/uploadthing'
 
@@ -60,7 +59,8 @@ export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'asp
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
       >
         {url ? (
-          <Image src={url} alt={label} fill className="object-cover" sizes="160px" />
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={url} alt={label} className="absolute inset-0 w-full h-full object-cover" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="font-mono text-xs text-slate-700">Sin foto</span>

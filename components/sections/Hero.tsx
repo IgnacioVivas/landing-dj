@@ -36,6 +36,7 @@ export default function Hero() {
           src={heroImageUrl}
           alt=""
           fill
+          unoptimized
           className={`object-cover ${heroImageMobileUrl ? 'hidden md:block' : ''}`}
           priority
           sizes="100vw"
@@ -46,6 +47,7 @@ export default function Hero() {
           src={heroImageMobileUrl}
           alt=""
           fill
+          unoptimized
           className="object-cover md:hidden"
           priority
           sizes="100vw"

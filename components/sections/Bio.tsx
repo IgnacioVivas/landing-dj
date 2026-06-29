@@ -28,6 +28,7 @@ export default function Bio() {
                   src={bio.photoUrl}
                   alt={dj.name}
                   fill
+                  unoptimized
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />

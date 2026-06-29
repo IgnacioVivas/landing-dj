@@ -36,6 +36,7 @@ function MediaPreview({ item, sizes }: { item: GalleryItem; sizes: string }) {
         src={item.imageUrl}
         alt={item.caption}
         fill
+        unoptimized
         className="object-cover transition-transform duration-500 group-hover:scale-105"
         sizes={sizes}
       />
@@ -107,7 +108,7 @@ function Lightbox({ item, onClose }: { item: GalleryItem; onClose: () => void })
           ) : (
             <div className={`w-full relative ${aspectMap[item.aspect]}`}>
               {item.imageUrl ? (
-                <Image src={item.imageUrl} alt={item.caption} fill className="object-cover" sizes="672px" />
+                <Image src={item.imageUrl} alt={item.caption} fill unoptimized className="object-cover" sizes="672px" />
               ) : (
                 <div className="absolute inset-0" style={{ background: item.gradient }} />
               )}

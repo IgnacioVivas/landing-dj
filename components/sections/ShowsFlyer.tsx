@@ -28,6 +28,7 @@ function FlyerCard({ show, index, past }: { show: Show; index: number; past?: bo
             src={show.flyerUrl}
             alt={`${show.venue} flyer`}
             fill
+            unoptimized
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
