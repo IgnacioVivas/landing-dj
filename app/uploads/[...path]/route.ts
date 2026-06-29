@@ -13,6 +13,21 @@ const MIME: Record<string, string> = {
   '.webm': 'video/webm',
 }
 
+function toWebStream(nodeStream: NodeJS.ReadableStream): ReadableStream<Uint8Array> {
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      nodeStream.on('data', (chunk: Buffer | string) => {
+        controller.enqueue(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+      })
+      nodeStream.on('end', () => controller.close())
+      nodeStream.on('error', (err) => controller.error(err))
+    },
+    cancel() {
+      (nodeStream as NodeJS.ReadableStream & { destroy?: () => void }).destroy?.()
+    },
+  })
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
@@ -34,8 +49,7 @@ export async function GET(
     const start     = parseInt(startStr, 10)
     const end       = endStr ? parseInt(endStr, 10) : size - 1
     const chunkSize = end - start + 1
-    const stream    = ReadableStream.from(createReadStream(filePath, { start, end }))
-    return new NextResponse(stream, {
+    return new NextResponse(toWebStream(createReadStream(filePath, { start, end })), {
       status: 206,
       headers: {
         'Content-Range':  `bytes ${start}-${end}/${size}`,
@@ -46,8 +60,7 @@ export async function GET(
     })
   }
 
-  const stream = ReadableStream.from(createReadStream(filePath))
-  return new NextResponse(stream, {
+  return new NextResponse(toWebStream(createReadStream(filePath)), {
     headers: {
       'Content-Type':   mime,
       'Content-Length': String(size),
