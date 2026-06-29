@@ -40,6 +40,7 @@ export interface DjPageData {
     heroLayout:         'center' | 'integrated'
   }
   showsMode:   'list' | 'flyer'
+  scrollMode:  'free' | 'snap'
   showStats:   boolean
   galleryMode: 'grid' | 'carousel'
   metaPixelId: string | null
@@ -96,6 +97,7 @@ function configToPageData(): DjPageData {
       heroLayout:         'center',
     },
     showsMode:   'list',
+    scrollMode:  'free',
     showStats:   true,
     galleryMode: 'grid',
     metaPixelId: null,

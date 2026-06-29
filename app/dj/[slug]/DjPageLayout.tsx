@@ -29,6 +29,10 @@ export default function DjPageLayout({ data, userId }: { data: DjPageData; userI
           --dj-accent:  ${accentColor};
           --dj-accent2: ${accentColor2};
         }
+        ${data.scrollMode === 'snap' ? `
+          html { scroll-snap-type: y mandatory; }
+          main > section { scroll-snap-align: start; }
+        ` : ''}
       `}</style>
       <DjProvider data={data}>
         <PageLoader />

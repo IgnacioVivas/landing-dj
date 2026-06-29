@@ -53,6 +53,7 @@ export const settingsSchema = z.object({
   heroTitleEn:  z.string().max(100),
   heroOverlay:  z.boolean(),
   heroLayout:   z.enum(['center', 'integrated']),
+  scrollMode:   z.enum(['free', 'snap']),
   showStats:    z.boolean(),
   galleryMode:  z.enum(['grid', 'carousel']),
   showsMode:    z.enum(['list', 'flyer']),

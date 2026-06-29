@@ -50,6 +50,7 @@ function toDefaults(d: UserSettings): SettingsInput {
     heroTitleEn:       d.settings?.heroTitleEn         ?? '',
     heroOverlay:       d.settings?.heroOverlay         ?? true,
     heroLayout:        (d.settings?.heroLayout         ?? 'center') as 'center' | 'integrated',
+    scrollMode:        (d.settings?.scrollMode         ?? 'free') as 'free' | 'snap',
     showStats:         d.settings?.showStats           ?? true,
     galleryMode:       (d.settings?.galleryMode        ?? 'grid') as 'grid' | 'carousel',
     showsMode:         (d.settings?.showsMode         ?? 'list') as 'list' | 'flyer',

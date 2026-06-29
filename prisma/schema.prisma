@@ -214,6 +214,7 @@ model DjSettings {
   heroTitleEn            String?
   heroOverlay            Boolean   @default(true)
   heroLayout             String    @default("center")
+  scrollMode             String    @default("free")
   showStats              Boolean   @default(true)
   galleryMode            String    @default("grid")
   showsMode              String    @default("list")

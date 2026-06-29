@@ -25,6 +25,7 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
   const heroOverlay  = watch('heroOverlay')
   const heroLayout   = watch('heroLayout')
   const galleryMode  = watch('galleryMode')
+  const scrollMode   = watch('scrollMode')
 
   return (
     <div className="flex flex-col gap-8">
@@ -142,6 +143,32 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
         </label>
         <p className="font-mono text-xs text-slate-700">
           {heroOverlay ? 'La imagen tiene un filtro oscuro para mejorar la legibilidad.' : 'La imagen se muestra limpia sin filtro.'}
+        </p>
+      </div>
+
+      {/* Scroll mode */}
+      <div className="flex flex-col gap-3">
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Modo de scroll</p>
+        <div className="flex gap-2">
+          {(['free', 'snap'] as const).map((val) => (
+            <label
+              key={val}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer transition-colors font-mono text-xs tracking-widest uppercase"
+              style={{
+                background: scrollMode === val ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: scrollMode === val ? '#e2e8f0' : '#475569',
+              }}
+            >
+              <input {...register('scrollMode')} type="radio" value={val} className="sr-only" />
+              {val === 'free' ? 'Libre' : 'Por secciones'}
+            </label>
+          ))}
+        </div>
+        <p className="font-mono text-xs text-slate-700">
+          {scrollMode === 'snap'
+            ? 'Cada scroll salta a la siguiente sección completa.'
+            : 'Scroll continuo sin saltos.'}
         </p>
       </div>
 

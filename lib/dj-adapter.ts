@@ -108,6 +108,7 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       heroLayout:         (dj.settings?.heroLayout        ?? 'center') as 'center' | 'integrated',
     },
     showsMode:   (dj.settings?.showsMode   ?? 'list') as 'list' | 'flyer',
+    scrollMode:  (dj.settings?.scrollMode  ?? 'free') as 'free' | 'snap',
     showStats:   dj.settings?.showStats   ?? true,
     galleryMode: (dj.settings?.galleryMode ?? 'grid') as 'grid' | 'carousel',
     metaPixelId: dj.settings?.metaPixelId ?? null,
