@@ -239,18 +239,24 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
             initialUrl={initialHeroUrl}
             onSave={updateHeroPhotoAction}
             aspect="aspect-video"
+            maxSizeMB={4}
+            maxWidthOrHeight={2560}
           />
           <PhotoUploader
             label="Móvil"
             initialUrl={initialHeroMobileUrl}
             onSave={updateHeroMobilePhotoAction}
             aspect="aspect-[9/16]"
+            maxSizeMB={3}
+            maxWidthOrHeight={1920}
           />
           <PhotoUploader
             label="Foto de bio"
             initialUrl={initialBioUrl}
             onSave={updateBioPhotoAction}
             aspect="aspect-[3/4]"
+            maxSizeMB={2}
+            maxWidthOrHeight={1600}
           />
         </div>
         <p className="font-mono text-xs text-slate-700">Las fotos se aplican al instante, sin necesidad de guardar.</p>

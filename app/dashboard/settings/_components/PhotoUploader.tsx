@@ -10,9 +10,11 @@ type Props = {
   initialUrl: string | null
   onSave: (url: string | null) => Promise<{ error: string } | { success: true }>
   aspect?: string
+  maxSizeMB?: number
+  maxWidthOrHeight?: number
 }
 
-export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'aspect-square' }: Props) {
+export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'aspect-square', maxSizeMB = 3, maxWidthOrHeight = 2560 }: Props) {
   const router      = useRouter()
   const [url, setUrl]         = useState<string | null>(initialUrl)
   const [error, setError]     = useState<string | null>(null)
@@ -26,7 +28,7 @@ export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'asp
     setStatus('compressing')
     setError(null)
     try {
-      const compressed = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true })
+      const compressed = await imageCompression(file, { maxSizeMB, maxWidthOrHeight, useWebWorker: true })
       setStatus('uploading')
       const newUrl = await uploadFile(new File([compressed], file.name, { type: compressed.type }))
       const result = await onSave(newUrl)
