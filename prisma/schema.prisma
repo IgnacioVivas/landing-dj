@@ -208,6 +208,8 @@ model DjSettings {
   accentColor2           String    @default("#22d3ee")
   heroImageUrl           String?
   heroImageMobileUrl     String?
+  heroVideoUrl           String?
+  heroVideoMobileUrl     String?
   heroTitle              String?
   heroTitleEn            String?
   heroOverlay            Boolean   @default(true)

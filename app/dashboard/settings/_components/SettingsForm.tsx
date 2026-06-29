@@ -92,6 +92,8 @@ export default function SettingsForm({ data }: { data: UserSettings }) {
         watch={watch}
         initialHeroUrl={data.settings?.heroImageUrl ?? null}
         initialHeroMobileUrl={data.settings?.heroImageMobileUrl ?? null}
+        initialHeroVideoUrl={data.settings?.heroVideoUrl ?? null}
+        initialHeroVideoMobileUrl={data.settings?.heroVideoMobileUrl ?? null}
         initialBioUrl={data.bioPhoto ?? null}
       />
       <BioSection      register={register} errors={errors} watch={watch} />

@@ -4,7 +4,8 @@ import type { UseFormRegister, FieldErrors, UseFormWatch } from 'react-hook-form
 import type { SettingsInput } from '@/lib/validations/settings'
 import { SectionTitle, Field, inputClass } from '@/app/dashboard/_components/Field'
 import PhotoUploader from './PhotoUploader'
-import { updateHeroPhotoAction, updateHeroMobilePhotoAction, updateBioPhotoAction } from '../actions'
+import VideoUploader from './VideoUploader'
+import { updateHeroPhotoAction, updateHeroMobilePhotoAction, updateBioPhotoAction, updateHeroVideoAction, updateHeroVideoMobileAction } from '../actions'
 
 type Props = {
   register: UseFormRegister<SettingsInput>
@@ -12,10 +13,12 @@ type Props = {
   watch: UseFormWatch<SettingsInput>
   initialHeroUrl: string | null
   initialHeroMobileUrl: string | null
+  initialHeroVideoUrl: string | null
+  initialHeroVideoMobileUrl: string | null
   initialBioUrl: string | null
 }
 
-export default function ThemeSection({ register, errors, watch, initialHeroUrl, initialHeroMobileUrl, initialBioUrl }: Props) {
+export default function ThemeSection({ register, errors, watch, initialHeroUrl, initialHeroMobileUrl, initialHeroVideoUrl, initialHeroVideoMobileUrl, initialBioUrl }: Props) {
   const accent       = watch('accentColor')
   const accent2      = watch('accentColor2')
   const mode         = watch('showsMode')
@@ -202,16 +205,16 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
 
       {/* Photo uploads (independent of form submit) */}
       <div className="flex flex-col gap-4">
-        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Fotos</p>
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Fotos del hero</p>
         <div className="flex flex-wrap gap-8">
           <PhotoUploader
-            label="Hero (escritorio)"
+            label="Escritorio"
             initialUrl={initialHeroUrl}
             onSave={updateHeroPhotoAction}
             aspect="aspect-video"
           />
           <PhotoUploader
-            label="Hero (móvil)"
+            label="Móvil"
             initialUrl={initialHeroMobileUrl}
             onSave={updateHeroMobilePhotoAction}
             aspect="aspect-[9/16]"
@@ -224,6 +227,26 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
           />
         </div>
         <p className="font-mono text-xs text-slate-700">Las fotos se aplican al instante, sin necesidad de guardar.</p>
+      </div>
+
+      {/* Video uploads (independent of form submit) */}
+      <div className="flex flex-col gap-4">
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Videos del hero</p>
+        <div className="flex flex-wrap gap-8">
+          <VideoUploader
+            label="Escritorio"
+            initialUrl={initialHeroVideoUrl}
+            onSave={updateHeroVideoAction}
+          />
+          <VideoUploader
+            label="Móvil"
+            initialUrl={initialHeroVideoMobileUrl}
+            onSave={updateHeroVideoMobileAction}
+          />
+        </div>
+        <p className="font-mono text-xs text-slate-700">
+          El video reemplaza a la foto cuando ambos están cargados. Formatos: MP4, WebM. Máx. 200 MB.
+        </p>
       </div>
     </div>
   )

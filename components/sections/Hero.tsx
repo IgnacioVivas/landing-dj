@@ -14,7 +14,7 @@ const ease = [0.16, 1, 0.3, 1] as const
 export default function Hero() {
   const { t, lang } = useLanguage()
   const dj = useDjData()
-  const { heroImageUrl, heroImageMobileUrl, heroTitle, heroTitleEn, heroOverlay, heroLayout } = dj.theme
+  const { heroImageUrl, heroImageMobileUrl, heroVideoUrl, heroVideoMobileUrl, heroTitle, heroTitleEn, heroOverlay, heroLayout } = dj.theme
 
   const displayTitle   = lang === 'en' ? (heroTitleEn || heroTitle || dj.name) : (heroTitle || dj.name)
   const displayTagline = lang === 'en' ? (dj.taglineEn || dj.tagline) : dj.tagline
@@ -27,22 +27,41 @@ export default function Hero() {
     { label: t.nav.contact,  href: '#contact' },
   ]
 
-  const hasImage = Boolean(heroImageUrl || heroImageMobileUrl)
+  const hasMobileMedia  = Boolean(heroVideoMobileUrl || heroImageMobileUrl)
+  const hasDesktopMedia = Boolean(heroVideoUrl || heroImageUrl)
+  const hasBg           = hasDesktopMedia || hasMobileMedia
 
-  const bgImages = (
+  const bgMedia = (
     <>
-      {heroImageUrl && (
+      {/* Desktop slot: video takes priority over image */}
+      {heroVideoUrl ? (
+        <video
+          autoPlay muted loop playsInline
+          className={`absolute inset-0 w-full h-full object-cover ${hasMobileMedia ? 'hidden md:block' : ''}`}
+        >
+          <source src={heroVideoUrl} />
+        </video>
+      ) : heroImageUrl ? (
         <Image
           src={heroImageUrl}
           alt=""
           fill
           unoptimized
-          className={`object-cover ${heroImageMobileUrl ? 'hidden md:block' : ''}`}
+          className={`object-cover ${hasMobileMedia ? 'hidden md:block' : ''}`}
           priority
           sizes="100vw"
         />
-      )}
-      {heroImageMobileUrl && (
+      ) : null}
+
+      {/* Mobile slot: video takes priority over image */}
+      {heroVideoMobileUrl ? (
+        <video
+          autoPlay muted loop playsInline
+          className="absolute inset-0 w-full h-full object-cover md:hidden"
+        >
+          <source src={heroVideoMobileUrl} />
+        </video>
+      ) : heroImageMobileUrl ? (
         <Image
           src={heroImageMobileUrl}
           alt=""
@@ -52,7 +71,7 @@ export default function Hero() {
           priority
           sizes="100vw"
         />
-      )}
+      ) : null}
     </>
   )
 
@@ -76,8 +95,8 @@ export default function Hero() {
   if (heroLayout === 'integrated') {
     return (
       <section className="relative flex flex-col items-center justify-end md:justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
-        {bgImages}
-        {hasImage && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
+        {bgMedia}
+        {hasBg && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
         {/* Extra bottom gradient on mobile so the text sits on a darker base */}
         <div className="absolute bottom-0 inset-x-0 h-2/5 bg-gradient-to-t from-[#07070f]/80 to-transparent md:hidden pointer-events-none" />
         {orbs}
@@ -147,8 +166,8 @@ export default function Hero() {
   // Default: classic centered layout
   return (
     <section className="relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
-      {bgImages}
-      {hasImage && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
+      {bgMedia}
+      {hasBg && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
       {orbs}
 
       <div className="relative z-10 flex flex-col items-center text-center px-4">

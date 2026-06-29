@@ -32,6 +32,8 @@ export interface DjPageData {
     accentColor2:       string
     heroImageUrl:       string | null
     heroImageMobileUrl: string | null
+    heroVideoUrl:       string | null
+    heroVideoMobileUrl: string | null
     heroTitle:          string | null
     heroTitleEn:        string | null
     heroOverlay:        boolean
@@ -86,6 +88,8 @@ function configToPageData(): DjPageData {
       accentColor2:       '#22d3ee',
       heroImageUrl:       null,
       heroImageMobileUrl: null,
+      heroVideoUrl:       null,
+      heroVideoMobileUrl: null,
       heroTitle:          null,
       heroTitleEn:        null,
       heroOverlay:        true,

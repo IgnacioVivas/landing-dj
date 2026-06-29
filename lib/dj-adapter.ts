@@ -100,6 +100,8 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       accentColor2:       dj.settings?.accentColor2       ?? '#22d3ee',
       heroImageUrl:       dj.settings?.heroImageUrl       ?? null,
       heroImageMobileUrl: dj.settings?.heroImageMobileUrl ?? null,
+      heroVideoUrl:       dj.settings?.heroVideoUrl       ?? null,
+      heroVideoMobileUrl: dj.settings?.heroVideoMobileUrl ?? null,
       heroTitle:          dj.settings?.heroTitle          ?? null,
       heroTitleEn:        dj.settings?.heroTitleEn        ?? null,
       heroOverlay:        dj.settings?.heroOverlay        ?? true,

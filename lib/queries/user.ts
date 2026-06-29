@@ -35,6 +35,8 @@ export async function getUserSettings(userId: string) {
           accentColor2:           true,
           heroImageUrl:           true,
           heroImageMobileUrl:     true,
+          heroVideoUrl:           true,
+          heroVideoMobileUrl:     true,
           heroTitle:              true,
           heroTitleEn:            true,
           heroOverlay:            true,

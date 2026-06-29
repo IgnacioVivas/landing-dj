@@ -105,6 +105,44 @@ export async function updateHeroMobilePhotoAction(url: string | null): Promise<A
   return { success: true }
 }
 
+export async function updateHeroVideoAction(url: string | null): Promise<ActionResult> {
+  const session = await auth()
+  if (!session?.user.id) return { error: 'No autorizado.' }
+
+  const current = await db.djSettings.findUnique({
+    where: { userId: session.user.id },
+    select: { heroVideoUrl: true },
+  })
+  await deleteFile(current?.heroVideoUrl)
+
+  await db.djSettings.upsert({
+    where:  { userId: session.user.id },
+    update: { heroVideoUrl: url },
+    create: { userId: session.user.id, heroVideoUrl: url },
+  })
+
+  return { success: true }
+}
+
+export async function updateHeroVideoMobileAction(url: string | null): Promise<ActionResult> {
+  const session = await auth()
+  if (!session?.user.id) return { error: 'No autorizado.' }
+
+  const current = await db.djSettings.findUnique({
+    where: { userId: session.user.id },
+    select: { heroVideoMobileUrl: true },
+  })
+  await deleteFile(current?.heroVideoMobileUrl)
+
+  await db.djSettings.upsert({
+    where:  { userId: session.user.id },
+    update: { heroVideoMobileUrl: url },
+    create: { userId: session.user.id, heroVideoMobileUrl: url },
+  })
+
+  return { success: true }
+}
+
 export async function updateBioPhotoAction(url: string | null): Promise<ActionResult> {
   const session = await auth()
   if (!session?.user.id) return { error: 'No autorizado.' }
