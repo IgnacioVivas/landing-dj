@@ -244,8 +244,10 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
             onSave={updateHeroVideoMobileAction}
           />
         </div>
-        <p className="font-mono text-xs text-slate-700">
-          El video reemplaza a la foto cuando ambos están cargados. Formatos: MP4, WebM. Máx. 200 MB.
+        <p className="font-mono text-xs text-slate-700 leading-relaxed">
+          El video reemplaza a la foto cuando ambos están cargados. Formatos: MP4, WebM. Máx. 200 MB.<br />
+          Recomendado: 5–15 segundos · 16:9 · menos de 30 MB para carga rápida.<br />
+          Videos gratuitos: <span className="text-slate-500">pexels.com/videos · pixabay.com/videos · coverr.co</span>
         </p>
       </div>
     </div>
