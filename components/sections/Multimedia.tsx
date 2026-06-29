@@ -21,9 +21,15 @@ function MediaPreview({ item, sizes }: { item: GalleryItem; sizes: string }) {
   if (item.videoUrl) {
     return (
       <>
-        <div className="absolute inset-0" style={{ background: item.gradient }} />
+        <video
+          src={item.videoUrl}
+          preload="metadata"
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
             <Play size={20} weight="fill" className="text-white ml-0.5" />
           </div>
         </div>

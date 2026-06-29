@@ -35,8 +35,17 @@ export default function GalleryItemCard({ item, isFirst, isLast, onEdit, onDelet
             sizes="64px"
           />
         ) : item.videoUrl ? (
-          <div className="w-full h-full flex items-center justify-center" style={{ background: item.gradient }}>
-            <Play size={20} weight="fill" className="text-white/70" />
+          <div className="w-full h-full relative">
+            <video
+              src={item.videoUrl}
+              preload="metadata"
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Play size={16} weight="fill" className="text-white drop-shadow" />
+            </div>
           </div>
         ) : (
           <div className="w-full h-full" style={{ background: item.gradient }} />

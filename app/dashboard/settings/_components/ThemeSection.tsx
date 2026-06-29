@@ -298,8 +298,9 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
           />
         </div>
         <p className="font-mono text-xs text-slate-700 leading-relaxed">
-          El video reemplaza a la foto cuando ambos están cargados. Formatos: MP4, WebM. Máx. 200 MB.<br />
-          Recomendado: 5–15 segundos · 16:9 · menos de 30 MB para carga rápida.
+          El video reemplaza a la foto cuando ambos están cargados. Formatos soportados: MP4, WebM. Máx. 200 MB.<br />
+          Recomendado: 5–15 segundos · 16:9 · menos de 30 MB para carga rápida.<br />
+          <span className="text-amber-700">MOV (iPhone/QuickTime) no es compatible con todos los navegadores — convertilo a MP4 antes de subir.</span>
         </p>
       </div>
     </div>

@@ -72,7 +72,7 @@ export default function VideoUploader({ label, initialUrl, onSave }: Props) {
         <label className="cursor-pointer">
           <input
             type="file"
-            accept="video/mp4,video/webm,video/quicktime"
+            accept="video/mp4,video/webm"
             className="sr-only"
             disabled={status !== 'idle'}
             onChange={handleFile}

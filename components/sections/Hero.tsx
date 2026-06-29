@@ -11,6 +11,10 @@ import { trackLead } from '@/lib/meta-pixel'
 
 const ease = [0.16, 1, 0.3, 1] as const
 
+function videoType(url: string) {
+  return url.endsWith('.webm') ? 'video/webm' : 'video/mp4'
+}
+
 export default function Hero() {
   const { t, lang } = useLanguage()
   const dj = useDjData()
@@ -39,7 +43,7 @@ export default function Hero() {
           autoPlay muted loop playsInline
           className={`absolute inset-0 w-full h-full object-cover ${hasMobileMedia ? 'hidden md:block' : ''}`}
         >
-          <source src={heroVideoUrl} />
+          <source src={heroVideoUrl} type={videoType(heroVideoUrl)} />
         </video>
       ) : heroImageUrl ? (
         <Image
@@ -59,7 +63,7 @@ export default function Hero() {
           autoPlay muted loop playsInline
           className="absolute inset-0 w-full h-full object-cover md:hidden"
         >
-          <source src={heroVideoMobileUrl} />
+          <source src={heroVideoMobileUrl} type={videoType(heroVideoMobileUrl)} />
         </video>
       ) : heroImageMobileUrl ? (
         <Image
