@@ -26,6 +26,7 @@ export default function ReleaseCard({ release, isFirst, isLast, onEdit, onDelete
             src={release.coverImageUrl}
             alt={release.title}
             fill
+            unoptimized
             className="object-cover"
             sizes="48px"
           />

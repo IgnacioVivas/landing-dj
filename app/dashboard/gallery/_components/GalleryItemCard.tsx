@@ -30,6 +30,7 @@ export default function GalleryItemCard({ item, isFirst, isLast, onEdit, onDelet
             src={item.imageUrl}
             alt={item.caption || 'Gallery'}
             fill
+            unoptimized
             className="object-cover"
             sizes="64px"
           />

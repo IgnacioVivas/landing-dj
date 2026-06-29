@@ -30,6 +30,7 @@ function ReleaseCard({ release, index }: { release: Release; index: number }) {
             src={release.coverImageUrl}
             alt={release.title}
             fill
+            unoptimized
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="240px"
           />

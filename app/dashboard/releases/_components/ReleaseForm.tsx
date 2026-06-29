@@ -109,7 +109,7 @@ export default function ReleaseForm({ defaultValues, onSubmit, submitLabel }: Pr
         <div className="flex items-start gap-3">
           {coverImageUrl && (
             <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
-              <Image src={coverImageUrl} alt="Cover" fill className="object-cover" sizes="64px" />
+              <Image src={coverImageUrl} alt="Cover" fill unoptimized className="object-cover" sizes="64px" />
             </div>
           )}
           <div className="flex flex-col gap-2">

@@ -31,7 +31,7 @@ export default function ShowCard({ show, showsMode, onEdit, onDelete, onFeature 
             style={{ background: 'rgba(255,255,255,0.06)' }}
           >
             {show.flyerUrl ? (
-              <Image src={show.flyerUrl} alt="Flyer" fill className="object-cover" sizes="40px" />
+              <Image src={show.flyerUrl} alt="Flyer" fill unoptimized className="object-cover" sizes="40px" />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="font-mono text-[8px] text-slate-700">IMG</span>

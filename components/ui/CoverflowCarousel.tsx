@@ -121,6 +121,7 @@ export default function CoverflowCarousel({ items, onOpen }: Props) {
                       src={item.imageUrl}
                       alt={caption || ''}
                       fill
+                      unoptimized
                       className="object-cover"
                       sizes={`${CARD_WIDTH}px`}
                     />

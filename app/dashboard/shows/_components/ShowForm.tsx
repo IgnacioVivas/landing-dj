@@ -91,7 +91,7 @@ export default function ShowForm({ defaultValues, onSubmit, submitLabel, showFly
           <div className="flex items-start gap-3">
             {flyerUrl && (
               <div className="relative w-20 aspect-[3/4] rounded-lg overflow-hidden shrink-0">
-                <Image src={flyerUrl} alt="Flyer" fill className="object-cover" sizes="80px" />
+                <Image src={flyerUrl} alt="Flyer" fill unoptimized className="object-cover" sizes="80px" />
               </div>
             )}
             <div className="flex flex-col gap-2">
