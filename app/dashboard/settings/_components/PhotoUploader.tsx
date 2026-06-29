@@ -12,9 +12,10 @@ type Props = {
   aspect?: string
   maxSizeMB?: number
   maxWidthOrHeight?: number
+  objectFit?: 'cover' | 'contain'
 }
 
-export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'aspect-square', maxSizeMB = 3, maxWidthOrHeight = 2560 }: Props) {
+export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'aspect-square', maxSizeMB = 3, maxWidthOrHeight = 2560, objectFit = 'cover' }: Props) {
   const router      = useRouter()
   const [url, setUrl]         = useState<string | null>(initialUrl)
   const [error, setError]     = useState<string | null>(null)
@@ -62,7 +63,7 @@ export default function PhotoUploader({ label, initialUrl, onSave, aspect = 'asp
       >
         {url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={url} alt={label} className="absolute inset-0 w-full h-full object-cover" />
+          <img src={url} alt={label} className={`absolute inset-0 w-full h-full ${objectFit === 'contain' ? 'object-contain p-3' : 'object-cover'}`} />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="font-mono text-xs text-slate-700">Sin foto</span>

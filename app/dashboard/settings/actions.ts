@@ -105,6 +105,25 @@ export async function updateHeroMobilePhotoAction(url: string | null): Promise<A
   return { success: true }
 }
 
+export async function updateHeroLogoAction(url: string | null): Promise<ActionResult> {
+  const session = await auth()
+  if (!session?.user.id) return { error: 'No autorizado.' }
+
+  const current = await db.djSettings.findUnique({
+    where: { userId: session.user.id },
+    select: { heroLogoUrl: true },
+  })
+  await deleteFile(current?.heroLogoUrl)
+
+  await db.djSettings.upsert({
+    where:  { userId: session.user.id },
+    update: { heroLogoUrl: url },
+    create: { userId: session.user.id, heroLogoUrl: url },
+  })
+
+  return { success: true }
+}
+
 export async function updateHeroVideoAction(url: string | null): Promise<ActionResult> {
   const session = await auth()
   if (!session?.user.id) return { error: 'No autorizado.' }

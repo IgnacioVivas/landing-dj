@@ -5,7 +5,7 @@ import type { SettingsInput } from '@/lib/validations/settings'
 import { SectionTitle, Field, inputClass } from '@/app/dashboard/_components/Field'
 import PhotoUploader from './PhotoUploader'
 import VideoUploader from './VideoUploader'
-import { updateHeroPhotoAction, updateHeroMobilePhotoAction, updateBioPhotoAction, updateHeroVideoAction, updateHeroVideoMobileAction } from '../actions'
+import { updateHeroPhotoAction, updateHeroMobilePhotoAction, updateBioPhotoAction, updateHeroVideoAction, updateHeroVideoMobileAction, updateHeroLogoAction } from '../actions'
 
 type Props = {
   register: UseFormRegister<SettingsInput>
@@ -15,10 +15,11 @@ type Props = {
   initialHeroMobileUrl: string | null
   initialHeroVideoUrl: string | null
   initialHeroVideoMobileUrl: string | null
+  initialHeroLogoUrl: string | null
   initialBioUrl: string | null
 }
 
-export default function ThemeSection({ register, errors, watch, initialHeroUrl, initialHeroMobileUrl, initialHeroVideoUrl, initialHeroVideoMobileUrl, initialBioUrl }: Props) {
+export default function ThemeSection({ register, errors, watch, initialHeroUrl, initialHeroMobileUrl, initialHeroVideoUrl, initialHeroVideoMobileUrl, initialHeroLogoUrl, initialBioUrl }: Props) {
   const accent       = watch('accentColor')
   const accent2      = watch('accentColor2')
   const mode         = watch('showsMode')
@@ -227,6 +228,25 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
         </div>
         <p className="font-mono text-xs text-slate-700">
           {mode === 'flyer' ? 'Cada show muestra una imagen flyer.' : 'Los shows se listan en formato tabla.'}
+        </p>
+      </div>
+
+      {/* Logo upload (independent of form submit) */}
+      <div className="flex flex-col gap-4">
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Logo del hero</p>
+        <div className="flex flex-wrap gap-8">
+          <PhotoUploader
+            label="Logo (PNG recomendado)"
+            initialUrl={initialHeroLogoUrl}
+            onSave={updateHeroLogoAction}
+            aspect="aspect-[3/1]"
+            maxSizeMB={1}
+            maxWidthOrHeight={1200}
+            objectFit="contain"
+          />
+        </div>
+        <p className="font-mono text-xs text-slate-700">
+          Reemplaza el título de texto. Usá PNG con fondo transparente para mejor resultado.
         </p>
       </div>
 

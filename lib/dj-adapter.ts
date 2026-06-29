@@ -102,6 +102,7 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       heroImageMobileUrl: dj.settings?.heroImageMobileUrl ?? null,
       heroVideoUrl:       dj.settings?.heroVideoUrl       ?? null,
       heroVideoMobileUrl: dj.settings?.heroVideoMobileUrl ?? null,
+      heroLogoUrl:        dj.settings?.heroLogoUrl        ?? null,
       heroTitle:          dj.settings?.heroTitle          ?? null,
       heroTitleEn:        dj.settings?.heroTitleEn        ?? null,
       heroOverlay:        dj.settings?.heroOverlay        ?? true,

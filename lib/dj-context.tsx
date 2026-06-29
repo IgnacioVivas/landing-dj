@@ -34,6 +34,7 @@ export interface DjPageData {
     heroImageMobileUrl: string | null
     heroVideoUrl:       string | null
     heroVideoMobileUrl: string | null
+    heroLogoUrl:        string | null
     heroTitle:          string | null
     heroTitleEn:        string | null
     heroOverlay:        boolean
@@ -91,6 +92,7 @@ function configToPageData(): DjPageData {
       heroImageMobileUrl: null,
       heroVideoUrl:       null,
       heroVideoMobileUrl: null,
+      heroLogoUrl:        null,
       heroTitle:          null,
       heroTitleEn:        null,
       heroOverlay:        true,

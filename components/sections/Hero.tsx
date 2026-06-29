@@ -14,7 +14,7 @@ const ease = [0.16, 1, 0.3, 1] as const
 export default function Hero() {
   const { t, lang } = useLanguage()
   const dj = useDjData()
-  const { heroImageUrl, heroImageMobileUrl, heroVideoUrl, heroVideoMobileUrl, heroTitle, heroTitleEn, heroOverlay, heroLayout } = dj.theme
+  const { heroImageUrl, heroImageMobileUrl, heroVideoUrl, heroVideoMobileUrl, heroLogoUrl, heroTitle, heroTitleEn, heroOverlay, heroLayout } = dj.theme
 
   const displayTitle   = lang === 'en' ? (heroTitleEn || heroTitle || dj.name) : (heroTitle || dj.name)
   const displayTagline = lang === 'en' ? (dj.taglineEn || dj.tagline) : dj.tagline
@@ -113,15 +113,26 @@ export default function Hero() {
             {dj.genres.join(' · ')}
           </motion.p>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.1, ease }}
-            className="font-display gradient-text leading-none tracking-tight text-glow-purple"
-            style={{ fontSize: 'clamp(4rem, 16vw, 12rem)' }}
-          >
-            {displayTitle}
-          </motion.h1>
+          {heroLogoUrl ? (
+            <motion.img
+              src={heroLogoUrl}
+              alt={displayTitle}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.1, ease }}
+              className="max-h-32 md:max-h-52 w-auto object-contain"
+            />
+          ) : (
+            <motion.h1
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.1, ease }}
+              className="font-display gradient-text leading-none tracking-tight text-glow-purple"
+              style={{ fontSize: 'clamp(4rem, 16vw, 12rem)' }}
+            >
+              {displayTitle}
+            </motion.h1>
+          )}
 
           {displayTagline && (
             <motion.p
@@ -182,15 +193,26 @@ export default function Hero() {
           {dj.genres.join(' · ')}
         </motion.p>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.1, ease }}
-          className="font-display gradient-text leading-none tracking-tight text-glow-purple"
-          style={{ fontSize: 'clamp(5rem, 20vw, 18rem)' }}
-        >
-          {displayTitle}
-        </motion.h1>
+        {heroLogoUrl ? (
+          <motion.img
+            src={heroLogoUrl}
+            alt={displayTitle}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.1, ease }}
+            className="max-h-36 md:max-h-60 w-auto object-contain"
+          />
+        ) : (
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.1, ease }}
+            className="font-display gradient-text leading-none tracking-tight text-glow-purple"
+            style={{ fontSize: 'clamp(5rem, 20vw, 18rem)' }}
+          >
+            {displayTitle}
+          </motion.h1>
+        )}
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}

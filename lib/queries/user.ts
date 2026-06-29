@@ -37,6 +37,7 @@ export async function getUserSettings(userId: string) {
           heroImageMobileUrl:     true,
           heroVideoUrl:           true,
           heroVideoMobileUrl:     true,
+          heroLogoUrl:            true,
           heroTitle:              true,
           heroTitleEn:            true,
           heroOverlay:            true,
