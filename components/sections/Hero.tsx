@@ -98,8 +98,10 @@ export default function Hero() {
         {bgMedia}
         {hasBg && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
         {/* Extra bottom gradient on mobile so the text sits on a darker base */}
-        <div className="absolute bottom-0 inset-x-0 h-2/5 bg-gradient-to-t from-[#07070f]/80 to-transparent md:hidden pointer-events-none" />
-        {orbs}
+        {(!hasBg || heroOverlay) && (
+          <div className="absolute bottom-0 inset-x-0 h-2/5 bg-gradient-to-t from-[#07070f]/80 to-transparent md:hidden pointer-events-none" />
+        )}
+        {(!hasBg || heroOverlay) && orbs}
 
         <div className="relative z-10 flex flex-col items-center text-center px-4 pb-10 md:pb-0">
           <motion.p
@@ -168,7 +170,7 @@ export default function Hero() {
     <section className="relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
       {bgMedia}
       {hasBg && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
-      {orbs}
+      {(!hasBg || heroOverlay) && orbs}
 
       <div className="relative z-10 flex flex-col items-center text-center px-4">
         <motion.p
