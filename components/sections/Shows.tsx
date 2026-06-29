@@ -66,7 +66,7 @@ function ShowRow({ show, index, past }: { show: Show; index: number; past?: bool
                 rel="noopener noreferrer"
                 className="font-mono text-[10px] text-slate-700 hover:text-slate-400 transition-colors"
               >
-                Ver en mapa →
+                {t.countdown.mapLink} →
               </a>
             )}
           </div>

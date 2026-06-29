@@ -73,6 +73,14 @@ const es = {
     seconds:  'SEG',
     mapLink:  'Ver en mapa',
   },
+  showsMap: {
+    overline:  'Gira mundial',
+    title:     'Mapa de Shows',
+    loading:   'Cargando mapa...',
+    noCoords:  'Sin coordenadas disponibles.',
+    upcoming:  'Próximos',
+    past:      'Pasados',
+  },
   contact: {
     overline: 'Contacto',
     title: 'Hablemos',
@@ -170,6 +178,14 @@ const en = {
     minutes:  'MIN',
     seconds:  'SEC',
     mapLink:  'View on map',
+  },
+  showsMap: {
+    overline:  'World tour',
+    title:     'Shows Map',
+    loading:   'Loading map...',
+    noCoords:  'No coordinates available.',
+    upcoming:  'Upcoming',
+    past:      'Past',
   },
   contact: {
     overline: 'Contact',

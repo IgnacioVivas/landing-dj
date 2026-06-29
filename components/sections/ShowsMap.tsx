@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useDjData } from '@/lib/dj-context'
+import { useLanguage } from '@/contexts/LanguageContext'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import SectionHeading from '@/components/ui/SectionHeading'
 import type { ShowPin } from '@/components/ui/LeafletMap'
@@ -29,6 +30,7 @@ function sleep(ms: number) {
 
 export default function ShowsMap() {
   const { shows, theme } = useDjData()
+  const { t } = useLanguage()
   const [pins, setPins]     = useState<ShowPin[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -84,7 +86,7 @@ export default function ShowsMap() {
     <section id="showsmap" className="py-24 md:py-32" style={{ background: '#050509' }}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-10">
-          <SectionHeading overline="Gira mundial" title="Mapa de Shows" />
+          <SectionHeading overline={t.showsMap.overline} title={t.showsMap.title} />
         </AnimatedSection>
 
         <AnimatedSection delay={0.1}>
@@ -98,7 +100,7 @@ export default function ShowsMap() {
                 style={{ background: '#07070f' }}
               >
                 <p className="font-mono text-xs text-slate-600 animate-pulse tracking-widest">
-                  Cargando mapa...
+                  {t.showsMap.loading}
                 </p>
               </div>
             ) : pins.length > 0 ? (
@@ -108,7 +110,7 @@ export default function ShowsMap() {
                 className="h-[440px] flex items-center justify-center"
                 style={{ background: '#07070f' }}
               >
-                <p className="font-mono text-xs text-slate-700">Sin coordenadas disponibles.</p>
+                <p className="font-mono text-xs text-slate-700">{t.showsMap.noCoords}</p>
               </div>
             )}
           </div>
@@ -116,11 +118,11 @@ export default function ShowsMap() {
           <div className="flex items-center gap-4 mt-3 justify-end">
             <span className="flex items-center gap-1.5 font-mono text-[10px] text-slate-600">
               <span className="w-2 h-2 rounded-full inline-block" style={{ background: theme.accentColor }} />
-              Próximos
+              {t.showsMap.upcoming}
             </span>
             <span className="flex items-center gap-1.5 font-mono text-[10px] text-slate-700">
               <span className="w-2 h-2 rounded-full inline-block bg-slate-700" />
-              Pasados
+              {t.showsMap.past}
             </span>
           </div>
         </AnimatedSection>
