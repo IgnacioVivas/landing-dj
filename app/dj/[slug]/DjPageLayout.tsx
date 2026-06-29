@@ -15,6 +15,7 @@ import MixPlayer from '@/components/sections/MixPlayer'
 import PressKit from '@/components/sections/PressKit'
 import ShowsMap from '@/components/sections/ShowsMap'
 import FloatingControls from '@/components/ui/FloatingControls'
+import SnapScrollController from '@/components/ui/SnapScrollController'
 import AnalyticsBeacon from '@/components/ui/AnalyticsBeacon'
 import PageLoader from '@/components/ui/PageLoader'
 import MetaPixel from '@/components/MetaPixel'
@@ -29,10 +30,6 @@ export default function DjPageLayout({ data, userId }: { data: DjPageData; userI
           --dj-accent:  ${accentColor};
           --dj-accent2: ${accentColor2};
         }
-        ${data.scrollMode === 'snap' ? `
-          html { scroll-snap-type: y mandatory; }
-          main > section { scroll-snap-align: start; }
-        ` : ''}
       `}</style>
       <DjProvider data={data}>
         <PageLoader />
@@ -51,6 +48,7 @@ export default function DjPageLayout({ data, userId }: { data: DjPageData; userI
           <Contact />
         </main>
         <Footer />
+        <SnapScrollController />
         <FloatingControls />
         <AnalyticsBeacon userId={userId} />
         {data.metaPixelId && <MetaPixel pixelId={data.metaPixelId} />}
