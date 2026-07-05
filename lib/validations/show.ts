@@ -1,5 +1,11 @@
 import { z } from 'zod'
 
+const uploadedFileUrl = z.union([
+  z.literal(''),
+  z.string().url('URL inválida'),
+  z.string().regex(/^\/uploads\//, 'URL inválida'),
+])
+
 export const showSchema = z.object({
   date:      z.string().min(1, 'La fecha es requerida'),
   venue:     z.string().min(1, 'El venue es requerido').max(100),
@@ -8,7 +14,7 @@ export const showSchema = z.object({
   address:   z.string().max(200),
   festival:  z.string().max(100),
   ticketUrl: z.union([z.literal(''), z.string().url('URL inválida')]),
-  flyerUrl:  z.union([z.literal(''), z.string().url('URL inválida')]),
+  flyerUrl:  uploadedFileUrl,
   isSoldOut: z.boolean(),
 })
 
