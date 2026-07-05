@@ -36,7 +36,7 @@ export default function PasswordSection() {
     <section className="flex flex-col gap-6">
       <div>
         <h3 className="font-display text-2xl text-white tracking-wider mb-1">Contraseña</h3>
-        <p className="font-mono text-xs text-slate-500">Cambiá tu contraseña de acceso.</p>
+        <p className="font-mono text-xs text-slate-500">Cambiá tu contraseña de acceso al dashboard.</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 max-w-sm">

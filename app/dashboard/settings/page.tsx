@@ -2,7 +2,6 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { getUserSettings } from '@/lib/queries/user'
 import SettingsForm from './_components/SettingsForm'
-import PasswordSection from './_components/PasswordSection'
 import BackButton from '@/app/dashboard/_components/BackButton'
 
 export const metadata = { title: 'Configuración — DJ Panel' }
@@ -27,10 +26,6 @@ export default async function SettingsPage() {
       </div>
 
       <SettingsForm data={data} />
-
-      <div className="mt-16 pt-10 border-t border-white/5">
-        <PasswordSection />
-      </div>
     </div>
   )
 }

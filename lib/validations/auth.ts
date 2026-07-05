@@ -17,3 +17,10 @@ export const changePasswordSchema = z.object({
 })
 
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>
+
+export const changeEmailSchema = z.object({
+  newEmail:        z.string().email('Email inválido'),
+  currentPassword: z.string().min(1, 'Requerido'),
+})
+
+export type ChangeEmailInput = z.infer<typeof changeEmailSchema>

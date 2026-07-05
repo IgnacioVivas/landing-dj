@@ -12,7 +12,6 @@ import StatsSection    from './StatsSection'
 import SocialSection   from './SocialSection'
 import ThemeSection    from './ThemeSection'
 import MixSection      from './MixSection'
-import PressKitSection from './PressKitSection'
 
 function toDefaults(d: UserSettings): SettingsInput {
   return {
@@ -42,8 +41,6 @@ function toDefaults(d: UserSettings): SettingsInput {
       d.settings?.mixUrls[1] ?? '',
       d.settings?.mixUrls[2] ?? '',
     ],
-    riderUrl:          d.settings?.riderUrl           ?? '',
-    epkUrl:            d.settings?.epkUrl             ?? '',
     accentColor:       d.settings?.accentColor        ?? '#8b5cf6',
     accentColor2:      d.settings?.accentColor2       ?? '#22d3ee',
     heroTitle:         d.settings?.heroTitle           ?? '',
@@ -100,7 +97,6 @@ export default function SettingsForm({ data }: { data: UserSettings }) {
       <StatsSection    register={register} errors={errors} watch={watch} />
       <SocialSection   register={register} errors={errors} watch={watch} setValue={setValue} />
       <MixSection      register={register} errors={errors} />
-      <PressKitSection register={register} errors={errors} />
 
       <div className="flex items-center gap-4 pb-12 border-t border-white/5 pt-6">
         <button

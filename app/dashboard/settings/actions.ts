@@ -3,8 +3,6 @@
 import { auth } from '@/auth'
 import { db } from '@/lib/db'
 import { settingsSchema } from '@/lib/validations/settings'
-import { changePasswordSchema } from '@/lib/validations/auth'
-import { hashPassword, verifyPassword } from '@/lib/auth-utils'
 import { deleteFile } from '@/lib/storage'
 import { extractYouTubeId } from '@/lib/youtube'
 
@@ -23,7 +21,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
     instagramUrl, instagramUsername, spotifyProfileUrl,
     soundcloudUrl, youtubeChannelUrl, youtubeVideoIds, metaPixelId,
     bookingEmail, pressEmail,
-    mixUrls, riderUrl, epkUrl,
+    mixUrls,
     accentColor, accentColor2, heroTitle, heroTitleEn, heroOverlay, heroLayout, scrollMode, showStats,
   } = parsed.data
 
@@ -49,7 +47,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         spotifyProfileUrl: toNull(spotifyProfileUrl), soundcloudUrl: toNull(soundcloudUrl),
         youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds, metaPixelId: toNull(metaPixelId),
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
-        mixUrls: cleanMixUrls, riderUrl: toNull(riderUrl), epkUrl: toNull(epkUrl),
+        mixUrls: cleanMixUrls,
         accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroOverlay, heroLayout, scrollMode, showStats,
       },
       create: {
@@ -58,7 +56,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         spotifyProfileUrl: toNull(spotifyProfileUrl), soundcloudUrl: toNull(soundcloudUrl),
         youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds, metaPixelId: toNull(metaPixelId),
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
-        mixUrls: cleanMixUrls, riderUrl: toNull(riderUrl), epkUrl: toNull(epkUrl),
+        mixUrls: cleanMixUrls,
         accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroOverlay, heroLayout, scrollMode, showStats,
       },
     }),
@@ -176,28 +174,6 @@ export async function updateBioPhotoAction(url: string | null): Promise<ActionRe
     where: { id: session.user.id },
     data:  { bioPhoto: url },
   })
-
-  return { success: true }
-}
-
-export async function changePasswordAction(data: unknown): Promise<ActionResult> {
-  const session = await auth()
-  if (!session?.user.id) return { error: 'No autorizado.' }
-
-  const parsed = changePasswordSchema.safeParse(data)
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' }
-
-  const user = await db.user.findUnique({
-    where:  { id: session.user.id },
-    select: { password: true },
-  })
-  if (!user?.password) return { error: 'No autorizado.' }
-
-  const valid = await verifyPassword(parsed.data.currentPassword, user.password)
-  if (!valid) return { error: 'La contraseña actual es incorrecta.' }
-
-  const hashed = await hashPassword(parsed.data.newPassword)
-  await db.user.update({ where: { id: session.user.id }, data: { password: hashed } })
 
   return { success: true }
 }

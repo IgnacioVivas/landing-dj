@@ -1,4 +1,4 @@
-import { CalendarBlank, MusicNote, Images, Gear, ChartBar, FileLock } from '@phosphor-icons/react/dist/ssr'
+import { CalendarBlank, MusicNote, Images, Gear, ChartBar, FileLock, Key } from '@phosphor-icons/react/dist/ssr'
 
 type Counts = {
   upcomingShows: number
@@ -62,6 +62,14 @@ export default function DashboardCards({ counts }: { counts: Counts }) {
       stat:        null,
       href:        '/dashboard/settings',
       accentVar:   '--dj-accent2',
+    },
+    {
+      Icon:        Key,
+      title:       'Cuenta',
+      description: 'Email y contraseña de acceso al dashboard.',
+      stat:        null,
+      href:        '/dashboard/account',
+      accentVar:   '--dj-accent',
     },
   ]
 

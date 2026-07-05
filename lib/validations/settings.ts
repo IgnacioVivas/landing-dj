@@ -41,10 +41,8 @@ export const settingsSchema = z.object({
   bookingEmail: optionalEmail,
   pressEmail:   optionalEmail,
 
-  // Mix / Press Kit
+  // Mix
   mixUrls:  z.array(optionalUrl).max(3),
-  riderUrl: optionalUrl,
-  epkUrl:   optionalUrl,
 
   // Theme
   accentColor:  z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Color inválido'),

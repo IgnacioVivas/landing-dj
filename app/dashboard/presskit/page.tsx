@@ -2,6 +2,7 @@ import { auth } from '@/auth'
 import { db } from '@/lib/db'
 import { redirect } from 'next/navigation'
 import BackButton from '@/app/dashboard/_components/BackButton'
+import PressKitLinksSection from './_components/PressKitLinksSection'
 import PressKitPasswordSection from './_components/PressKitPasswordSection'
 
 export const metadata = { title: 'Press Kit — DJ Panel' }
@@ -12,7 +13,7 @@ export default async function PressKitPage() {
 
   const settings = await db.djSettings.findUnique({
     where:  { userId: session.user.id },
-    select: { pressKitPassword: true },
+    select: { pressKitPassword: true, riderUrl: true, epkUrl: true },
   })
 
   return (
@@ -24,11 +25,19 @@ export default async function PressKitPage() {
           Press Kit
         </h2>
         <p className="font-mono text-xs text-slate-500">
-          Gestioná el acceso y la protección de los archivos de prensa.
+          Gestioná los archivos de prensa y su acceso.
         </p>
       </div>
 
-      <PressKitPasswordSection initialPassword={settings?.pressKitPassword ?? null} />
+      <div className="flex flex-col gap-12">
+        <PressKitLinksSection
+          initialRiderUrl={settings?.riderUrl ?? null}
+          initialEpkUrl={settings?.epkUrl ?? null}
+        />
+        <div className="pt-10 border-t border-white/5">
+          <PressKitPasswordSection initialPassword={settings?.pressKitPassword ?? null} />
+        </div>
+      </div>
     </div>
   )
 }
