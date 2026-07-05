@@ -22,7 +22,6 @@ type Props = {
 export default function ThemeSection({ register, errors, watch, initialHeroUrl, initialHeroMobileUrl, initialHeroVideoUrl, initialHeroVideoMobileUrl, initialHeroLogoUrl, initialBioUrl }: Props) {
   const accent       = watch('accentColor')
   const accent2      = watch('accentColor2')
-  const mode         = watch('showsMode')
   const heroOverlay  = watch('heroOverlay')
   const heroLayout   = watch('heroLayout')
   const galleryMode  = watch('galleryMode')
@@ -196,38 +195,6 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
           {galleryMode === 'carousel'
             ? 'Galería horizontal tipo carrusel.'
             : 'Galería en cuadrícula masonry.'}
-        </p>
-      </div>
-
-      {/* Shows display mode */}
-      <div className="flex flex-col gap-3">
-        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Modo de shows</p>
-        <div className="flex gap-2">
-          <label
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer transition-colors font-mono text-xs tracking-widest uppercase"
-            style={{
-              background: mode === 'list' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: mode === 'list' ? '#e2e8f0' : '#475569',
-            }}
-          >
-            <input {...register('showsMode')} type="radio" value="list" className="sr-only" />
-            Lista
-          </label>
-          <label
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer transition-colors font-mono text-xs tracking-widest uppercase"
-            style={{
-              background: mode === 'flyer' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: mode === 'flyer' ? '#e2e8f0' : '#475569',
-            }}
-          >
-            <input {...register('showsMode')} type="radio" value="flyer" className="sr-only" />
-            Flyers
-          </label>
-        </div>
-        <p className="font-mono text-xs text-slate-700">
-          {mode === 'flyer' ? 'Cada show muestra una imagen flyer.' : 'Los shows se listan en formato tabla.'}
         </p>
       </div>
 

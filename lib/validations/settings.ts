@@ -56,7 +56,6 @@ export const settingsSchema = z.object({
   scrollMode:   z.enum(['free', 'snap']),
   showStats:    z.boolean(),
   galleryMode:  z.enum(['grid', 'carousel']),
-  showsMode:    z.enum(['list', 'flyer']),
 })
 
 export type SettingsInput = z.infer<typeof settingsSchema>

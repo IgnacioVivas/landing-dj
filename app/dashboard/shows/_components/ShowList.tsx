@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Plus } from '@phosphor-icons/react'
 import type { ShowItem } from '@/lib/queries/shows'
 import type { ShowInput } from '@/lib/validations/show'
-import { createShowAction, updateShowAction, deleteShowAction, toggleFeaturedAction } from '../actions'
+import { createShowAction, updateShowAction, deleteShowAction, toggleFeaturedAction, updateShowsModeAction } from '../actions'
 import ShowDialog from '@/app/dashboard/_components/Dialog'
 import ShowForm from './ShowForm'
 import ShowCard from './ShowCard'
@@ -35,12 +35,25 @@ type Props = {
   showsMode: 'list' | 'flyer'
 }
 
-export default function ShowList({ shows, showsMode }: Props) {
+export default function ShowList({ shows, showsMode: initialShowsMode }: Props) {
   const router = useRouter()
   const [dialog, setDialog] = useState<DialogState>({ mode: 'closed' })
   const [error, setError] = useState<string | null>(null)
+  const [showsMode, setShowsMode] = useState(initialShowsMode)
+  const [changingMode, setChangingMode] = useState(false)
 
   const close = useCallback(() => setDialog({ mode: 'closed' }), [])
+
+  async function handleModeChange(mode: 'list' | 'flyer') {
+    if (mode === showsMode || changingMode) return
+    setChangingMode(true)
+    setError(null)
+    const result = await updateShowsModeAction(mode)
+    setChangingMode(false)
+    if ('error' in result) { setError(result.error); return }
+    setShowsMode(mode)
+    router.refresh()
+  }
 
   async function handleCreate(data: ShowInput) {
     const result = await createShowAction(data)
@@ -77,16 +90,10 @@ export default function ShowList({ shows, showsMode }: Props) {
     <>
       <BackButton />
 
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="font-display text-4xl text-white tracking-wider mb-1">Shows</h2>
-          <p className="font-mono text-xs text-slate-500">
-            Modo: <span className="text-slate-400">{showsMode === 'flyer' ? 'Flyers' : 'Lista'}</span>
-            {' · '}
-            <a href="/dashboard/settings" className="text-violet-400 hover:text-violet-300 transition-colors">
-              Cambiar en Configuración
-            </a>
-          </p>
+          <p className="font-mono text-xs text-slate-500">Gestioná tus fechas y elegí cómo se muestran.</p>
         </div>
         <button
           onClick={() => { setError(null); setDialog({ mode: 'create' }) }}
@@ -95,6 +102,31 @@ export default function ShowList({ shows, showsMode }: Props) {
           <Plus size={15} weight="bold" />
           Agregar
         </button>
+      </div>
+
+      <div className="flex flex-col gap-3 mb-8">
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Modo de visualización</p>
+        <div className="flex gap-2">
+          {(['list', 'flyer'] as const).map(val => (
+            <button
+              key={val}
+              type="button"
+              disabled={changingMode}
+              onClick={() => handleModeChange(val)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg transition-colors font-mono text-xs tracking-widest uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: showsMode === val ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: showsMode === val ? '#e2e8f0' : '#475569',
+              }}
+            >
+              {val === 'list' ? 'Lista' : 'Flyers'}
+            </button>
+          ))}
+        </div>
+        <p className="font-mono text-xs text-slate-700">
+          {showsMode === 'flyer' ? 'Cada show muestra una imagen flyer.' : 'Los shows se listan en formato tabla.'}
+        </p>
       </div>
 
       {error && <p className="font-mono text-xs text-red-400 mb-4">{error}</p>}

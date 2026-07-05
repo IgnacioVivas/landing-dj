@@ -56,6 +56,20 @@ export async function updateShowAction(id: string, data: unknown): Promise<Resul
   return { success: true }
 }
 
+export async function updateShowsModeAction(mode: 'list' | 'flyer'): Promise<Result> {
+  const session = await auth()
+  if (!session?.user.id) return { error: 'No autorizado.' }
+  if (mode !== 'list' && mode !== 'flyer') return { error: 'Modo inválido.' }
+
+  await db.djSettings.upsert({
+    where:  { userId: session.user.id },
+    update: { showsMode: mode },
+    create: { userId: session.user.id, showsMode: mode },
+  })
+
+  return { success: true }
+}
+
 export async function toggleFeaturedAction(id: string): Promise<Result> {
   const session = await auth()
   if (!session?.user.id) return { error: 'No autorizado.' }

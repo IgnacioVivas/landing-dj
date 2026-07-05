@@ -53,7 +53,6 @@ function toDefaults(d: UserSettings): SettingsInput {
     scrollMode:        (d.settings?.scrollMode         ?? 'free') as 'free' | 'snap',
     showStats:         d.settings?.showStats           ?? true,
     galleryMode:       (d.settings?.galleryMode        ?? 'grid') as 'grid' | 'carousel',
-    showsMode:         (d.settings?.showsMode         ?? 'list') as 'list' | 'flyer',
   }
 }
 
