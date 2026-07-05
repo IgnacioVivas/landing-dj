@@ -24,7 +24,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
     soundcloudUrl, youtubeChannelUrl, youtubeVideoIds, metaPixelId,
     bookingEmail, pressEmail,
     mixUrls, riderUrl, epkUrl,
-    accentColor, accentColor2, heroTitle, heroTitleEn, heroOverlay, heroLayout, scrollMode, showStats, galleryMode,
+    accentColor, accentColor2, heroTitle, heroTitleEn, heroOverlay, heroLayout, scrollMode, showStats,
   } = parsed.data
 
   const cleanMixUrls  = mixUrls.map(u => u.trim()).filter(Boolean)
@@ -50,7 +50,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds, metaPixelId: toNull(metaPixelId),
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
         mixUrls: cleanMixUrls, riderUrl: toNull(riderUrl), epkUrl: toNull(epkUrl),
-        accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroOverlay, heroLayout, scrollMode, showStats, galleryMode,
+        accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroOverlay, heroLayout, scrollMode, showStats,
       },
       create: {
         userId: session.user.id,
@@ -59,7 +59,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds, metaPixelId: toNull(metaPixelId),
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
         mixUrls: cleanMixUrls, riderUrl: toNull(riderUrl), epkUrl: toNull(epkUrl),
-        accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroOverlay, heroLayout, scrollMode, showStats, galleryMode,
+        accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroOverlay, heroLayout, scrollMode, showStats,
       },
     }),
   ])

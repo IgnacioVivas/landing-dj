@@ -52,7 +52,6 @@ function toDefaults(d: UserSettings): SettingsInput {
     heroLayout:        (d.settings?.heroLayout         ?? 'center') as 'center' | 'integrated',
     scrollMode:        (d.settings?.scrollMode         ?? 'free') as 'free' | 'snap',
     showStats:         d.settings?.showStats           ?? true,
-    galleryMode:       (d.settings?.galleryMode        ?? 'grid') as 'grid' | 'carousel',
   }
 }
 

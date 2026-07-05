@@ -63,6 +63,20 @@ export async function deleteGalleryItemAction(id: string): Promise<Result> {
   return { success: true }
 }
 
+export async function updateGalleryModeAction(mode: 'grid' | 'carousel'): Promise<Result> {
+  const session = await auth()
+  if (!session?.user.id) return { error: 'No autorizado.' }
+  if (mode !== 'grid' && mode !== 'carousel') return { error: 'Modo inválido.' }
+
+  await db.djSettings.upsert({
+    where:  { userId: session.user.id },
+    update: { galleryMode: mode },
+    create: { userId: session.user.id, galleryMode: mode },
+  })
+
+  return { success: true }
+}
+
 export async function reorderGalleryAction(orderedIds: string[]): Promise<Result> {
   const session = await auth()
   if (!session?.user.id) return { error: 'No autorizado.' }

@@ -55,7 +55,6 @@ export const settingsSchema = z.object({
   heroLayout:   z.enum(['center', 'integrated']),
   scrollMode:   z.enum(['free', 'snap']),
   showStats:    z.boolean(),
-  galleryMode:  z.enum(['grid', 'carousel']),
 })
 
 export type SettingsInput = z.infer<typeof settingsSchema>

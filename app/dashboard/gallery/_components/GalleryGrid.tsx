@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import type { GalleryDbItem } from '@/lib/queries/gallery'
-import { createGalleryItemAction, updateGalleryItemAction, deleteGalleryItemAction, reorderGalleryAction } from '../actions'
+import { createGalleryItemAction, updateGalleryItemAction, deleteGalleryItemAction, reorderGalleryAction, updateGalleryModeAction } from '../actions'
 import Dialog from '@/app/dashboard/_components/Dialog'
 import { Field, inputClass, selectClass, SelectWrapper } from '@/app/dashboard/_components/Field'
 import GalleryUploader, { type UploadResult } from './GalleryUploader'
@@ -86,15 +86,33 @@ function EditDialog({
   )
 }
 
-export default function GalleryGrid({ items: initial }: { items: GalleryDbItem[] }) {
+type Props = {
+  items: GalleryDbItem[]
+  galleryMode: 'grid' | 'carousel'
+}
+
+export default function GalleryGrid({ items: initial, galleryMode: initialGalleryMode }: Props) {
   const router  = useRouter()
   const [items,   setItems]   = useState(initial)
   const [editing, setEditing] = useState<EditState>(null)
   const [pending, setPending] = useState<UploadResult | null>(null)
   const [error,   setError]   = useState<string | null>(null)
   const [saved,   setSaved]   = useState(false)
+  const [galleryMode, setGalleryMode] = useState(initialGalleryMode)
+  const [changingMode, setChangingMode] = useState(false)
 
   const closeEdit = useCallback(() => setEditing(null), [])
+
+  async function handleModeChange(mode: 'grid' | 'carousel') {
+    if (mode === galleryMode || changingMode) return
+    setChangingMode(true)
+    setError(null)
+    const result = await updateGalleryModeAction(mode)
+    setChangingMode(false)
+    if ('error' in result) { setError(result.error); return }
+    setGalleryMode(mode)
+    router.refresh()
+  }
 
   function handleUploaded(result: UploadResult) {
     setPending(result)
@@ -165,6 +183,31 @@ export default function GalleryGrid({ items: initial }: { items: GalleryDbItem[]
         {items.length >= GALLERY_LIMIT && (
           <p className="font-mono text-xs text-red-400">Límite alcanzado</p>
         )}
+      </div>
+
+      <div className="flex flex-col gap-3 mb-8">
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Modo de visualización</p>
+        <div className="flex gap-2">
+          {(['grid', 'carousel'] as const).map(val => (
+            <button
+              key={val}
+              type="button"
+              disabled={changingMode}
+              onClick={() => handleModeChange(val)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg transition-colors font-mono text-xs tracking-widest uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: galleryMode === val ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: galleryMode === val ? '#e2e8f0' : '#475569',
+              }}
+            >
+              {val === 'grid' ? 'Cuadrícula' : 'Carrusel'}
+            </button>
+          ))}
+        </div>
+        <p className="font-mono text-xs text-slate-700">
+          {galleryMode === 'carousel' ? 'Galería horizontal tipo carrusel.' : 'Galería en cuadrícula masonry.'}
+        </p>
       </div>
 
       {error && <p className="font-mono text-xs text-red-400 mb-4">{error}</p>}

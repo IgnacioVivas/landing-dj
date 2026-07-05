@@ -24,7 +24,6 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
   const accent2      = watch('accentColor2')
   const heroOverlay  = watch('heroOverlay')
   const heroLayout   = watch('heroLayout')
-  const galleryMode  = watch('galleryMode')
   const scrollMode   = watch('scrollMode')
 
   return (
@@ -169,32 +168,6 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
           {scrollMode === 'snap'
             ? 'Cada scroll salta a la siguiente sección completa.'
             : 'Scroll continuo sin saltos.'}
-        </p>
-      </div>
-
-      {/* Gallery display mode */}
-      <div className="flex flex-col gap-3">
-        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Modo de galería</p>
-        <div className="flex gap-2">
-          {(['grid', 'carousel'] as const).map((val) => (
-            <label
-              key={val}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer transition-colors font-mono text-xs tracking-widest uppercase"
-              style={{
-                background: galleryMode === val ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                color: galleryMode === val ? '#e2e8f0' : '#475569',
-              }}
-            >
-              <input {...register('galleryMode')} type="radio" value={val} className="sr-only" />
-              {val === 'grid' ? 'Cuadrícula' : 'Carrusel'}
-            </label>
-          ))}
-        </div>
-        <p className="font-mono text-xs text-slate-700">
-          {galleryMode === 'carousel'
-            ? 'Galería horizontal tipo carrusel.'
-            : 'Galería en cuadrícula masonry.'}
         </p>
       </div>
 
