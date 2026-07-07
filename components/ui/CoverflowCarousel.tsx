@@ -53,10 +53,12 @@ export default function CoverflowCarousel({ items, onOpen }: Props) {
     touchStartX.current = null
   }
 
-  // Build visible slots — deduplicate when gallery has fewer than 5 items
+  // Build visible slots — deduplicate when gallery has fewer than 5 items.
+  // Closest-to-center offsets are claimed first so a single/duplicate item
+  // always lands centered at full scale instead of stuck on a far slot.
   const visibleSlots: { item: GalleryItem; offset: number }[] = []
   const seen = new Set<string>()
-  for (const offset of [-2, -1, 0, 1, 2]) {
+  for (const offset of [0, -1, 1, -2, 2]) {
     const idx  = (current + offset + items.length) % items.length
     const item = items[idx]
     if (!seen.has(item.id)) {
@@ -142,39 +144,43 @@ export default function CoverflowCarousel({ items, onOpen }: Props) {
         </AnimatePresence>
       </div>
 
-      {/* Arrows */}
-      <button
-        onClick={prev}
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full text-slate-400 hover:text-white transition-colors"
-        style={{ background: 'rgba(255,255,255,0.05)' }}
-        aria-label="Anterior"
-      >
-        <CaretLeft size={20} weight="bold" />
-      </button>
-      <button
-        onClick={next}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full text-slate-400 hover:text-white transition-colors"
-        style={{ background: 'rgba(255,255,255,0.05)' }}
-        aria-label="Siguiente"
-      >
-        <CaretRight size={20} weight="bold" />
-      </button>
-
-      {/* Dot indicators */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
-        {items.map((_, i) => (
+      {items.length > 1 && (
+        <>
+          {/* Arrows */}
           <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            className="w-1.5 h-1.5 rounded-full transition-all duration-300"
-            style={{
-              background: i === current ? 'var(--dj-accent)' : 'rgba(255,255,255,0.2)',
-              transform:  i === current ? 'scale(1.4)' : 'scale(1)',
-            }}
-            aria-label={`Ir a imagen ${i + 1}`}
-          />
-        ))}
-      </div>
+            onClick={prev}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full text-slate-400 hover:text-white transition-colors"
+            style={{ background: 'rgba(255,255,255,0.05)' }}
+            aria-label="Anterior"
+          >
+            <CaretLeft size={20} weight="bold" />
+          </button>
+          <button
+            onClick={next}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full text-slate-400 hover:text-white transition-colors"
+            style={{ background: 'rgba(255,255,255,0.05)' }}
+            aria-label="Siguiente"
+          >
+            <CaretRight size={20} weight="bold" />
+          </button>
+
+          {/* Dot indicators */}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
+            {items.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrent(i)}
+                className="w-1.5 h-1.5 rounded-full transition-all duration-300"
+                style={{
+                  background: i === current ? 'var(--dj-accent)' : 'rgba(255,255,255,0.2)',
+                  transform:  i === current ? 'scale(1.4)' : 'scale(1)',
+                }}
+                aria-label={`Ir a imagen ${i + 1}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }
