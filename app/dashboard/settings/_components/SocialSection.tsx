@@ -158,23 +158,6 @@ export default function SocialSection({ register, errors, watch, setValue }: Pro
       </div>
 
       <div>
-        <SectionTitle>Integraciones</SectionTitle>
-        <div className="flex flex-col gap-4">
-          <Field
-            label="Meta Pixel ID"
-            hint="Pegá el ID numérico de tu Pixel (ej. 1234567890123456). Lo encontrás en Meta Business → Events Manager."
-            error={errors.metaPixelId?.message}
-          >
-            <input
-              {...register('metaPixelId')}
-              className={inputClass}
-              placeholder="1234567890123456"
-            />
-          </Field>
-        </div>
-      </div>
-
-      <div>
         <SectionTitle>Contacto</SectionTitle>
         <div className="flex flex-col gap-4">
           <Field label="Email de booking" error={errors.bookingEmail?.message}>

@@ -33,7 +33,6 @@ function toDefaults(d: UserSettings): SettingsInput {
     soundcloudUrl:     d.settings?.soundcloudUrl      ?? '',
     youtubeChannelUrl: d.settings?.youtubeChannelUrl  ?? '',
     youtubeVideoIds:   d.settings?.youtubeVideoIds    ?? [],
-    metaPixelId:       d.settings?.metaPixelId        ?? '',
     bookingEmail:      d.settings?.bookingEmail       ?? '',
     pressEmail:        d.settings?.pressEmail         ?? '',
     mixUrls: [

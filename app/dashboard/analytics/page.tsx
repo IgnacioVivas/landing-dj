@@ -2,6 +2,7 @@ import { auth } from '@/auth';
 import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import BackButton from '@/app/dashboard/_components/BackButton';
+import MetaPixelSection from './_components/MetaPixelSection';
 import { DeviceMobile, Desktop, DeviceTablet } from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = { title: 'Estadísticas — DJ Panel' };
@@ -74,7 +75,7 @@ export default async function AnalyticsPage() {
 	const now = new Date();
 	const ago30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-	const [total, thisMonth, thisWeek, today, rawDaily, deviceGroups, rawCountries] = await Promise.all([
+	const [total, thisMonth, thisWeek, today, rawDaily, deviceGroups, rawCountries, settings] = await Promise.all([
 		db.pageView.count({ where: { userId } }),
 		db.pageView.count({ where: { userId, createdAt: { gte: startOf('month') } } }),
 		db.pageView.count({ where: { userId, createdAt: { gte: startOf('week') } } }),
@@ -97,6 +98,7 @@ export default async function AnalyticsPage() {
       WHERE "userId" = ${userId}
       GROUP BY country ORDER BY count DESC LIMIT 10
     `,
+		db.djSettings.findUnique({ where: { userId }, select: { metaPixelId: true } }),
 	]);
 
 	// Bar chart data
@@ -118,6 +120,8 @@ export default async function AnalyticsPage() {
 				<h2 className="font-display text-4xl text-white tracking-wider mb-1">Estadísticas</h2>
 				<p className="font-mono text-xs text-slate-500">Visitas a tu landing page.</p>
 			</div>
+
+			<MetaPixelSection initialMetaPixelId={settings?.metaPixelId ?? null} />
 
 			{/* Stat cards */}
 			<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">

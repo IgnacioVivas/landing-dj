@@ -35,7 +35,6 @@ export const settingsSchema = z.object({
   soundcloudUrl:     optionalUrl,
   youtubeChannelUrl: optionalUrl,
   youtubeVideoIds:   z.array(z.string().max(200)).max(10),
-  metaPixelId:       z.string().max(20),
 
   // Booking
   bookingEmail: optionalEmail,
