@@ -16,11 +16,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title       = dj.djName || slug
   const description = dj.bioShort || `${title} — DJ`
   const image       = dj.settings?.heroImageUrl ?? dj.bioPhoto ?? null
+  const favicon     = dj.settings?.faviconUrl ?? null
   const url         = `/dj/${slug}`
 
   return {
     title,
     description,
+    ...(favicon && { icons: { icon: favicon } }),
     openGraph: {
       type:        'website',
       url,

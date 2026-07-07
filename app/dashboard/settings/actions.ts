@@ -122,6 +122,25 @@ export async function updateHeroLogoAction(url: string | null): Promise<ActionRe
   return { success: true }
 }
 
+export async function updateFaviconAction(url: string | null): Promise<ActionResult> {
+  const session = await auth()
+  if (!session?.user.id) return { error: 'No autorizado.' }
+
+  const current = await db.djSettings.findUnique({
+    where: { userId: session.user.id },
+    select: { faviconUrl: true },
+  })
+  await deleteFile(current?.faviconUrl)
+
+  await db.djSettings.upsert({
+    where:  { userId: session.user.id },
+    update: { faviconUrl: url },
+    create: { userId: session.user.id, faviconUrl: url },
+  })
+
+  return { success: true }
+}
+
 export async function updateHeroVideoAction(url: string | null): Promise<ActionResult> {
   const session = await auth()
   if (!session?.user.id) return { error: 'No autorizado.' }

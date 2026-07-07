@@ -5,7 +5,7 @@ import type { SettingsInput } from '@/lib/validations/settings'
 import { SectionTitle, Field, inputClass } from '@/app/dashboard/_components/Field'
 import PhotoUploader from './PhotoUploader'
 import VideoUploader from './VideoUploader'
-import { updateHeroPhotoAction, updateHeroMobilePhotoAction, updateBioPhotoAction, updateHeroVideoAction, updateHeroVideoMobileAction, updateHeroLogoAction } from '../actions'
+import { updateHeroPhotoAction, updateHeroMobilePhotoAction, updateBioPhotoAction, updateHeroVideoAction, updateHeroVideoMobileAction, updateHeroLogoAction, updateFaviconAction } from '../actions'
 
 type Props = {
   register: UseFormRegister<SettingsInput>
@@ -16,10 +16,11 @@ type Props = {
   initialHeroVideoUrl: string | null
   initialHeroVideoMobileUrl: string | null
   initialHeroLogoUrl: string | null
+  initialFaviconUrl: string | null
   initialBioUrl: string | null
 }
 
-export default function ThemeSection({ register, errors, watch, initialHeroUrl, initialHeroMobileUrl, initialHeroVideoUrl, initialHeroVideoMobileUrl, initialHeroLogoUrl, initialBioUrl }: Props) {
+export default function ThemeSection({ register, errors, watch, initialHeroUrl, initialHeroMobileUrl, initialHeroVideoUrl, initialHeroVideoMobileUrl, initialHeroLogoUrl, initialFaviconUrl, initialBioUrl }: Props) {
   const accent       = watch('accentColor')
   const accent2      = watch('accentColor2')
   const heroOverlay  = watch('heroOverlay')
@@ -187,6 +188,25 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
         </div>
         <p className="font-mono text-xs text-slate-700">
           Reemplaza el título de texto. Usá PNG con fondo transparente para mejor resultado.
+        </p>
+      </div>
+
+      {/* Favicon upload (independent of form submit) */}
+      <div className="flex flex-col gap-4">
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Favicon</p>
+        <div className="flex flex-wrap gap-8">
+          <PhotoUploader
+            label="Favicon (PNG cuadrado)"
+            initialUrl={initialFaviconUrl}
+            onSave={updateFaviconAction}
+            aspect="aspect-square"
+            maxSizeMB={1}
+            maxWidthOrHeight={512}
+            objectFit="contain"
+          />
+        </div>
+        <p className="font-mono text-xs text-slate-700">
+          Se muestra en la pestaña del navegador cuando alguien abre tu presskit. Usá una imagen cuadrada.
         </p>
       </div>
 

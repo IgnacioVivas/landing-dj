@@ -211,6 +211,7 @@ model DjSettings {
   heroVideoUrl           String?
   heroVideoMobileUrl     String?
   heroLogoUrl            String?
+  faviconUrl             String?
   heroTitle              String?
   heroTitleEn            String?
   heroOverlay            Boolean   @default(true)
