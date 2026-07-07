@@ -188,6 +188,7 @@ model DjSettings {
   youtubeChannelUrl      String?
   youtubeVideoIds        String[]
   metaPixelId            String?
+  gtmId                  String?
   soundcloudUrl          String?
   spotifyProfileUrl      String?
   instagramUrl           String?

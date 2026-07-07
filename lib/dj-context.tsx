@@ -45,6 +45,7 @@ export interface DjPageData {
   showStats:   boolean
   galleryMode: 'grid' | 'carousel'
   metaPixelId: string | null
+  gtmId:       string | null
 }
 
 const DjContext = createContext<DjPageData | null>(null)
@@ -103,6 +104,7 @@ function configToPageData(): DjPageData {
     showStats:   true,
     galleryMode: 'grid',
     metaPixelId: null,
+    gtmId:       null,
   }
 }
 

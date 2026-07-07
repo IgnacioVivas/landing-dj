@@ -19,6 +19,7 @@ import SnapScrollController from '@/components/ui/SnapScrollController'
 import AnalyticsBeacon from '@/components/ui/AnalyticsBeacon'
 import PageLoader from '@/components/ui/PageLoader'
 import MetaPixel from '@/components/MetaPixel'
+import GoogleTagManager from '@/components/GoogleTagManager'
 
 export default function DjPageLayout({ data, userId }: { data: DjPageData; userId: string }) {
   const { accentColor, accentColor2 } = data.theme
@@ -52,6 +53,7 @@ export default function DjPageLayout({ data, userId }: { data: DjPageData; userI
         <FloatingControls />
         <AnalyticsBeacon userId={userId} />
         {data.metaPixelId && <MetaPixel pixelId={data.metaPixelId} />}
+        {data.gtmId && <GoogleTagManager gtmId={data.gtmId} />}
       </DjProvider>
     </>
   )

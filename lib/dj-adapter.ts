@@ -113,5 +113,6 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
     showStats:   dj.settings?.showStats   ?? true,
     galleryMode: (dj.settings?.galleryMode ?? 'grid') as 'grid' | 'carousel',
     metaPixelId: dj.settings?.metaPixelId ?? null,
+    gtmId:       dj.settings?.gtmId ?? null,
   }
 }

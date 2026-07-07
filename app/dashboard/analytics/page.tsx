@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import BackButton from '@/app/dashboard/_components/BackButton';
 import MetaPixelSection from './_components/MetaPixelSection';
+import GtmSection from './_components/GtmSection';
 import { DeviceMobile, Desktop, DeviceTablet } from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = { title: 'Estadísticas — DJ Panel' };
@@ -98,7 +99,7 @@ export default async function AnalyticsPage() {
       WHERE "userId" = ${userId}
       GROUP BY country ORDER BY count DESC LIMIT 10
     `,
-		db.djSettings.findUnique({ where: { userId }, select: { metaPixelId: true } }),
+		db.djSettings.findUnique({ where: { userId }, select: { metaPixelId: true, gtmId: true } }),
 	]);
 
 	// Bar chart data
@@ -122,6 +123,7 @@ export default async function AnalyticsPage() {
 			</div>
 
 			<MetaPixelSection initialMetaPixelId={settings?.metaPixelId ?? null} />
+			<GtmSection initialGtmId={settings?.gtmId ?? null} />
 
 			{/* Stat cards */}
 			<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
