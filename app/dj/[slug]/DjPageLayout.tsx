@@ -46,7 +46,7 @@ export default function DjPageLayout({ data, userId }: { data: DjPageData; userI
           <MixPlayer />
           <YouTube />
           <PressKit />
-          <Contact />
+          <Contact userId={userId} />
         </main>
         <Footer />
         <SnapScrollController />

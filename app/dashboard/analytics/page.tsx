@@ -68,6 +68,15 @@ const COUNTRY_NAMES: Record<string, string> = {
 const DEVICE_ICONS = { mobile: DeviceMobile, tablet: DeviceTablet, desktop: Desktop } as const;
 const DEVICE_LABELS = { mobile: 'Móvil', tablet: 'Tablet', desktop: 'Desktop' };
 
+const CONTACT_CLICK_ORDER = ['booking', 'press', 'other', 'send_message', 'booking_contact'] as const;
+const CONTACT_CLICK_LABELS: Record<string, string> = {
+	booking: 'Booking',
+	press: 'Press',
+	other: 'Other',
+	send_message: 'Send Message',
+	booking_contact: 'Booking - Contact',
+};
+
 export default async function AnalyticsPage() {
 	const session = await auth();
 	if (!session?.user.id) redirect('/login');
@@ -76,7 +85,7 @@ export default async function AnalyticsPage() {
 	const now = new Date();
 	const ago30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-	const [total, thisMonth, thisWeek, today, rawDaily, deviceGroups, rawCountries, settings] = await Promise.all([
+	const [total, thisMonth, thisWeek, today, rawDaily, deviceGroups, rawCountries, settings, contactClickGroups] = await Promise.all([
 		db.pageView.count({ where: { userId } }),
 		db.pageView.count({ where: { userId, createdAt: { gte: startOf('month') } } }),
 		db.pageView.count({ where: { userId, createdAt: { gte: startOf('week') } } }),
@@ -100,6 +109,7 @@ export default async function AnalyticsPage() {
       GROUP BY country ORDER BY count DESC LIMIT 10
     `,
 		db.djSettings.findUnique({ where: { userId }, select: { metaPixelId: true, gtmId: true } }),
+		db.contactClick.groupBy({ by: ['type'], where: { userId }, _count: { type: true } }),
 	]);
 
 	// Bar chart data
@@ -113,6 +123,9 @@ export default async function AnalyticsPage() {
 		country: r.country ?? UNKNOWN,
 		count: r.count,
 	}));
+
+	const contactClickCounts = new Map(contactClickGroups.map((g) => [g.type, g._count.type]));
+	const totalContactClicks = contactClickGroups.reduce((sum, g) => sum + g._count.type, 0);
 
 	return (
 		<div>
@@ -275,6 +288,29 @@ export default async function AnalyticsPage() {
 								);
 							})}
 						</div>
+					</div>
+				)}
+			</div>
+
+			{/* Contact clicks */}
+			<div
+				className="p-6 rounded-2xl mt-6"
+				style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+			>
+				<p className="font-mono text-xs text-slate-500 tracking-widest uppercase mb-5">Clics en botones de contacto</p>
+
+				{totalContactClicks === 0 ? (
+					<p className="font-mono text-xs text-slate-600 text-center py-6">Todavía no hay clics registrados.</p>
+				) : (
+					<div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+						{CONTACT_CLICK_ORDER.map((type) => (
+							<div key={type} className="flex flex-col gap-1">
+								<span className="font-display text-3xl leading-none" style={{ color: 'var(--dj-accent)' }}>
+									{contactClickCounts.get(type) ?? 0}
+								</span>
+								<span className="font-mono text-xs text-slate-500 tracking-wider">{CONTACT_CLICK_LABELS[type]}</span>
+							</div>
+						))}
 					</div>
 				)}
 			</div>

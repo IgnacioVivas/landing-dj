@@ -12,6 +12,7 @@ import {
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDjData } from '@/lib/dj-context'
 import type { ContactFormData } from '@/lib/types'
+import { trackContactClick } from '@/lib/track-contact'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import GlowButton from '@/components/ui/GlowButton'
@@ -21,7 +22,7 @@ const INITIAL: ContactFormData = { name: '', email: '', type: 'booking', message
 const inputClass =
   'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 font-body text-sm focus:outline-none transition-colors'
 
-export default function Contact() {
+export default function Contact({ userId }: { userId: string }) {
   const { t } = useLanguage()
   const { contact, social } = useDjData()
   const [form, setForm] = useState<ContactFormData>(INITIAL)
@@ -37,6 +38,11 @@ export default function Contact() {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
+  function selectType(type: ContactFormData['type']) {
+    set('type', type)
+    trackContactClick(userId, type)
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setStatus('loading')
@@ -46,6 +52,7 @@ export default function Contact() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
+      if (res.ok) trackContactClick(userId, 'send_message')
       setStatus(res.ok ? 'success' : 'error')
     } catch {
       setStatus('error')
@@ -71,6 +78,7 @@ export default function Contact() {
                   label={t.contact.bookingLabel}
                   value={contact.bookingEmail}
                   href={`mailto:${contact.bookingEmail}`}
+                  onClick={() => trackContactClick(userId, 'booking_contact')}
                 />
               )}
               {contact.pressEmail && (
@@ -151,7 +159,7 @@ export default function Contact() {
                     <button
                       key={type.value}
                       type="button"
-                      onClick={() => set('type', type.value)}
+                      onClick={() => selectType(type.value)}
                       className="flex-1 py-2.5 rounded-xl font-mono text-xs tracking-wider uppercase transition-all duration-200"
                       style={
                         form.type === type.value
@@ -190,16 +198,18 @@ export default function Contact() {
 }
 
 function InfoRow({
-  icon, label, value, href,
+  icon, label, value, href, onClick,
 }: {
   icon: React.ReactNode
   label: string
   value: string
   href: string
+  onClick?: () => void
 }) {
   return (
     <a
       href={href}
+      onClick={onClick}
       className="flex items-center gap-3 p-4 rounded-xl group transition-colors hover:bg-white/[0.03]"
       style={{ border: '1px solid var(--dj-border)' }}
     >
