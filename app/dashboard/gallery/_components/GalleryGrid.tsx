@@ -2,6 +2,9 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import imageCompression from 'browser-image-compression'
+import { uploadFile } from '@/lib/uploadthing'
 import type { GalleryDbItem } from '@/lib/queries/gallery'
 import { createGalleryItemAction, updateGalleryItemAction, deleteGalleryItemAction, reorderGalleryAction, updateGalleryModeAction } from '../actions'
 import Dialog from '@/app/dashboard/_components/Dialog'
@@ -18,33 +21,100 @@ const ASPECT_OPTIONS = [
   { value: 'landscape', label: 'Landscape (4:3)' },
 ]
 
-type EditState = { id: string; caption: string; captionEn: string; aspect: string } | null
+type EditState = {
+  id: string
+  caption: string
+  captionEn: string
+  aspect: string
+  videoUrl: string | null
+  videoThumbnailUrl: string | null
+} | null
+
+function ThumbnailUploader({ value, onChange }: { value: string | null; onChange: (url: string | null) => void }) {
+  const [status, setStatus] = useState<'idle' | 'compressing' | 'uploading'>('idle')
+  const [error,  setError]  = useState<string | null>(null)
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    setStatus('compressing')
+    setError(null)
+    try {
+      const compressed = await imageCompression(file, { maxSizeMB: 0.8, maxWidthOrHeight: 1280, useWebWorker: true })
+      setStatus('uploading')
+      const url = await uploadFile(new File([compressed], file.name, { type: compressed.type }))
+      onChange(url)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al subir')
+    } finally {
+      setStatus('idle')
+    }
+  }
+
+  return (
+    <Field label="Foto de portada" hint="Se muestra como preview del video antes de reproducirlo.">
+      <div className="flex items-start gap-3">
+        {value && (
+          <div className="relative w-20 aspect-square rounded-lg overflow-hidden shrink-0">
+            <Image src={value} alt="Portada" fill unoptimized className="object-cover" sizes="80px" />
+          </div>
+        )}
+        <div className="flex flex-col gap-2">
+          <label className="cursor-pointer">
+            <input type="file" accept="image/*" className="sr-only" disabled={status !== 'idle'} onChange={handleFile} />
+            <span
+              className="inline-flex items-center font-mono text-xs px-3 py-2 rounded-lg transition-colors"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: status !== 'idle' ? '#475569' : '#e2e8f0' }}
+            >
+              {status === 'compressing' ? 'Comprimiendo...' : status === 'uploading' ? 'Subiendo...' : value ? 'Cambiar portada' : 'Subir portada'}
+            </span>
+          </label>
+          {value && (
+            <button
+              type="button"
+              onClick={() => onChange(null)}
+              className="font-mono text-xs text-red-400 hover:text-red-300 transition-colors text-left"
+            >
+              Eliminar portada
+            </button>
+          )}
+        </div>
+      </div>
+      {error && <p className="font-mono text-xs text-red-400 mt-1">{error}</p>}
+    </Field>
+  )
+}
 
 function EditDialog({
   state,
+  isVideo = false,
   onClose,
   onSave,
   title = 'Editar elemento',
 }: {
   state: EditState
+  isVideo?: boolean
   onClose: () => void
-  onSave: (caption: string, captionEn: string, aspect: string) => Promise<void>
+  onSave: (caption: string, captionEn: string, aspect: string, videoThumbnailUrl: string | null) => Promise<void>
   title?: string
 }) {
   const [caption,   setCaption]   = useState(state?.caption   ?? '')
   const [captionEn, setCaptionEn] = useState(state?.captionEn ?? '')
   const [aspect,    setAspect]    = useState(state?.aspect    ?? 'square')
+  const [thumbnailUrl, setThumbnailUrl] = useState(state?.videoThumbnailUrl ?? null)
   const [saving,    setSaving]    = useState(false)
 
   async function handleSave() {
     setSaving(true)
-    await onSave(caption, captionEn, aspect)
+    await onSave(caption, captionEn, aspect, thumbnailUrl)
     setSaving(false)
   }
 
   return (
     <Dialog open={!!state} onClose={onClose} title={title}>
       <div className="flex flex-col gap-4">
+        {isVideo && <ThumbnailUploader value={thumbnailUrl} onChange={setThumbnailUrl} />}
         <Field label="Caption (Español)">
           <input
             value={caption}
@@ -118,15 +188,15 @@ export default function GalleryGrid({ items: initial, galleryMode: initialGaller
     setPending(result)
   }
 
-  async function handleConfirmUpload(caption: string, captionEn: string, aspect: string) {
+  async function handleConfirmUpload(caption: string, captionEn: string, aspect: string, videoThumbnailUrl: string | null) {
     if (!pending) return
     const imageUrl = pending.mediaType === 'image' ? pending.url : null
     const videoUrl = pending.mediaType === 'video' ? pending.url : null
-    const result = await createGalleryItemAction(imageUrl, videoUrl, caption, aspect)
+    const result = await createGalleryItemAction(imageUrl, videoUrl, caption, aspect, videoThumbnailUrl)
     if ('error' in result) { setError(result.error ?? null); return }
     // Update captionEn separately if provided
     if (captionEn) {
-      await updateGalleryItemAction(result.item.id, caption, captionEn, aspect)
+      await updateGalleryItemAction(result.item.id, caption, captionEn, aspect, videoThumbnailUrl)
     }
     setItems(prev => [...prev, { ...result.item, captionEn }])
     setPending(null)
@@ -135,11 +205,11 @@ export default function GalleryGrid({ items: initial, galleryMode: initialGaller
     router.refresh()
   }
 
-  async function handleSaveEdit(caption: string, captionEn: string, aspect: string) {
+  async function handleSaveEdit(caption: string, captionEn: string, aspect: string, videoThumbnailUrl: string | null) {
     if (!editing) return
-    const result = await updateGalleryItemAction(editing.id, caption, captionEn, aspect)
+    const result = await updateGalleryItemAction(editing.id, caption, captionEn, aspect, videoThumbnailUrl)
     if ('error' in result) { setError(result.error); return }
-    setItems(prev => prev.map(i => i.id === editing.id ? { ...i, caption, captionEn, aspect } : i))
+    setItems(prev => prev.map(i => i.id === editing.id ? { ...i, caption, captionEn, aspect, videoThumbnailUrl } : i))
     closeEdit()
   }
 
@@ -226,18 +296,19 @@ export default function GalleryGrid({ items: initial, galleryMode: initialGaller
             item={item}
             isFirst={i === 0}
             isLast={i === items.length - 1}
-            onEdit={it => setEditing({ id: it.id, caption: it.caption, captionEn: it.captionEn, aspect: it.aspect })}
+            onEdit={it => setEditing({ id: it.id, caption: it.caption, captionEn: it.captionEn, aspect: it.aspect, videoUrl: it.videoUrl, videoThumbnailUrl: it.videoThumbnailUrl })}
             onDelete={handleDelete}
             onMove={handleMove}
           />
         ))}
       </div>
 
-      <EditDialog state={editing} onClose={closeEdit} onSave={handleSaveEdit} />
+      <EditDialog state={editing} isVideo={!!editing?.videoUrl} onClose={closeEdit} onSave={handleSaveEdit} />
 
       {pending && (
         <EditDialog
-          state={{ id: '', caption: '', captionEn: '', aspect: 'square' }}
+          state={{ id: '', caption: '', captionEn: '', aspect: 'square', videoUrl: pending.mediaType === 'video' ? pending.url : null, videoThumbnailUrl: null }}
+          isVideo={pending.mediaType === 'video'}
           onClose={() => setPending(null)}
           onSave={handleConfirmUpload}
           title={`Agregar ${pending.mediaType === 'video' ? 'video' : 'foto'}`}

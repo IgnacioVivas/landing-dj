@@ -111,7 +111,18 @@ export default function CoverflowCarousel({ items, onOpen }: Props) {
                 <div className="relative rounded-2xl overflow-hidden" style={{ height: CARD_HEIGHT }}>
                   {item.videoUrl ? (
                     <>
-                      <div className="absolute inset-0" style={{ background: item.gradient }} />
+                      {item.videoThumbnailUrl ? (
+                        <Image
+                          src={item.videoThumbnailUrl}
+                          alt={caption || ''}
+                          fill
+                          unoptimized
+                          className="object-cover"
+                          sizes={`${CARD_WIDTH}px`}
+                        />
+                      ) : (
+                        <div className="absolute inset-0" style={{ background: item.gradient }} />
+                      )}
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                           <Play size={24} weight="fill" className="text-white ml-1" />

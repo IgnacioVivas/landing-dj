@@ -38,6 +38,7 @@ export default function GalleryItemCard({ item, isFirst, isLast, onEdit, onDelet
           <div className="w-full h-full relative">
             <video
               src={item.videoUrl}
+              poster={item.videoThumbnailUrl ?? undefined}
               preload="metadata"
               muted
               playsInline

@@ -13,18 +13,19 @@ export async function createGalleryItemAction(
   videoUrl: string | null,
   caption: string,
   aspect: string,
+  videoThumbnailUrl: string | null = null,
 ) {
   const session = await auth()
   if (!session?.user.id) return { error: 'No autorizado.' }
 
   const count = await db.galleryItem.count({ where: { userId: session.user.id } })
   if (count >= GALLERY_LIMIT) {
-    await deleteFile(imageUrl ?? videoUrl)
+    await Promise.all([deleteFile(imageUrl ?? videoUrl), deleteFile(videoThumbnailUrl)])
     return { error: `Límite de ${GALLERY_LIMIT} elementos alcanzado.` }
   }
 
   const item = await db.galleryItem.create({
-    data: { userId: session.user.id, imageUrl, videoUrl, caption, aspect, order: count },
+    data: { userId: session.user.id, imageUrl, videoUrl, videoThumbnailUrl, caption, aspect, order: count },
   })
 
   return { success: true as const, item }
@@ -35,14 +36,24 @@ export async function updateGalleryItemAction(
   caption: string,
   captionEn: string,
   aspect: string,
+  videoThumbnailUrl?: string | null,
 ): Promise<Result> {
   const session = await auth()
   if (!session?.user.id) return { error: 'No autorizado.' }
 
-  const item = await db.galleryItem.findUnique({ where: { id }, select: { userId: true } })
+  const item = await db.galleryItem.findUnique({ where: { id }, select: { userId: true, videoThumbnailUrl: true } })
   if (item?.userId !== session.user.id) return { error: 'No autorizado.' }
 
-  await db.galleryItem.update({ where: { id }, data: { caption, captionEn, aspect } })
+  const changingThumbnail = videoThumbnailUrl !== undefined && videoThumbnailUrl !== item.videoThumbnailUrl
+  if (changingThumbnail) await deleteFile(item.videoThumbnailUrl)
+
+  await db.galleryItem.update({
+    where: { id },
+    data: {
+      caption, captionEn, aspect,
+      ...(videoThumbnailUrl !== undefined && { videoThumbnailUrl }),
+    },
+  })
 
   return { success: true }
 }
@@ -53,11 +64,11 @@ export async function deleteGalleryItemAction(id: string): Promise<Result> {
 
   const item = await db.galleryItem.findUnique({
     where: { id },
-    select: { userId: true, imageUrl: true, videoUrl: true },
+    select: { userId: true, imageUrl: true, videoUrl: true, videoThumbnailUrl: true },
   })
   if (item?.userId !== session.user.id) return { error: 'No autorizado.' }
 
-  await Promise.all([deleteFile(item.imageUrl), deleteFile(item.videoUrl)])
+  await Promise.all([deleteFile(item.imageUrl), deleteFile(item.videoUrl), deleteFile(item.videoThumbnailUrl)])
   await db.galleryItem.delete({ where: { id } })
 
   return { success: true }

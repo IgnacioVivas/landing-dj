@@ -144,6 +144,7 @@ model GalleryItem {
   userId    String
   imageUrl  String?
   videoUrl  String?
+  videoThumbnailUrl String?
   gradient  String   @default("linear-gradient(160deg, #0a001a 0%, #1a0050 60%, #3a0080 100%)")
   caption   String   @default("")
   captionEn String   @default("")
@@ -221,6 +222,7 @@ model DjSettings {
   showStats              Boolean   @default(true)
   galleryMode            String    @default("grid")
   showsMode              String    @default("list")
+  showMapVisible         Boolean   @default(true)
 
   user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 

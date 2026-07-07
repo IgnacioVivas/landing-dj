@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Plus } from '@phosphor-icons/react'
 import type { ShowItem } from '@/lib/queries/shows'
 import type { ShowInput } from '@/lib/validations/show'
-import { createShowAction, updateShowAction, deleteShowAction, toggleFeaturedAction, updateShowsModeAction } from '../actions'
+import { createShowAction, updateShowAction, deleteShowAction, toggleFeaturedAction, updateShowsModeAction, updateShowMapVisibleAction } from '../actions'
 import ShowDialog from '@/app/dashboard/_components/Dialog'
 import ShowForm from './ShowForm'
 import ShowCard from './ShowCard'
@@ -33,14 +33,17 @@ type DialogState =
 type Props = {
   shows: ShowItem[]
   showsMode: 'list' | 'flyer'
+  showMapVisible: boolean
 }
 
-export default function ShowList({ shows, showsMode: initialShowsMode }: Props) {
+export default function ShowList({ shows, showsMode: initialShowsMode, showMapVisible: initialShowMapVisible }: Props) {
   const router = useRouter()
   const [dialog, setDialog] = useState<DialogState>({ mode: 'closed' })
   const [error, setError] = useState<string | null>(null)
   const [showsMode, setShowsMode] = useState(initialShowsMode)
   const [changingMode, setChangingMode] = useState(false)
+  const [showMapVisible, setShowMapVisible] = useState(initialShowMapVisible)
+  const [changingMapVisible, setChangingMapVisible] = useState(false)
 
   const close = useCallback(() => setDialog({ mode: 'closed' }), [])
 
@@ -52,6 +55,17 @@ export default function ShowList({ shows, showsMode: initialShowsMode }: Props) 
     setChangingMode(false)
     if ('error' in result) { setError(result.error); return }
     setShowsMode(mode)
+    router.refresh()
+  }
+
+  async function handleMapVisibleChange(visible: boolean) {
+    if (changingMapVisible) return
+    setChangingMapVisible(true)
+    setError(null)
+    const result = await updateShowMapVisibleAction(visible)
+    setChangingMapVisible(false)
+    if ('error' in result) { setError(result.error); return }
+    setShowMapVisible(visible)
     router.refresh()
   }
 
@@ -126,6 +140,32 @@ export default function ShowList({ shows, showsMode: initialShowsMode }: Props) 
         </div>
         <p className="font-mono text-xs text-slate-700">
           {showsMode === 'flyer' ? 'Cada show muestra una imagen flyer.' : 'Los shows se listan en formato tabla.'}
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-3 mb-8">
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Mapa de shows</p>
+        <label className="flex items-center gap-3 cursor-pointer w-fit">
+          <input
+            type="checkbox"
+            checked={showMapVisible}
+            disabled={changingMapVisible}
+            onChange={e => handleMapVisibleChange(e.target.checked)}
+            className="sr-only"
+          />
+          <div
+            className="w-10 h-5 rounded-full transition-colors relative flex-shrink-0"
+            style={{ background: showMapVisible ? 'var(--dj-accent)' : 'rgba(255,255,255,0.1)', opacity: changingMapVisible ? 0.5 : 1 }}
+          >
+            <div
+              className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform"
+              style={{ transform: showMapVisible ? 'translateX(1.25rem)' : 'translateX(0.125rem)' }}
+            />
+          </div>
+          <span className="font-mono text-xs text-slate-400">Mostrar mapa en el presskit</span>
+        </label>
+        <p className="font-mono text-xs text-slate-700">
+          Incluye tus shows próximos y pasados en un mapa. Se oculta automáticamente si desactivás esta opción.
         </p>
       </div>
 

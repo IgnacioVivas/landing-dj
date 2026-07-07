@@ -23,6 +23,7 @@ function MediaPreview({ item, sizes }: { item: GalleryItem; sizes: string }) {
       <>
         <video
           src={item.videoUrl}
+          poster={item.videoThumbnailUrl ?? undefined}
           preload="metadata"
           muted
           playsInline
@@ -106,6 +107,7 @@ function Lightbox({ item, onClose }: { item: GalleryItem; onClose: () => void })
           {isVideo ? (
             <video
               src={item.videoUrl!}
+              poster={item.videoThumbnailUrl ?? undefined}
               controls
               autoPlay
               playsInline

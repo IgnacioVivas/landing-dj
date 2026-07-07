@@ -29,13 +29,13 @@ function sleep(ms: number) {
 }
 
 export default function ShowsMap() {
-  const { shows, theme } = useDjData()
+  const { shows, theme, showMapVisible } = useDjData()
   const { t } = useLanguage()
   const [pins, setPins]     = useState<ShowPin[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!shows.length) { setLoading(false); return }
+    if (!shows.length || !showMapVisible) { setLoading(false); return }
 
     async function load() {
       const cacheKey = `djmap_${shows.map(s => `${s.city}|${s.country}`).sort().join('_')}`
@@ -78,9 +78,9 @@ export default function ShowsMap() {
     }
 
     load()
-  }, [shows])
+  }, [shows, showMapVisible])
 
-  if (!shows.length) return null
+  if (!shows.length || !showMapVisible) return null
 
   return (
     <section id="showsmap" className="py-24 md:py-32" style={{ background: '#050509' }}>

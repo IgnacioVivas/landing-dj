@@ -50,13 +50,14 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       },
     })),
     gallery: dj.gallery.map(g => ({
-      id:        g.id,
-      imageUrl:  g.imageUrl ?? null,
-      videoUrl:  g.videoUrl ?? null,
-      gradient:  g.gradient,
-      caption:   g.caption,
-      captionEn: g.captionEn,
-      aspect:    g.aspect as AspectRatio,
+      id:                g.id,
+      imageUrl:          g.imageUrl ?? null,
+      videoUrl:          g.videoUrl ?? null,
+      videoThumbnailUrl: g.videoThumbnailUrl ?? null,
+      gradient:          g.gradient,
+      caption:           g.caption,
+      captionEn:         g.captionEn,
+      aspect:            g.aspect as AspectRatio,
     })),
     youtube: {
       videoIds:   dj.settings?.youtubeVideoIds  ?? [],
@@ -114,5 +115,6 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
     galleryMode: (dj.settings?.galleryMode ?? 'grid') as 'grid' | 'carousel',
     metaPixelId: dj.settings?.metaPixelId ?? null,
     gtmId:       dj.settings?.gtmId ?? null,
+    showMapVisible: dj.settings?.showMapVisible ?? true,
   }
 }

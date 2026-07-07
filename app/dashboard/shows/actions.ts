@@ -70,6 +70,19 @@ export async function updateShowsModeAction(mode: 'list' | 'flyer'): Promise<Res
   return { success: true }
 }
 
+export async function updateShowMapVisibleAction(visible: boolean): Promise<Result> {
+  const session = await auth()
+  if (!session?.user.id) return { error: 'No autorizado.' }
+
+  await db.djSettings.upsert({
+    where:  { userId: session.user.id },
+    update: { showMapVisible: visible },
+    create: { userId: session.user.id, showMapVisible: visible },
+  })
+
+  return { success: true }
+}
+
 export async function toggleFeaturedAction(id: string): Promise<Result> {
   const session = await auth()
   if (!session?.user.id) return { error: 'No autorizado.' }

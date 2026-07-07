@@ -38,6 +38,7 @@ export interface GalleryItem {
   id: string
   imageUrl?: string | null
   videoUrl?: string | null
+  videoThumbnailUrl?: string | null
   gradient: string
   caption: string
   captionEn: string
