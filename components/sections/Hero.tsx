@@ -8,6 +8,7 @@ import { useDjData } from '@/lib/dj-context'
 import GlowButton from '@/components/ui/GlowButton'
 import HeroSocialLinks from '@/components/ui/HeroSocialLinks'
 import { trackLead } from '@/lib/meta-pixel'
+import { HERO_SIZE_SCALE } from '@/lib/hero-size'
 
 const ease = [0.16, 1, 0.3, 1] as const
 
@@ -15,13 +16,29 @@ function videoType(url: string) {
   return url.endsWith('.webm') ? 'video/webm' : 'video/mp4'
 }
 
+// clamp() base en rem/vw para el layout "center" (clásico) y "integrated", a escala 1 (tamaño 'md' = el de siempre).
+// El tamaño elegido en Configuración multiplica estos tres números.
+const BASE_CLAMP = {
+  center:     { title: [5, 20, 18] as const, logo: [9, 18, 15] as const },
+  integrated: { title: [4, 16, 12] as const, logo: [8, 16, 13] as const },
+}
+
+function scaledClamp([minRem, vw, maxRem]: readonly [number, number, number], scale: number) {
+  return `clamp(${(minRem * scale).toFixed(2)}rem, ${(vw * scale).toFixed(1)}vw, ${(maxRem * scale).toFixed(2)}rem)`
+}
+
 export default function Hero() {
   const { t, lang } = useLanguage()
   const dj = useDjData()
-  const { heroImageUrl, heroImageMobileUrl, heroVideoUrl, heroVideoMobileUrl, heroLogoUrl, heroTitle, heroTitleEn, heroOverlay, heroLayout } = dj.theme
+  const { heroImageUrl, heroImageMobileUrl, heroVideoUrl, heroVideoMobileUrl, heroLogoUrl, heroTitle, heroTitleEn, heroTitleSize, heroOverlay, heroLayout } = dj.theme
 
   const displayTitle   = lang === 'en' ? (heroTitleEn || heroTitle || dj.name) : (heroTitle || dj.name)
   const displayTagline = lang === 'en' ? (dj.taglineEn || dj.tagline) : dj.tagline
+
+  const sizeScale  = HERO_SIZE_SCALE[heroTitleSize]
+  const base       = BASE_CLAMP[heroLayout === 'integrated' ? 'integrated' : 'center']
+  const titleSize  = scaledClamp(base.title, sizeScale)
+  const logoSize   = scaledClamp(base.logo, sizeScale)
 
   const navLinks = [
     { label: t.nav.bio,      href: '#bio' },
@@ -124,7 +141,8 @@ export default function Hero() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.1, ease }}
-              className="max-h-32 md:max-h-52 w-auto object-contain"
+              className="w-auto object-contain"
+              style={{ maxHeight: logoSize }}
             />
           ) : (
             <motion.h1
@@ -132,7 +150,7 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.1, ease }}
               className="font-display gradient-text leading-none tracking-tight text-glow-purple"
-              style={{ fontSize: 'clamp(4rem, 16vw, 12rem)' }}
+              style={{ fontSize: titleSize }}
             >
               {displayTitle}
             </motion.h1>
@@ -204,7 +222,8 @@ export default function Hero() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.1, ease }}
-            className="max-h-36 md:max-h-60 w-auto object-contain"
+            className="w-auto object-contain"
+            style={{ maxHeight: logoSize }}
           />
         ) : (
           <motion.h1
@@ -212,7 +231,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.1, ease }}
             className="font-display gradient-text leading-none tracking-tight text-glow-purple"
-            style={{ fontSize: 'clamp(5rem, 20vw, 18rem)' }}
+            style={{ fontSize: titleSize }}
           >
             {displayTitle}
           </motion.h1>

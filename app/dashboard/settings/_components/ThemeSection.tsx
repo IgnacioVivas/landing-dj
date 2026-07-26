@@ -6,6 +6,9 @@ import { SectionTitle, Field, inputClass } from '@/app/dashboard/_components/Fie
 import PhotoUploader from './PhotoUploader'
 import VideoUploader from './VideoUploader'
 import { updateHeroPhotoAction, updateHeroMobilePhotoAction, updateBioPhotoAction, updateHeroVideoAction, updateHeroVideoMobileAction, updateHeroLogoAction, updateFaviconAction } from '../actions'
+import { HERO_TITLE_SIZES, HERO_SIZE_SCALE, HERO_SIZE_LABELS } from '@/lib/hero-size'
+
+const PREVIEW_BASE_PX = 46
 
 type Props = {
   register: UseFormRegister<SettingsInput>
@@ -21,11 +24,17 @@ type Props = {
 }
 
 export default function ThemeSection({ register, errors, watch, initialHeroUrl, initialHeroMobileUrl, initialHeroVideoUrl, initialHeroVideoMobileUrl, initialHeroLogoUrl, initialFaviconUrl, initialBioUrl }: Props) {
-  const accent       = watch('accentColor')
-  const accent2      = watch('accentColor2')
-  const heroOverlay  = watch('heroOverlay')
-  const heroLayout   = watch('heroLayout')
-  const scrollMode   = watch('scrollMode')
+  const accent        = watch('accentColor')
+  const accent2       = watch('accentColor2')
+  const heroOverlay   = watch('heroOverlay')
+  const heroLayout    = watch('heroLayout')
+  const scrollMode    = watch('scrollMode')
+  const heroTitleSize = watch('heroTitleSize')
+  const heroTitle     = watch('heroTitle')
+  const djName        = watch('djName')
+
+  const previewLabel = heroTitle || djName || 'DJ Example'
+  const previewPx    = Math.round(PREVIEW_BASE_PX * HERO_SIZE_SCALE[heroTitleSize])
 
   return (
     <div className="flex flex-col gap-8">
@@ -97,6 +106,53 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
             placeholder={watch('djName') || 'DJ Example'}
           />
         </Field>
+      </div>
+
+      {/* Hero title/logo size */}
+      <div className="flex flex-col gap-3">
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Tamaño del título / logo</p>
+        <div className="flex gap-2 flex-wrap">
+          {HERO_TITLE_SIZES.map((val) => (
+            <label
+              key={val}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer transition-colors font-mono text-xs tracking-widest uppercase"
+              style={{
+                background: heroTitleSize === val ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: heroTitleSize === val ? '#e2e8f0' : '#475569',
+              }}
+            >
+              <input {...register('heroTitleSize')} type="radio" value={val} className="sr-only" />
+              {HERO_SIZE_LABELS[val]}
+            </label>
+          ))}
+        </div>
+
+        {/* Preview aproximado — compara el tamaño relativo entre las 5 opciones */}
+        <div
+          className="flex items-center justify-center h-40 rounded-lg overflow-hidden px-4"
+          style={{ background: '#07070f', border: '1px solid rgba(255,255,255,0.08)' }}
+        >
+          {initialHeroLogoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={initialHeroLogoUrl}
+              alt={previewLabel}
+              className="w-auto object-contain"
+              style={{ maxHeight: previewPx * 1.4 }}
+            />
+          ) : (
+            <span
+              className="font-display gradient-text leading-none tracking-tight truncate max-w-full"
+              style={{ fontSize: previewPx }}
+            >
+              {previewLabel}
+            </span>
+          )}
+        </div>
+        <p className="font-mono text-xs text-slate-700">
+          Vista previa aproximada, solo para comparar los 5 tamaños entre sí — el resultado real en pantalla completa puede verse distinto según el dispositivo. Para el chequeo final, abrí tu página desde el link de arriba a la derecha (<span className="text-slate-500">tuslug.{'{dominio}'} ↗</span>).
+        </p>
       </div>
 
       {/* Hero layout */}

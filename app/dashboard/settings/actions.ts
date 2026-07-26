@@ -22,7 +22,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
     soundcloudUrl, youtubeChannelUrl, youtubeVideoIds,
     bookingEmail, pressEmail,
     mixUrls,
-    accentColor, accentColor2, heroTitle, heroTitleEn, heroOverlay, heroLayout, scrollMode, showStats,
+    accentColor, accentColor2, heroTitle, heroTitleEn, heroTitleSize, heroOverlay, heroLayout, scrollMode, showStats,
   } = parsed.data
 
   const cleanMixUrls  = mixUrls.map(u => u.trim()).filter(Boolean)
@@ -48,7 +48,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds,
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
         mixUrls: cleanMixUrls,
-        accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroOverlay, heroLayout, scrollMode, showStats,
+        accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroTitleSize, heroOverlay, heroLayout, scrollMode, showStats,
       },
       create: {
         userId: session.user.id,
@@ -57,7 +57,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds,
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
         mixUrls: cleanMixUrls,
-        accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroOverlay, heroLayout, scrollMode, showStats,
+        accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroTitleSize, heroOverlay, heroLayout, scrollMode, showStats,
       },
     }),
   ])

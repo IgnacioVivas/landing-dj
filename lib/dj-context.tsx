@@ -3,6 +3,7 @@
 import { createContext, useContext, type ReactNode } from 'react'
 import { djConfig } from './config'
 import type { Show, Release, GalleryItem, ReleaseType, AspectRatio } from './types'
+import type { HeroTitleSize } from './hero-size'
 
 export interface DjPageData {
   name:       string
@@ -37,6 +38,7 @@ export interface DjPageData {
     heroLogoUrl:        string | null
     heroTitle:          string | null
     heroTitleEn:        string | null
+    heroTitleSize:      HeroTitleSize
     heroOverlay:        boolean
     heroLayout:         'center' | 'integrated'
   }
@@ -97,6 +99,7 @@ function configToPageData(): DjPageData {
       heroLogoUrl:        null,
       heroTitle:          null,
       heroTitleEn:        null,
+      heroTitleSize:      'md',
       heroOverlay:        true,
       heroLayout:         'center',
     },

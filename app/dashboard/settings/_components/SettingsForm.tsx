@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { settingsSchema, type SettingsInput } from '@/lib/validations/settings'
+import type { HeroTitleSize } from '@/lib/hero-size'
 import { updateSettingsAction } from '../actions'
 import type { UserSettings } from '@/lib/queries/user'
 import BioSection      from './BioSection'
@@ -44,6 +45,7 @@ function toDefaults(d: UserSettings): SettingsInput {
     accentColor2:      d.settings?.accentColor2       ?? '#22d3ee',
     heroTitle:         d.settings?.heroTitle           ?? '',
     heroTitleEn:       d.settings?.heroTitleEn         ?? '',
+    heroTitleSize:     (d.settings?.heroTitleSize      ?? 'md') as HeroTitleSize,
     heroOverlay:       d.settings?.heroOverlay         ?? true,
     heroLayout:        (d.settings?.heroLayout         ?? 'center') as 'center' | 'integrated',
     scrollMode:        (d.settings?.scrollMode         ?? 'free') as 'free' | 'snap',

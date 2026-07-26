@@ -228,6 +228,7 @@ model DjSettings {
   faviconUrl             String?
   heroTitle              String?
   heroTitleEn            String?
+  heroTitleSize          String    @default("md")
   heroOverlay            Boolean   @default(true)
   heroLayout             String    @default("center")
   scrollMode             String    @default("free")
