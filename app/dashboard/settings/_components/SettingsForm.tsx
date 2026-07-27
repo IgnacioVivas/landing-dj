@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { settingsSchema, type SettingsInput } from '@/lib/validations/settings'
 import type { HeroTitleSize } from '@/lib/hero-size'
+import type { HeroAlign } from '@/lib/hero-align'
 import { updateSettingsAction } from '../actions'
 import type { UserSettings } from '@/lib/queries/user'
 import BioSection      from './BioSection'
@@ -46,6 +47,7 @@ function toDefaults(d: UserSettings): SettingsInput {
     heroTitle:         d.settings?.heroTitle           ?? '',
     heroTitleEn:       d.settings?.heroTitleEn         ?? '',
     heroTitleSize:     (d.settings?.heroTitleSize      ?? 'md') as HeroTitleSize,
+    heroContentAlign:  (d.settings?.heroContentAlign   ?? 'center') as HeroAlign,
     heroOverlay:       d.settings?.heroOverlay         ?? true,
     heroLayout:        (d.settings?.heroLayout         ?? 'center') as 'center' | 'integrated',
     scrollMode:        (d.settings?.scrollMode         ?? 'free') as 'free' | 'snap',

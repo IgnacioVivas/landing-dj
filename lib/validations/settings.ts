@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { HERO_TITLE_SIZES } from '@/lib/hero-size'
+import { HERO_ALIGNS } from '@/lib/hero-align'
 
 const optionalUrl = z.union([
   z.literal(''),
@@ -49,7 +50,8 @@ export const settingsSchema = z.object({
   accentColor2: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Color inválido'),
   heroTitle:     z.string().max(100),
   heroTitleEn:   z.string().max(100),
-  heroTitleSize: z.enum(HERO_TITLE_SIZES),
+  heroTitleSize:    z.enum(HERO_TITLE_SIZES),
+  heroContentAlign: z.enum(HERO_ALIGNS),
   heroOverlay:  z.boolean(),
   heroLayout:   z.enum(['center', 'integrated']),
   scrollMode:   z.enum(['free', 'snap']),

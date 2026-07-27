@@ -2,9 +2,14 @@ import type { DjWithData } from './queries/dj'
 import type { DjPageData } from './dj-context'
 import type { ReleaseType, AspectRatio } from './types'
 import { HERO_TITLE_SIZES, type HeroTitleSize } from './hero-size'
+import { HERO_ALIGNS, type HeroAlign } from './hero-align'
 
 function toHeroTitleSize(value: string | null | undefined): HeroTitleSize {
   return (HERO_TITLE_SIZES as readonly string[]).includes(value ?? '') ? (value as HeroTitleSize) : 'md'
+}
+
+function toHeroAlign(value: string | null | undefined): HeroAlign {
+  return (HERO_ALIGNS as readonly string[]).includes(value ?? '') ? (value as HeroAlign) : 'center'
 }
 
 export function dbToDjPageData(dj: DjWithData): DjPageData {
@@ -112,6 +117,7 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       heroTitle:          dj.settings?.heroTitle          ?? null,
       heroTitleEn:        dj.settings?.heroTitleEn        ?? null,
       heroTitleSize:      toHeroTitleSize(dj.settings?.heroTitleSize),
+      heroContentAlign:   toHeroAlign(dj.settings?.heroContentAlign),
       heroOverlay:        dj.settings?.heroOverlay        ?? true,
       heroLayout:         (dj.settings?.heroLayout        ?? 'center') as 'center' | 'integrated',
     },

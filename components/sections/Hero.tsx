@@ -9,6 +9,7 @@ import GlowButton from '@/components/ui/GlowButton'
 import HeroSocialLinks from '@/components/ui/HeroSocialLinks'
 import { trackLead } from '@/lib/meta-pixel'
 import { HERO_SIZE_SCALE } from '@/lib/hero-size'
+import type { HeroAlign } from '@/lib/hero-align'
 
 const ease = [0.16, 1, 0.3, 1] as const
 
@@ -27,10 +28,16 @@ function scaledClamp([minRem, vw, maxRem]: readonly [number, number, number], sc
   return `clamp(${(minRem * scale).toFixed(2)}rem, ${(vw * scale).toFixed(1)}vw, ${(maxRem * scale).toFixed(2)}rem)`
 }
 
+// Alineación solo aplica en desktop (md:) — en mobile el hero siempre queda centrado.
+const ALIGN_ITEMS:   Record<HeroAlign, string> = { left: 'md:items-start', center: '', right: 'md:items-end' }
+const ALIGN_TEXT:    Record<HeroAlign, string> = { left: 'md:text-left',   center: '', right: 'md:text-right' }
+const ALIGN_JUSTIFY: Record<HeroAlign, string> = { left: 'md:justify-start', center: '', right: 'md:justify-end' }
+const ALIGN_PADDING: Record<HeroAlign, string> = { left: 'md:pl-16 lg:pl-24', center: '', right: 'md:pr-16 lg:pr-24' }
+
 export default function Hero() {
   const { t, lang } = useLanguage()
   const dj = useDjData()
-  const { heroImageUrl, heroImageMobileUrl, heroVideoUrl, heroVideoMobileUrl, heroLogoUrl, heroTitle, heroTitleEn, heroTitleSize, heroOverlay, heroLayout } = dj.theme
+  const { heroImageUrl, heroImageMobileUrl, heroVideoUrl, heroVideoMobileUrl, heroLogoUrl, heroTitle, heroTitleEn, heroTitleSize, heroContentAlign, heroOverlay, heroLayout } = dj.theme
 
   const displayTitle   = lang === 'en' ? (heroTitleEn || heroTitle || dj.name) : (heroTitle || dj.name)
   const displayTagline = lang === 'en' ? (dj.taglineEn || dj.tagline) : dj.tagline
@@ -39,6 +46,11 @@ export default function Hero() {
   const base       = BASE_CLAMP[heroLayout === 'integrated' ? 'integrated' : 'center']
   const titleSize  = scaledClamp(base.title, sizeScale)
   const logoSize   = scaledClamp(base.logo, sizeScale)
+
+  const alignItems   = ALIGN_ITEMS[heroContentAlign]
+  const alignText    = ALIGN_TEXT[heroContentAlign]
+  const alignJustify = ALIGN_JUSTIFY[heroContentAlign]
+  const alignPadding = ALIGN_PADDING[heroContentAlign]
 
   const navLinks = [
     { label: t.nav.bio,      href: '#bio' },
@@ -115,7 +127,7 @@ export default function Hero() {
 
   if (heroLayout === 'integrated') {
     return (
-      <section className="relative flex flex-col items-center justify-end md:justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
+      <section className={`relative flex flex-col items-center justify-end md:justify-center h-screen overflow-hidden bg-[#07070f] ${alignItems} ${alignPadding}`} style={{ contain: 'paint' }}>
         {bgMedia}
         {hasBg && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
         {/* Extra bottom gradient on mobile so the text sits on a darker base */}
@@ -124,7 +136,7 @@ export default function Hero() {
         )}
         {(!hasBg || heroOverlay) && orbs}
 
-        <div className="relative z-10 flex flex-col items-center text-center px-4 pb-10 md:pb-0">
+        <div className={`relative z-10 flex flex-col items-center text-center px-4 pb-10 md:pb-0 ${alignItems} ${alignText}`}>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -171,7 +183,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.45, ease }}
-            className="flex flex-wrap items-center justify-center gap-4 mt-6"
+            className={`flex flex-wrap items-center justify-center gap-4 mt-6 ${alignJustify}`}
           >
             <GlowButton href="#contact" onClick={trackLead}>{t.hero.bookNow}</GlowButton>
             <HeroSocialLinks social={dj.social} size={24} />
@@ -181,7 +193,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6, ease }}
-            className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-6 pt-5 border-t border-white/10"
+            className={`flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-6 pt-5 border-t border-white/10 ${alignJustify}`}
           >
             {navLinks.map(link => (
               <a
@@ -200,12 +212,12 @@ export default function Hero() {
 
   // Default: classic centered layout
   return (
-    <section className="relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f]" style={{ contain: 'paint' }}>
+    <section className={`relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f] ${alignItems} ${alignPadding}`} style={{ contain: 'paint' }}>
       {bgMedia}
       {hasBg && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
       {(!hasBg || heroOverlay) && orbs}
 
-      <div className="relative z-10 flex flex-col items-center text-center px-4">
+      <div className={`relative z-10 flex flex-col items-center text-center px-4 ${alignItems} ${alignText}`}>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -250,7 +262,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.55, ease }}
-          className="flex flex-col sm:flex-row gap-3 mt-10"
+          className={`flex flex-col sm:flex-row gap-3 mt-10 ${alignJustify}`}
         >
           <GlowButton href="#contact">{t.hero.bookNow}</GlowButton>
           <GlowButton href="#releases" variant="outline">{t.hero.listenNow}</GlowButton>

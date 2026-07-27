@@ -42,6 +42,7 @@ export async function getUserSettings(userId: string) {
           heroTitle:              true,
           heroTitleEn:            true,
           heroTitleSize:          true,
+          heroContentAlign:       true,
           heroOverlay:            true,
           heroLayout:             true,
           scrollMode:             true,

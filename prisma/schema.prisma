@@ -229,6 +229,7 @@ model DjSettings {
   heroTitle              String?
   heroTitleEn            String?
   heroTitleSize          String    @default("md")
+  heroContentAlign       String    @default("center")
   heroOverlay            Boolean   @default(true)
   heroLayout             String    @default("center")
   scrollMode             String    @default("free")

@@ -7,6 +7,7 @@ import PhotoUploader from './PhotoUploader'
 import VideoUploader from './VideoUploader'
 import { updateHeroPhotoAction, updateHeroMobilePhotoAction, updateBioPhotoAction, updateHeroVideoAction, updateHeroVideoMobileAction, updateHeroLogoAction, updateFaviconAction } from '../actions'
 import { HERO_TITLE_SIZES, HERO_SIZE_SCALE, HERO_SIZE_LABELS } from '@/lib/hero-size'
+import { HERO_ALIGNS, HERO_ALIGN_LABELS } from '@/lib/hero-align'
 
 const PREVIEW_BASE_PX = 46
 
@@ -29,7 +30,8 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
   const heroOverlay   = watch('heroOverlay')
   const heroLayout    = watch('heroLayout')
   const scrollMode    = watch('scrollMode')
-  const heroTitleSize = watch('heroTitleSize')
+  const heroTitleSize    = watch('heroTitleSize')
+  const heroContentAlign = watch('heroContentAlign')
   const heroTitle     = watch('heroTitle')
   const djName        = watch('djName')
 
@@ -152,6 +154,30 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
         </div>
         <p className="font-mono text-xs text-slate-700">
           Vista previa aproximada, solo para comparar los 5 tamaños entre sí — el resultado real en pantalla completa puede verse distinto según el dispositivo. Para el chequeo final, abrí tu página desde el link de arriba a la derecha (<span className="text-slate-500">tuslug.{'{dominio}'} ↗</span>).
+        </p>
+      </div>
+
+      {/* Hero content alignment */}
+      <div className="flex flex-col gap-3">
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Alineación del contenido del hero</p>
+        <div className="flex gap-2">
+          {HERO_ALIGNS.map((val) => (
+            <label
+              key={val}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer transition-colors font-mono text-xs tracking-widest uppercase"
+              style={{
+                background: heroContentAlign === val ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: heroContentAlign === val ? '#e2e8f0' : '#475569',
+              }}
+            >
+              <input {...register('heroContentAlign')} type="radio" value={val} className="sr-only" />
+              {HERO_ALIGN_LABELS[val]}
+            </label>
+          ))}
+        </div>
+        <p className="font-mono text-xs text-slate-700">
+          Mueve el título/logo, tagline, botón de reservar, redes y menú a un costado. Solo afecta pantallas grandes — en mobile siempre queda centrado.
         </p>
       </div>
 
