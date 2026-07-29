@@ -26,6 +26,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'Hypek — Presskits profesionales para DJs',
   description: 'Creá tu landing page y presskit profesional como DJ. Hypek.',
+  icons: { icon: '/favicon.ico' },
   openGraph: {
     type: 'website',
     title: 'Hypek — Presskits profesionales para DJs',

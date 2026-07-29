@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { headers } from 'next/headers'
 import { getDjBySlug } from '@/lib/queries/dj'
 import { dbToDjPageData } from '@/lib/dj-adapter'
 import DjPageLayout from './DjPageLayout'
@@ -13,9 +14,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const dj = await getDjBySlug(slug)
   if (!dj) return {}
 
+  // WhatsApp/Facebook/Twitter crawlers require an absolute image URL — a relative
+  // path can't be resolved without a fixed metadataBase, which doesn't make sense
+  // across per-DJ subdomains. Build it from the actual request's host instead.
+  const hdrs       = await headers()
+  const host       = hdrs.get('host')
+  const proto      = hdrs.get('x-forwarded-proto') ?? 'https'
+  const origin     = host ? `${proto}://${host}` : null
+
   const title       = dj.djName || slug
   const description = dj.bioShort || `${title} — DJ`
-  const image       = dj.settings?.heroImageUrl ?? dj.bioPhoto ?? null
+  const imagePath   = dj.settings?.heroImageUrl ?? dj.bioPhoto ?? null
+  const image       = imagePath && origin ? `${origin}${imagePath}` : null
   const favicon     = dj.settings?.faviconUrl ?? null
   const url         = `/dj/${slug}`
 
