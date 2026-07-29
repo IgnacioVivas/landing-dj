@@ -17,11 +17,12 @@ const CONFIG = {
 } as const
 
 type Props = {
-  items:  GalleryItem[]
-  onOpen: (item: GalleryItem) => void
+  items: GalleryItem[]
+  playingId: string | null
+  onToggleVideo: (id: string) => void
 }
 
-export default function CoverflowCarousel({ items, onOpen }: Props) {
+export default function CoverflowCarousel({ items, playingId, onToggleVideo }: Props) {
   const { lang }                 = useLanguage()
   const [current, setCurrent]    = useState(0)
   const [spacing, setSpacing]    = useState(340)
@@ -39,8 +40,14 @@ export default function CoverflowCarousel({ items, onOpen }: Props) {
     return () => window.removeEventListener('resize', update)
   }, [])
 
-  const prev = () => setCurrent(c => (c - 1 + items.length) % items.length)
-  const next = () => setCurrent(c => (c + 1) % items.length)
+  // Navigating away from a slide stops any video playing inline on it.
+  function goTo(index: number) {
+    if (playingId) onToggleVideo(playingId)
+    setCurrent(index)
+  }
+
+  const prev = () => goTo((current - 1 + items.length) % items.length)
+  const next = () => goTo((current + 1) % items.length)
 
   function handleTouchStart(e: React.TouchEvent) {
     touchStartX.current = e.touches[0].clientX
@@ -81,17 +88,19 @@ export default function CoverflowCarousel({ items, onOpen }: Props) {
       <div className="absolute inset-0 overflow-hidden">
         <AnimatePresence>
           {visibleSlots.map(({ item, offset }) => {
-            const abs     = Math.min(Math.abs(offset), 2) as 0 | 1 | 2
-            const cfg     = CONFIG[abs]
-            const x       = offset * spacing - CARD_WIDTH / 2
-            const caption = lang === 'en' ? (item.captionEn || item.caption) : item.caption
+            const abs       = Math.min(Math.abs(offset), 2) as 0 | 1 | 2
+            const cfg       = CONFIG[abs]
+            const x         = offset * spacing - CARD_WIDTH / 2
+            const caption   = lang === 'en' ? (item.captionEn || item.caption) : item.caption
+            const isCenter  = offset === 0
+            const isPlaying = isCenter && playingId === item.id
             // Items enter/exit from the far side in the correct direction
-            const farX    = (offset >= 0 ? 3 : -3) * spacing - CARD_WIDTH / 2
+            const farX      = (offset >= 0 ? 3 : -3) * spacing - CARD_WIDTH / 2
 
             return (
               <motion.div
                 key={item.id}
-                className="absolute cursor-pointer"
+                className={`absolute ${isCenter && !item.videoUrl ? '' : 'cursor-pointer'}`}
                 style={{
                   width:     CARD_WIDTH,
                   left:      '50%',
@@ -103,32 +112,43 @@ export default function CoverflowCarousel({ items, onOpen }: Props) {
                 animate={{ x, scale: cfg.scale, opacity: cfg.opacity }}
                 exit={{ x: farX, scale: 0.45, opacity: 0 }}
                 transition={transition}
-                onClick={() => offset === 0
-                  ? onOpen(item)
-                  : setCurrent((current + offset + items.length) % items.length)
-                }
+                onClick={() => {
+                  if (!isCenter) { goTo((current + offset + items.length) % items.length); return }
+                  if (item.videoUrl) onToggleVideo(item.id)
+                }}
               >
                 <div className="relative rounded-2xl overflow-hidden" style={{ height: CARD_HEIGHT }}>
                   {item.videoUrl ? (
-                    <>
-                      {item.videoThumbnailUrl ? (
-                        <Image
-                          src={item.videoThumbnailUrl}
-                          alt={caption || ''}
-                          fill
-                          unoptimized
-                          className="object-cover"
-                          sizes={`${CARD_WIDTH}px`}
-                        />
-                      ) : (
-                        <div className="absolute inset-0" style={{ background: item.gradient }} />
-                      )}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                          <Play size={24} weight="fill" className="text-white ml-1" />
+                    isPlaying ? (
+                      <video
+                        src={item.videoUrl}
+                        autoPlay
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onClick={e => { e.stopPropagation(); onToggleVideo(item.id) }}
+                        onEnded={() => onToggleVideo(item.id)}
+                      />
+                    ) : (
+                      <>
+                        {item.videoThumbnailUrl ? (
+                          <Image
+                            src={item.videoThumbnailUrl}
+                            alt={caption || ''}
+                            fill
+                            unoptimized
+                            className="object-cover"
+                            sizes={`${CARD_WIDTH}px`}
+                          />
+                        ) : (
+                          <div className="absolute inset-0" style={{ background: item.gradient }} />
+                        )}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                            <Play size={24} weight="fill" className="text-white ml-1" />
+                          </div>
                         </div>
-                      </div>
-                    </>
+                      </>
+                    )
                   ) : item.imageUrl ? (
                     <Image
                       src={item.imageUrl}
@@ -142,7 +162,7 @@ export default function CoverflowCarousel({ items, onOpen }: Props) {
                     <div className="absolute inset-0" style={{ background: item.gradient }} />
                   )}
 
-                  {offset === 0 && caption && (
+                  {isCenter && caption && !isPlaying && (
                     <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/75 to-transparent">
                       <p className="font-body text-sm text-white text-center">{caption}</p>
                     </div>
@@ -180,7 +200,7 @@ export default function CoverflowCarousel({ items, onOpen }: Props) {
             {items.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setCurrent(i)}
+                onClick={() => goTo(i)}
                 className="w-1.5 h-1.5 rounded-full transition-all duration-300"
                 style={{
                   background: i === current ? 'var(--dj-accent)' : 'rgba(255,255,255,0.2)',
