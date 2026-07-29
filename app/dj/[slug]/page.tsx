@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import { headers } from 'next/headers'
 import { getDjBySlug } from '@/lib/queries/dj'
 import { dbToDjPageData } from '@/lib/dj-adapter'
 import DjPageLayout from './DjPageLayout'
@@ -14,13 +13,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const dj = await getDjBySlug(slug)
   if (!dj) return {}
 
-  // WhatsApp/Facebook/Twitter crawlers require an absolute image URL — a relative
-  // path can't be resolved without a fixed metadataBase, which doesn't make sense
-  // across per-DJ subdomains. Build it from the actual request's host instead.
-  const hdrs       = await headers()
-  const host       = hdrs.get('host')
-  const proto      = hdrs.get('x-forwarded-proto') ?? 'https'
-  const origin     = host ? `${proto}://${host}` : null
+  // WhatsApp/Facebook/Twitter crawlers require an absolute image URL. Building it from
+  // the request's Host header isn't reliable here: NextAuth normalizes the request
+  // origin to AUTH_URL during the subdomain rewrite in proxy.ts, so headers() would
+  // report the platform's own domain instead of the DJ's subdomain. The canonical
+  // public URL for a DJ's page is always their own subdomain, so build it from that
+  // directly instead of trusting request headers.
+  const platformDomain = process.env.NEXT_PUBLIC_DOMAIN
+  const origin          = platformDomain ? `https://${slug}.${platformDomain}` : null
 
   const title       = dj.djName || slug
   const description = dj.bioShort || `${title} — DJ`
