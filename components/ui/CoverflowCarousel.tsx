@@ -16,6 +16,57 @@ const CONFIG = {
   2: { scale: 0.52, opacity: 0.2,  zIndex: 10 },
 } as const
 
+function CarouselVideo({ videoUrl, poster, gradient, isPlaying, onToggle, onEnded }: {
+  videoUrl: string
+  poster: string | undefined
+  gradient: string
+  isPlaying: boolean
+  onToggle: () => void
+  onEnded: () => void
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  // React reuses this same <video> element across renders (same slot, same type),
+  // so toggling the `autoPlay` attribute after mount does nothing — browsers only
+  // honor it when the element is first attached. Drive play/pause imperatively.
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+    if (isPlaying) el.play().catch(() => {})
+    else el.pause()
+  }, [isPlaying])
+
+  function handleEnded() {
+    if (videoRef.current) videoRef.current.currentTime = 0
+    onEnded()
+  }
+
+  return (
+    <>
+      {/* Fallback backdrop for videos without a custom thumbnail — hidden once the video paints a frame */}
+      {!poster && <div className="absolute inset-0" style={{ background: gradient }} />}
+      <video
+        ref={videoRef}
+        src={videoUrl}
+        poster={poster}
+        preload="metadata"
+        muted={!isPlaying}
+        playsInline
+        onClick={e => { e.stopPropagation(); onToggle() }}
+        onEnded={handleEnded}
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      {!isPlaying && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            <Play size={24} weight="fill" className="text-white ml-1" />
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 type Props = {
   items: GalleryItem[]
   playingId: string | null
@@ -119,36 +170,14 @@ export default function CoverflowCarousel({ items, playingId, onToggleVideo }: P
               >
                 <div className="relative rounded-2xl overflow-hidden" style={{ height: CARD_HEIGHT }}>
                   {item.videoUrl ? (
-                    isPlaying ? (
-                      <video
-                        src={item.videoUrl}
-                        autoPlay
-                        playsInline
-                        className="absolute inset-0 w-full h-full object-cover"
-                        onClick={e => { e.stopPropagation(); onToggleVideo(item.id) }}
-                        onEnded={() => onToggleVideo(item.id)}
-                      />
-                    ) : (
-                      <>
-                        {item.videoThumbnailUrl ? (
-                          <Image
-                            src={item.videoThumbnailUrl}
-                            alt={caption || ''}
-                            fill
-                            unoptimized
-                            className="object-cover"
-                            sizes={`${CARD_WIDTH}px`}
-                          />
-                        ) : (
-                          <div className="absolute inset-0" style={{ background: item.gradient }} />
-                        )}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                            <Play size={24} weight="fill" className="text-white ml-1" />
-                          </div>
-                        </div>
-                      </>
-                    )
+                    <CarouselVideo
+                      videoUrl={item.videoUrl}
+                      poster={item.videoThumbnailUrl ?? undefined}
+                      gradient={item.gradient}
+                      isPlaying={isPlaying}
+                      onToggle={() => onToggleVideo(item.id)}
+                      onEnded={() => onToggleVideo(item.id)}
+                    />
                   ) : item.imageUrl ? (
                     <Image
                       src={item.imageUrl}

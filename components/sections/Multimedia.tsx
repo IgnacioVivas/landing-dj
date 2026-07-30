@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { Play } from '@phosphor-icons/react'
 import Image from 'next/image'
@@ -18,33 +18,42 @@ const aspectMap = {
 }
 
 function InlineVideo({ item, isPlaying, onToggle }: { item: GalleryItem; isPlaying: boolean; onToggle: () => void }) {
-  if (isPlaying) {
-    return (
-      <video
-        src={item.videoUrl!}
-        autoPlay
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover cursor-pointer"
-        onClick={onToggle}
-        onEnded={onToggle}
-      />
-    )
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  // React reuses this same <video> element across renders, so toggling the
+  // `autoPlay` attribute after mount does nothing — browsers only honor it
+  // when the element is first attached. Drive play/pause imperatively instead.
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+    if (isPlaying) el.play().catch(() => {})
+    else el.pause()
+  }, [isPlaying])
+
+  function handleEnded() {
+    if (videoRef.current) videoRef.current.currentTime = 0
+    onToggle()
   }
+
   return (
     <div className="absolute inset-0 cursor-pointer" onClick={onToggle}>
       <video
+        ref={videoRef}
         src={item.videoUrl!}
         poster={item.videoThumbnailUrl ?? undefined}
         preload="metadata"
-        muted
+        muted={!isPlaying}
         playsInline
+        onEnded={handleEnded}
         className="absolute inset-0 w-full h-full object-cover"
       />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
-          <Play size={20} weight="fill" className="text-white ml-0.5" />
+      {!isPlaying && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+            <Play size={20} weight="fill" className="text-white ml-0.5" />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
