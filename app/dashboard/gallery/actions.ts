@@ -58,6 +58,40 @@ export async function updateGalleryItemAction(
   return { success: true }
 }
 
+export async function updateGalleryMediaAction(
+  id: string,
+  mediaType: 'image' | 'video',
+  url: string,
+): Promise<Result> {
+  const session = await auth()
+  if (!session?.user.id) return { error: 'No autorizado.' }
+
+  const item = await db.galleryItem.findUnique({
+    where: { id },
+    select: { userId: true, imageUrl: true, videoUrl: true, videoThumbnailUrl: true },
+  })
+  if (item?.userId !== session.user.id) return { error: 'No autorizado.' }
+
+  // Drop whatever file(s) this item previously pointed to, including the old
+  // thumbnail if the replacement switches it from a video to a photo.
+  await Promise.all([
+    deleteFile(item.imageUrl),
+    deleteFile(item.videoUrl),
+    ...(mediaType === 'image' ? [deleteFile(item.videoThumbnailUrl)] : []),
+  ])
+
+  await db.galleryItem.update({
+    where: { id },
+    data: {
+      imageUrl: mediaType === 'image' ? url : null,
+      videoUrl: mediaType === 'video' ? url : null,
+      ...(mediaType === 'image' && { videoThumbnailUrl: null }),
+    },
+  })
+
+  return { success: true }
+}
+
 export async function deleteGalleryItemAction(id: string): Promise<Result> {
   const session = await auth()
   if (!session?.user.id) return { error: 'No autorizado.' }

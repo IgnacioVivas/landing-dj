@@ -6,7 +6,7 @@ import Image from 'next/image'
 import imageCompression from 'browser-image-compression'
 import { uploadFile } from '@/lib/uploadthing'
 import type { GalleryDbItem } from '@/lib/queries/gallery'
-import { createGalleryItemAction, updateGalleryItemAction, deleteGalleryItemAction, reorderGalleryAction, updateGalleryModeAction } from '../actions'
+import { createGalleryItemAction, updateGalleryItemAction, updateGalleryMediaAction, deleteGalleryItemAction, reorderGalleryAction, updateGalleryModeAction } from '../actions'
 import Dialog from '@/app/dashboard/_components/Dialog'
 import { Field, inputClass, selectClass, SelectWrapper } from '@/app/dashboard/_components/Field'
 import GalleryUploader, { type UploadResult } from './GalleryUploader'
@@ -26,6 +26,7 @@ type EditState = {
   caption: string
   captionEn: string
   aspect: string
+  imageUrl: string | null
   videoUrl: string | null
   videoThumbnailUrl: string | null
 } | null
@@ -86,17 +87,60 @@ function ThumbnailUploader({ value, onChange }: { value: string | null; onChange
   )
 }
 
+function MediaReplaceSection({
+  isVideo,
+  currentUrl,
+  currentPoster,
+  onReplaced,
+}: {
+  isVideo: boolean
+  currentUrl: string | null
+  currentPoster: string | null
+  onReplaced: (result: UploadResult) => Promise<void>
+}) {
+  const [replacing, setReplacing] = useState(false)
+
+  async function handleUploaded(result: UploadResult) {
+    setReplacing(true)
+    await onReplaced(result)
+    setReplacing(false)
+  }
+
+  return (
+    <Field label="Archivo" hint="Reemplaza la foto o video de este ítem, sin perder el caption ni el orden.">
+      <div className="flex items-center gap-3">
+        {currentUrl && (
+          <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
+            {isVideo ? (
+              <video src={currentUrl} poster={currentPoster ?? undefined} muted playsInline preload="metadata" className="w-full h-full object-cover" />
+            ) : (
+              <Image src={currentUrl} alt="Actual" fill unoptimized className="object-cover" sizes="64px" />
+            )}
+          </div>
+        )}
+        <div className={replacing ? 'opacity-50 pointer-events-none' : ''}>
+          <GalleryUploader onUploaded={handleUploaded} idleLabel="Reemplazar archivo" />
+        </div>
+      </div>
+    </Field>
+  )
+}
+
 function EditDialog({
   state,
   isVideo = false,
+  allowReplaceMedia = false,
   onClose,
   onSave,
+  onReplaceMedia,
   title = 'Editar elemento',
 }: {
   state: EditState
   isVideo?: boolean
+  allowReplaceMedia?: boolean
   onClose: () => void
   onSave: (caption: string, captionEn: string, aspect: string, videoThumbnailUrl: string | null) => Promise<void>
+  onReplaceMedia?: (result: UploadResult) => Promise<void>
   title?: string
 }) {
   const [caption,   setCaption]   = useState(state?.caption   ?? '')
@@ -107,13 +151,24 @@ function EditDialog({
 
   async function handleSave() {
     setSaving(true)
-    await onSave(caption, captionEn, aspect, thumbnailUrl)
+    // If media was just replaced from video → photo, isVideo flips to false but this
+    // dialog instance's local thumbnailUrl state doesn't know that — ignore it then,
+    // otherwise saving would resurrect a thumbnail already deleted for a now-photo item.
+    await onSave(caption, captionEn, aspect, isVideo ? thumbnailUrl : null)
     setSaving(false)
   }
 
   return (
     <Dialog open={!!state} onClose={onClose} title={title}>
       <div className="flex flex-col gap-4">
+        {allowReplaceMedia && onReplaceMedia && (
+          <MediaReplaceSection
+            isVideo={isVideo}
+            currentUrl={isVideo ? state?.videoUrl ?? null : state?.imageUrl ?? null}
+            currentPoster={state?.videoThumbnailUrl ?? null}
+            onReplaced={onReplaceMedia}
+          />
+        )}
         {isVideo && <ThumbnailUploader value={thumbnailUrl} onChange={setThumbnailUrl} />}
         <Field label="Caption (Español)">
           <input
@@ -213,6 +268,22 @@ export default function GalleryGrid({ items: initial, galleryMode: initialGaller
     closeEdit()
   }
 
+  async function handleReplaceMedia(result: UploadResult) {
+    if (!editing) return
+    const mediaResult = await updateGalleryMediaAction(editing.id, result.mediaType, result.url)
+    if ('error' in mediaResult) { setError(mediaResult.error); return }
+
+    const isVideo = result.mediaType === 'video'
+    const patch = {
+      imageUrl:          isVideo ? null : result.url,
+      videoUrl:          isVideo ? result.url : null,
+      videoThumbnailUrl: isVideo ? editing.videoThumbnailUrl : null,
+    }
+    setItems(prev => prev.map(i => i.id === editing.id ? { ...i, ...patch } : i))
+    setEditing(prev => prev ? { ...prev, ...patch } : prev)
+    router.refresh()
+  }
+
   async function handleDelete(id: string) {
     if (!confirm('¿Eliminar esta imagen?')) return
     const result = await deleteGalleryItemAction(id)
@@ -296,18 +367,25 @@ export default function GalleryGrid({ items: initial, galleryMode: initialGaller
             item={item}
             isFirst={i === 0}
             isLast={i === items.length - 1}
-            onEdit={it => setEditing({ id: it.id, caption: it.caption, captionEn: it.captionEn, aspect: it.aspect, videoUrl: it.videoUrl, videoThumbnailUrl: it.videoThumbnailUrl })}
+            onEdit={it => setEditing({ id: it.id, caption: it.caption, captionEn: it.captionEn, aspect: it.aspect, imageUrl: it.imageUrl, videoUrl: it.videoUrl, videoThumbnailUrl: it.videoThumbnailUrl })}
             onDelete={handleDelete}
             onMove={handleMove}
           />
         ))}
       </div>
 
-      <EditDialog state={editing} isVideo={!!editing?.videoUrl} onClose={closeEdit} onSave={handleSaveEdit} />
+      <EditDialog
+        state={editing}
+        isVideo={!!editing?.videoUrl}
+        allowReplaceMedia
+        onClose={closeEdit}
+        onSave={handleSaveEdit}
+        onReplaceMedia={handleReplaceMedia}
+      />
 
       {pending && (
         <EditDialog
-          state={{ id: '', caption: '', captionEn: '', aspect: 'square', videoUrl: pending.mediaType === 'video' ? pending.url : null, videoThumbnailUrl: null }}
+          state={{ id: '', caption: '', captionEn: '', aspect: 'square', imageUrl: pending.mediaType === 'image' ? pending.url : null, videoUrl: pending.mediaType === 'video' ? pending.url : null, videoThumbnailUrl: null }}
           isVideo={pending.mediaType === 'video'}
           onClose={() => setPending(null)}
           onSave={handleConfirmUpload}

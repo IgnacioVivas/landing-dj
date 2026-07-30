@@ -9,9 +9,10 @@ export type UploadResult = { url: string; mediaType: 'image' | 'video' }
 
 type Props = {
   onUploaded: (result: UploadResult) => void
+  idleLabel?: string
 }
 
-export default function GalleryUploader({ onUploaded }: Props) {
+export default function GalleryUploader({ onUploaded, idleLabel = 'Subir foto o video' }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<'idle' | 'compressing' | 'uploading'>('idle')
   const [error, setError]   = useState<string | null>(null)
@@ -48,7 +49,7 @@ export default function GalleryUploader({ onUploaded }: Props) {
   const loading = status !== 'idle'
   const label   = status === 'compressing' ? 'Comprimiendo...'
                 : status === 'uploading'   ? 'Subiendo...'
-                : 'Subir foto o video'
+                : idleLabel
 
   return (
     <>
