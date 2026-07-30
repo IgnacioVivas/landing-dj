@@ -24,7 +24,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title       = dj.djName || slug
   const description = dj.bioShort || `${title} — DJ`
-  const imagePath   = dj.settings?.heroImageUrl ?? dj.bioPhoto ?? null
+  // Bio photo (a portrait) reads better as a share-link preview than the hero
+  // image (often a wide banner or a video still), so it takes priority here.
+  const imagePath   = dj.bioPhoto ?? dj.settings?.heroImageUrl ?? null
   const image       = imagePath && origin ? `${origin}${imagePath}` : null
   const favicon     = dj.settings?.faviconUrl ?? null
   const url         = `/dj/${slug}`
