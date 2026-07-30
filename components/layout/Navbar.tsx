@@ -40,12 +40,11 @@ export default function Navbar() {
   }, [atTop])
 
   const navLinks = [
-    { label: t.nav.bio,       href: '#bio' },
-    { label: t.nav.releases,  href: '#releases' },
-    { label: t.nav.shows,     href: '#shows' },
-    { label: t.nav.media,     href: '#media' },
-    { label: t.nav.instagram, href: '#instagram' },
-    { label: t.nav.contact,   href: '#contact' },
+    { label: t.nav.bio,      href: '#bio' },
+    { label: t.nav.releases, href: '#releases' },
+    { label: t.nav.shows,    href: '#shows' },
+    { label: t.nav.media,    href: '#media' },
+    { label: t.nav.contact,  href: '#contact' },
   ]
 
   // Compute translate class:
