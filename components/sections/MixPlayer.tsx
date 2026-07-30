@@ -17,7 +17,9 @@ function detectPlatform(url: string): Platform | null {
 
 function toEmbedUrl(url: string, platform: Platform): string {
   if (platform === 'soundcloud') {
-    return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23ff5500&auto_play=false&visual=true&hide_related=true&show_comments=false&show_user=true`
+    // visual=false uses SoundCloud's compact list layout (small artwork + track list),
+    // matching the Spotify embed's look, instead of the big background-photo player.
+    return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23ff5500&auto_play=false&visual=false&hide_related=true&show_comments=false&show_user=true`
   }
   if (platform === 'spotify') {
     const [base] = url.split('?')
@@ -29,7 +31,10 @@ function toEmbedUrl(url: string, platform: Platform): string {
 }
 
 function embedHeight(platform: Platform): number {
-  if (platform === 'soundcloud') return 166
+  // The classic/list SoundCloud layout needs more room than the old visual
+  // player to show artwork + track rows; 300 comfortably fits a handful of
+  // tracks and scrolls internally if there are more.
+  if (platform === 'soundcloud') return 300
   if (platform === 'spotify')    return 152
   return 120
 }
