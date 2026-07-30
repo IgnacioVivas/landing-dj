@@ -14,11 +14,13 @@ type Props = {
 export default function GalleryUploader({ onUploaded }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<'idle' | 'compressing' | 'uploading'>('idle')
+  const [error, setError]   = useState<string | null>(null)
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     e.target.value = ''
+    setError(null)
 
     try {
       if (file.type.startsWith('video/')) {
@@ -36,8 +38,8 @@ export default function GalleryUploader({ onUploaded }: Props) {
         const url = await uploadFile(new File([compressed], file.name, { type: compressed.type }))
         onUploaded({ url, mediaType: 'image' })
       }
-    } catch {
-      // el usuario puede reintentar
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al subir el archivo')
     } finally {
       setStatus('idle')
     }
@@ -65,6 +67,7 @@ export default function GalleryUploader({ onUploaded }: Props) {
         <CloudArrowUp size={16} weight="bold" />
         {label}
       </button>
+      {error && <p className="font-mono text-xs text-red-400 mt-2">{error}</p>}
     </>
   )
 }
