@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useDjData } from '@/lib/dj-context'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -29,8 +29,15 @@ function sleep(ms: number) {
 }
 
 export default function ShowsMap() {
-  const { shows, theme, showMapVisible } = useDjData()
+  const { shows: allShows, theme, showMapVisible, showPastShows } = useDjData()
   const { t } = useLanguage()
+  // Memoized so this stays referentially stable across re-renders when the
+  // underlying data hasn't changed — the effect below keys off this array,
+  // and a fresh reference on every render would re-trigger it needlessly.
+  const shows = useMemo(
+    () => showPastShows ? allShows : allShows.filter(s => !s.isPast),
+    [allShows, showPastShows],
+  )
   const [pins, setPins]     = useState<ShowPin[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -120,10 +127,12 @@ export default function ShowsMap() {
               <span className="w-2 h-2 rounded-full inline-block" style={{ background: theme.accentColor }} />
               {t.showsMap.upcoming}
             </span>
-            <span className="flex items-center gap-1.5 font-mono text-[10px] text-slate-700">
-              <span className="w-2 h-2 rounded-full inline-block bg-slate-700" />
-              {t.showsMap.past}
-            </span>
+            {showPastShows && (
+              <span className="flex items-center gap-1.5 font-mono text-[10px] text-slate-700">
+                <span className="w-2 h-2 rounded-full inline-block bg-slate-700" />
+                {t.showsMap.past}
+              </span>
+            )}
           </div>
         </AnimatedSection>
       </div>

@@ -7,7 +7,7 @@ type Social = {
   youtube:    string | null
 }
 
-export default function HeroSocialLinks({ social, size = 20 }: { social: Social; size?: number }) {
+export default function HeroSocialLinks({ social, size = 20, color }: { social: Social; size?: number; color?: string }) {
   const links = [
     { url: social.instagram,  Icon: InstagramLogo,  label: 'Instagram' },
     { url: social.spotify,    Icon: SpotifyLogo,    label: 'Spotify' },
@@ -26,7 +26,8 @@ export default function HeroSocialLinks({ social, size = 20 }: { social: Social;
           target="_blank"
           rel="noopener noreferrer"
           aria-label={label}
-          className="text-slate-500 hover:text-white transition-colors"
+          className={color ? 'transition-colors' : 'text-slate-500 hover:text-white transition-colors'}
+          style={color ? { color } : undefined}
         >
           <Icon size={size} />
         </a>

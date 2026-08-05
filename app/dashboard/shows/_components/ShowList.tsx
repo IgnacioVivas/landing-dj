@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Plus } from '@phosphor-icons/react'
 import type { ShowItem } from '@/lib/queries/shows'
 import type { ShowInput } from '@/lib/validations/show'
-import { createShowAction, updateShowAction, deleteShowAction, toggleFeaturedAction, updateShowsModeAction, updateShowMapVisibleAction } from '../actions'
+import { createShowAction, updateShowAction, deleteShowAction, toggleFeaturedAction, updateShowsModeAction, updateShowMapVisibleAction, updateShowPastShowsAction } from '../actions'
 import ShowDialog from '@/app/dashboard/_components/Dialog'
 import ShowForm from './ShowForm'
 import ShowCard from './ShowCard'
@@ -34,9 +34,10 @@ type Props = {
   shows: ShowItem[]
   showsMode: 'list' | 'flyer'
   showMapVisible: boolean
+  showPastShows: boolean
 }
 
-export default function ShowList({ shows, showsMode: initialShowsMode, showMapVisible: initialShowMapVisible }: Props) {
+export default function ShowList({ shows, showsMode: initialShowsMode, showMapVisible: initialShowMapVisible, showPastShows: initialShowPastShows }: Props) {
   const router = useRouter()
   const [dialog, setDialog] = useState<DialogState>({ mode: 'closed' })
   const [error, setError] = useState<string | null>(null)
@@ -44,6 +45,8 @@ export default function ShowList({ shows, showsMode: initialShowsMode, showMapVi
   const [changingMode, setChangingMode] = useState(false)
   const [showMapVisible, setShowMapVisible] = useState(initialShowMapVisible)
   const [changingMapVisible, setChangingMapVisible] = useState(false)
+  const [showPastShows, setShowPastShows] = useState(initialShowPastShows)
+  const [changingPastShows, setChangingPastShows] = useState(false)
 
   const close = useCallback(() => setDialog({ mode: 'closed' }), [])
 
@@ -66,6 +69,17 @@ export default function ShowList({ shows, showsMode: initialShowsMode, showMapVi
     setChangingMapVisible(false)
     if ('error' in result) { setError(result.error); return }
     setShowMapVisible(visible)
+    router.refresh()
+  }
+
+  async function handlePastShowsChange(visible: boolean) {
+    if (changingPastShows) return
+    setChangingPastShows(true)
+    setError(null)
+    const result = await updateShowPastShowsAction(visible)
+    setChangingPastShows(false)
+    if ('error' in result) { setError(result.error); return }
+    setShowPastShows(visible)
     router.refresh()
   }
 
@@ -166,6 +180,32 @@ export default function ShowList({ shows, showsMode: initialShowsMode, showMapVi
         </label>
         <p className="font-mono text-xs text-slate-700">
           Incluye tus shows próximos y pasados en un mapa. Se oculta automáticamente si desactivás esta opción.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-3 mb-8">
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Shows anteriores</p>
+        <label className="flex items-center gap-3 cursor-pointer w-fit">
+          <input
+            type="checkbox"
+            checked={showPastShows}
+            disabled={changingPastShows}
+            onChange={e => handlePastShowsChange(e.target.checked)}
+            className="sr-only"
+          />
+          <div
+            className="w-10 h-5 rounded-full transition-colors relative flex-shrink-0"
+            style={{ background: showPastShows ? 'var(--dj-accent)' : 'rgba(255,255,255,0.1)', opacity: changingPastShows ? 0.5 : 1 }}
+          >
+            <div
+              className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform"
+              style={{ transform: showPastShows ? 'translateX(1.25rem)' : 'translateX(0.125rem)' }}
+            />
+          </div>
+          <span className="font-mono text-xs text-slate-400">Mostrar shows anteriores en el presskit</span>
+        </label>
+        <p className="font-mono text-xs text-slate-700">
+          Si tenés muchos, se muestran los últimos 5 con un botón para ver el resto — así no abruman la página.
         </p>
       </div>
 

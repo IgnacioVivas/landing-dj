@@ -230,6 +230,7 @@ model DjSettings {
   heroTitleEn            String?
   heroTitleSize          String    @default("md")
   heroContentAlign       String    @default("center")
+  heroTextColor          String?
   heroOverlay            Boolean   @default(true)
   heroLayout             String    @default("center")
   scrollMode             String    @default("free")
@@ -237,6 +238,7 @@ model DjSettings {
   galleryMode            String    @default("grid")
   showsMode              String    @default("list")
   showMapVisible         Boolean   @default(true)
+  showPastShows          Boolean   @default(true)
 
   user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 

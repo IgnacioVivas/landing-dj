@@ -1,6 +1,6 @@
 'use client'
 
-import type { UseFormRegister, FieldErrors, UseFormWatch } from 'react-hook-form'
+import type { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form'
 import type { SettingsInput } from '@/lib/validations/settings'
 import { SectionTitle, Field, inputClass } from '@/app/dashboard/_components/Field'
 import PhotoUploader from './PhotoUploader'
@@ -15,6 +15,7 @@ type Props = {
   register: UseFormRegister<SettingsInput>
   errors: FieldErrors<SettingsInput>
   watch: UseFormWatch<SettingsInput>
+  setValue: UseFormSetValue<SettingsInput>
   initialHeroUrl: string | null
   initialHeroMobileUrl: string | null
   initialHeroVideoUrl: string | null
@@ -24,7 +25,7 @@ type Props = {
   initialBioUrl: string | null
 }
 
-export default function ThemeSection({ register, errors, watch, initialHeroUrl, initialHeroMobileUrl, initialHeroVideoUrl, initialHeroVideoMobileUrl, initialHeroLogoUrl, initialFaviconUrl, initialBioUrl }: Props) {
+export default function ThemeSection({ register, errors, watch, setValue, initialHeroUrl, initialHeroMobileUrl, initialHeroVideoUrl, initialHeroVideoMobileUrl, initialHeroLogoUrl, initialFaviconUrl, initialBioUrl }: Props) {
   const accent        = watch('accentColor')
   const accent2       = watch('accentColor2')
   const heroOverlay   = watch('heroOverlay')
@@ -32,6 +33,7 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
   const scrollMode    = watch('scrollMode')
   const heroTitleSize    = watch('heroTitleSize')
   const heroContentAlign = watch('heroContentAlign')
+  const heroTextColor    = watch('heroTextColor')
   const heroTitle     = watch('heroTitle')
   const djName        = watch('djName')
 
@@ -178,6 +180,49 @@ export default function ThemeSection({ register, errors, watch, initialHeroUrl, 
         </div>
         <p className="font-mono text-xs text-slate-700">
           Mueve el título/logo, tagline, botón de reservar, redes y menú a un costado. Solo afecta pantallas grandes — en mobile siempre queda centrado.
+        </p>
+      </div>
+
+      {/* Hero text color override */}
+      <div className="flex flex-col gap-3">
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Color de texto del hero</p>
+        <label className="flex items-center gap-3 cursor-pointer w-fit">
+          <input
+            type="checkbox"
+            checked={heroTextColor !== null}
+            onChange={e => setValue('heroTextColor', e.target.checked ? (heroTextColor ?? '#e2e8f0') : null, { shouldDirty: true })}
+            className="sr-only"
+          />
+          <div
+            className="w-10 h-5 rounded-full transition-colors relative flex-shrink-0"
+            style={{ background: heroTextColor !== null ? 'var(--dj-accent)' : 'rgba(255,255,255,0.1)' }}
+          >
+            <div
+              className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform"
+              style={{ transform: heroTextColor !== null ? 'translateX(1.25rem)' : 'translateX(0.125rem)' }}
+            />
+          </div>
+          <span className="font-mono text-xs text-slate-400">Personalizar color</span>
+        </label>
+
+        {heroTextColor !== null && (
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-lg border border-white/10 shrink-0"
+              style={{ backgroundColor: heroTextColor }}
+            />
+            <input
+              type="color"
+              value={heroTextColor}
+              onChange={e => setValue('heroTextColor', e.target.value, { shouldDirty: true })}
+              className="w-12 h-10 rounded-lg cursor-pointer bg-transparent border border-white/10"
+            />
+            <span className="font-mono text-xs text-slate-500">{heroTextColor}</span>
+          </div>
+        )}
+
+        <p className="font-mono text-xs text-slate-700">
+          Afecta el menú, el subtítulo y los íconos de redes del hero — igual en mobile y desktop. El título mantiene siempre su degradado de colores de acento.
         </p>
       </div>
 

@@ -6,6 +6,7 @@ import { MapPin, Ticket } from '@phosphor-icons/react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import type { Show } from '@/lib/types'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import ShowMorePastButton from './ShowMorePastButton'
 
 function FlyerCard({ show, index, past }: { show: Show; index: number; past?: boolean }) {
   const { lang, t } = useLanguage()
@@ -109,7 +110,12 @@ function FlyerCard({ show, index, past }: { show: Show; index: number; past?: bo
   )
 }
 
-export default function ShowsFlyer({ upcoming, past }: { upcoming: Show[]; past: Show[] }) {
+export default function ShowsFlyer({ upcoming, past, hasMorePast, onShowMorePast }: {
+  upcoming: Show[]
+  past: Show[]
+  hasMorePast: boolean
+  onShowMorePast: () => void
+}) {
   const { t } = useLanguage()
   return (
     <>
@@ -132,6 +138,7 @@ export default function ShowsFlyer({ upcoming, past }: { upcoming: Show[]; past:
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {past.map((show, i) => <FlyerCard key={show.id} show={show} index={i} past />)}
           </div>
+          {hasMorePast && <ShowMorePastButton onClick={onShowMorePast} />}
         </div>
       )}
     </>

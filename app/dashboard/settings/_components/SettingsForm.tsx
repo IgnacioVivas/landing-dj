@@ -48,6 +48,7 @@ function toDefaults(d: UserSettings): SettingsInput {
     heroTitleEn:       d.settings?.heroTitleEn         ?? '',
     heroTitleSize:     (d.settings?.heroTitleSize      ?? 'md') as HeroTitleSize,
     heroContentAlign:  (d.settings?.heroContentAlign   ?? 'center') as HeroAlign,
+    heroTextColor:     d.settings?.heroTextColor       ?? null,
     heroOverlay:       d.settings?.heroOverlay         ?? true,
     heroLayout:        (d.settings?.heroLayout         ?? 'center') as 'center' | 'integrated',
     scrollMode:        (d.settings?.scrollMode         ?? 'free') as 'free' | 'snap',
@@ -89,6 +90,7 @@ export default function SettingsForm({ data }: { data: UserSettings }) {
         register={register}
         errors={errors}
         watch={watch}
+        setValue={setValue}
         initialHeroUrl={data.settings?.heroImageUrl ?? null}
         initialHeroMobileUrl={data.settings?.heroImageMobileUrl ?? null}
         initialHeroVideoUrl={data.settings?.heroVideoUrl ?? null}

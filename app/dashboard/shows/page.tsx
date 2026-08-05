@@ -14,12 +14,13 @@ export default async function ShowsPage() {
     getShowsByUser(session.user.id),
     db.djSettings.findUnique({
       where:  { userId: session.user.id },
-      select: { showsMode: true, showMapVisible: true },
+      select: { showsMode: true, showMapVisible: true, showPastShows: true },
     }),
   ])
 
   const showsMode = (settings?.showsMode ?? 'list') as 'list' | 'flyer'
   const showMapVisible = settings?.showMapVisible ?? true
+  const showPastShows  = settings?.showPastShows  ?? true
 
-  return <ShowList shows={shows} showsMode={showsMode} showMapVisible={showMapVisible} />
+  return <ShowList shows={shows} showsMode={showsMode} showMapVisible={showMapVisible} showPastShows={showPastShows} />
 }

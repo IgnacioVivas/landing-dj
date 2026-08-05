@@ -52,6 +52,7 @@ export const settingsSchema = z.object({
   heroTitleEn:   z.string().max(100),
   heroTitleSize:    z.enum(HERO_TITLE_SIZES),
   heroContentAlign: z.enum(HERO_ALIGNS),
+  heroTextColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Color inválido').nullable(),
   heroOverlay:  z.boolean(),
   heroLayout:   z.enum(['center', 'integrated']),
   scrollMode:   z.enum(['free', 'snap']),

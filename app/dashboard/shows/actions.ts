@@ -83,6 +83,19 @@ export async function updateShowMapVisibleAction(visible: boolean): Promise<Resu
   return { success: true }
 }
 
+export async function updateShowPastShowsAction(visible: boolean): Promise<Result> {
+  const session = await auth()
+  if (!session?.user.id) return { error: 'No autorizado.' }
+
+  await db.djSettings.upsert({
+    where:  { userId: session.user.id },
+    update: { showPastShows: visible },
+    create: { userId: session.user.id, showPastShows: visible },
+  })
+
+  return { success: true }
+}
+
 export async function toggleFeaturedAction(id: string): Promise<Result> {
   const session = await auth()
   if (!session?.user.id) return { error: 'No autorizado.' }

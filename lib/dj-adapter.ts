@@ -118,6 +118,7 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       heroTitleEn:        dj.settings?.heroTitleEn        ?? null,
       heroTitleSize:      toHeroTitleSize(dj.settings?.heroTitleSize),
       heroContentAlign:   toHeroAlign(dj.settings?.heroContentAlign),
+      heroTextColor:      dj.settings?.heroTextColor ?? null,
       heroOverlay:        dj.settings?.heroOverlay        ?? true,
       heroLayout:         (dj.settings?.heroLayout        ?? 'center') as 'center' | 'integrated',
     },
@@ -128,5 +129,6 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
     metaPixelId: dj.settings?.metaPixelId ?? null,
     gtmId:       dj.settings?.gtmId ?? null,
     showMapVisible: dj.settings?.showMapVisible ?? true,
+    showPastShows:  dj.settings?.showPastShows  ?? true,
   }
 }

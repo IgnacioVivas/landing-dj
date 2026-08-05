@@ -41,6 +41,7 @@ export interface DjPageData {
     heroTitleEn:        string | null
     heroTitleSize:      HeroTitleSize
     heroContentAlign:   HeroAlign
+    heroTextColor:      string | null
     heroOverlay:        boolean
     heroLayout:         'center' | 'integrated'
   }
@@ -51,6 +52,7 @@ export interface DjPageData {
   metaPixelId: string | null
   gtmId:       string | null
   showMapVisible: boolean
+  showPastShows:  boolean
 }
 
 const DjContext = createContext<DjPageData | null>(null)
@@ -103,6 +105,7 @@ function configToPageData(): DjPageData {
       heroTitleEn:        null,
       heroTitleSize:      'md',
       heroContentAlign:   'center',
+      heroTextColor:      null,
       heroOverlay:        true,
       heroLayout:         'center',
     },
@@ -113,6 +116,7 @@ function configToPageData(): DjPageData {
     metaPixelId: null,
     gtmId:       null,
     showMapVisible: true,
+    showPastShows:  true,
   }
 }
 

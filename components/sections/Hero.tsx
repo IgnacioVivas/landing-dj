@@ -37,7 +37,11 @@ const ALIGN_PADDING: Record<HeroAlign, string> = { left: 'md:pl-16 lg:pl-24', ce
 export default function Hero() {
   const { t, lang } = useLanguage()
   const dj = useDjData()
-  const { heroImageUrl, heroImageMobileUrl, heroVideoUrl, heroVideoMobileUrl, heroLogoUrl, heroTitle, heroTitleEn, heroTitleSize, heroContentAlign, heroOverlay, heroLayout } = dj.theme
+  const { heroImageUrl, heroImageMobileUrl, heroVideoUrl, heroVideoMobileUrl, heroLogoUrl, heroTitle, heroTitleEn, heroTitleSize, heroContentAlign, heroTextColor, heroOverlay, heroLayout } = dj.theme
+
+  // When set, overrides the menu/tagline/genre-tag/social-icon colors to a single
+  // flat color for both mobile and desktop — the title keeps its accent gradient.
+  const textColorStyle = heroTextColor ? { color: heroTextColor } : undefined
 
   const displayTitle   = lang === 'en' ? (heroTitleEn || heroTitle || dj.name) : (heroTitle || dj.name)
   const displayTagline = lang === 'en' ? (dj.taglineEn || dj.tagline) : dj.tagline
@@ -141,7 +145,8 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease }}
-            className="font-mono text-xs tracking-[0.3em] text-white md:text-slate-500 uppercase mb-4"
+            className={`font-mono text-xs tracking-[0.3em] uppercase mb-4 ${heroTextColor ? '' : 'text-white md:text-slate-500'}`}
+            style={textColorStyle}
           >
             {dj.genres.join(' · ')}
           </motion.p>
@@ -173,7 +178,8 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3, ease }}
-              className="mt-3 font-body text-white md:text-slate-400 text-base md:text-lg tracking-widest uppercase"
+              className={`mt-3 font-body text-base md:text-lg tracking-widest uppercase ${heroTextColor ? '' : 'text-white md:text-slate-400'}`}
+              style={textColorStyle}
             >
               {displayTagline}
             </motion.p>
@@ -186,7 +192,7 @@ export default function Hero() {
             className={`flex flex-wrap items-center justify-center gap-4 mt-6 ${alignJustify}`}
           >
             <GlowButton href="#contact" onClick={trackLead}>{t.hero.bookNow}</GlowButton>
-            <HeroSocialLinks social={dj.social} size={24} />
+            <HeroSocialLinks social={dj.social} size={24} color={heroTextColor ?? undefined} />
           </motion.div>
 
           <motion.nav
@@ -199,7 +205,8 @@ export default function Hero() {
               <a
                 key={link.href}
                 href={link.href}
-                className="font-body text-xs text-white md:text-slate-500 hover:text-white transition-colors tracking-widest uppercase"
+                className={`font-body text-xs tracking-widest uppercase transition-colors ${heroTextColor ? '' : 'text-white md:text-slate-500 hover:text-white'}`}
+                style={textColorStyle}
               >
                 {link.label}
               </a>
@@ -222,7 +229,8 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease }}
-          className="font-mono text-xs tracking-[0.3em] text-slate-500 uppercase mb-6"
+          className={`font-mono text-xs tracking-[0.3em] uppercase mb-6 ${heroTextColor ? '' : 'text-slate-500'}`}
+          style={textColorStyle}
         >
           {dj.genres.join(' · ')}
         </motion.p>
@@ -253,7 +261,8 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.35, ease }}
-          className="mt-4 font-body text-slate-400 text-base md:text-lg tracking-widest uppercase"
+          className={`mt-4 font-body text-base md:text-lg tracking-widest uppercase ${heroTextColor ? '' : 'text-slate-400'}`}
+          style={textColorStyle}
         >
           {displayTagline}
         </motion.p>

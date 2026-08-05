@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { CalendarBlank, MapPin, Ticket } from '@phosphor-icons/react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDjData } from '@/lib/dj-context'
@@ -7,6 +8,9 @@ import type { Show } from '@/lib/types'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import ShowsFlyer from './ShowsFlyer'
+import ShowMorePastButton from './ShowMorePastButton'
+
+const PAST_SHOWS_LIMIT = 5
 
 function formatDate(iso: string, locale: string) {
   const date = new Date(iso)
@@ -91,7 +95,12 @@ function ShowRow({ show, index, past }: { show: Show; index: number; past?: bool
   )
 }
 
-function ShowsList({ upcoming, past }: { upcoming: Show[]; past: Show[] }) {
+function ShowsList({ upcoming, past, hasMorePast, onShowMorePast }: {
+  upcoming: Show[]
+  past: Show[]
+  hasMorePast: boolean
+  onShowMorePast: () => void
+}) {
   const { t } = useLanguage()
   return (
     <>
@@ -118,6 +127,7 @@ function ShowsList({ upcoming, past }: { upcoming: Show[]; past: Show[] }) {
           <div className="space-y-1">
             {past.map((show, i) => <ShowRow key={show.id} show={show} index={i} past />)}
           </div>
+          {hasMorePast && <ShowMorePastButton onClick={onShowMorePast} />}
         </div>
       )}
     </>
@@ -126,9 +136,13 @@ function ShowsList({ upcoming, past }: { upcoming: Show[]; past: Show[] }) {
 
 export default function Shows() {
   const { t } = useLanguage()
-  const { shows, showsMode } = useDjData()
-  const upcoming = shows.filter(s => !s.isPast)
-  const past     = shows.filter(s => s.isPast)
+  const { shows, showsMode, showPastShows } = useDjData()
+  const [pastExpanded, setPastExpanded] = useState(false)
+
+  const upcoming    = shows.filter(s => !s.isPast)
+  const allPast      = showPastShows ? shows.filter(s => s.isPast) : []
+  const past         = pastExpanded ? allPast : allPast.slice(0, PAST_SHOWS_LIMIT)
+  const hasMorePast  = past.length < allPast.length
 
   if (!shows.length) return null
 
@@ -140,8 +154,8 @@ export default function Shows() {
         </div>
 
         {showsMode === 'flyer'
-          ? <ShowsFlyer upcoming={upcoming} past={past} />
-          : <ShowsList upcoming={upcoming} past={past} />
+          ? <ShowsFlyer upcoming={upcoming} past={past} hasMorePast={hasMorePast} onShowMorePast={() => setPastExpanded(true)} />
+          : <ShowsList upcoming={upcoming} past={past} hasMorePast={hasMorePast} onShowMorePast={() => setPastExpanded(true)} />
         }
       </div>
     </section>
