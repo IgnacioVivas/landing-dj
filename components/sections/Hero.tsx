@@ -127,7 +127,7 @@ export default function Hero() {
 
   if (heroLayout === 'integrated') {
     return (
-      <section className={`relative flex flex-col items-center justify-end md:justify-center h-screen overflow-hidden bg-[#07070f] ${alignItems} ${alignPadding}`} style={{ contain: 'paint' }}>
+      <section className={`relative flex flex-col items-center justify-end md:justify-center h-screen-safe overflow-hidden bg-[#07070f] ${alignItems} ${alignPadding}`} style={{ contain: 'paint' }}>
         {bgMedia}
         {hasBg && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
         {/* Extra bottom gradient on mobile so the text sits on a darker base */}
@@ -212,7 +212,7 @@ export default function Hero() {
 
   // Default: classic centered layout
   return (
-    <section className={`relative flex flex-col items-center justify-center h-screen overflow-hidden bg-[#07070f] ${alignItems} ${alignPadding}`} style={{ contain: 'paint' }}>
+    <section className={`relative flex flex-col items-center justify-center h-screen-safe overflow-hidden bg-[#07070f] ${alignItems} ${alignPadding}`} style={{ contain: 'paint' }}>
       {bgMedia}
       {hasBg && heroOverlay && <div className="absolute inset-0 bg-[#07070f]/75" />}
       {(!hasBg || heroOverlay) && orbs}

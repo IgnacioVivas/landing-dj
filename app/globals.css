@@ -41,6 +41,22 @@ html {
   overflow-x: hidden;
 }
 
+/* Mobile browsers (notably Chrome/Android) size 100vh against the viewport with the
+   address bar hidden, so on first load — bar still visible — content pinned to the
+   bottom of a 100vh section renders below the actually visible area. 100dvh tracks
+   the real visible viewport live. The @supports gate (rather than a plain duplicate
+   `height` declaration) is deliberate: CSS minifiers otherwise treat the fallback as
+   dead code and strip it, leaving browsers without dvh support with no height at all. */
+.h-screen-safe {
+  height: 100vh;
+}
+
+@supports (height: 100dvh) {
+  .h-screen-safe {
+    height: 100dvh;
+  }
+}
+
 @layer base {
   * {
     box-sizing: border-box;
