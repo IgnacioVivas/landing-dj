@@ -1,8 +1,8 @@
 'use client'
 
-import { SoundcloudLogo, SpotifyLogo } from '@phosphor-icons/react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDjData } from '@/lib/dj-context'
+import { MUSIC_PLATFORM_ICON, MUSIC_PLATFORM_HEX, MUSIC_PLATFORM_LABEL } from '@/lib/music-platforms'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 
@@ -40,34 +40,16 @@ function embedHeight(platform: Platform): number {
 }
 
 function PlatformBadge({ platform }: { platform: Platform }) {
-  if (platform === 'soundcloud') {
-    return (
-      <span
-        className="flex items-center gap-1.5 font-mono text-[10px] tracking-wider px-2.5 py-1 rounded-full"
-        style={{ background: 'rgba(255,85,0,0.1)', color: '#ff5500', border: '1px solid rgba(255,85,0,0.2)' }}
-      >
-        <SoundcloudLogo size={12} />
-        SoundCloud
-      </span>
-    )
-  }
-  if (platform === 'spotify') {
-    return (
-      <span
-        className="flex items-center gap-1.5 font-mono text-[10px] tracking-wider px-2.5 py-1 rounded-full"
-        style={{ background: 'rgba(30,215,96,0.1)', color: '#1ed760', border: '1px solid rgba(30,215,96,0.2)' }}
-      >
-        <SpotifyLogo size={12} />
-        Spotify
-      </span>
-    )
-  }
+  const Icon = MUSIC_PLATFORM_ICON[platform]
+  const hex  = MUSIC_PLATFORM_HEX[platform]
+
   return (
     <span
-      className="font-mono text-[10px] tracking-wider px-2.5 py-1 rounded-full"
-      style={{ background: 'rgba(82,134,226,0.1)', color: '#5286e2', border: '1px solid rgba(82,134,226,0.2)' }}
+      className="flex items-center gap-1.5 font-mono text-[10px] tracking-wider px-2.5 py-1 rounded-full"
+      style={{ background: `${hex}1a`, color: hex, border: `1px solid ${hex}33` }}
     >
-      Mixcloud
+      <Icon size={12} />
+      {MUSIC_PLATFORM_LABEL[platform]}
     </span>
   )
 }

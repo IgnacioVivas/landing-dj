@@ -2,17 +2,40 @@
 
 import { motion } from 'motion/react'
 import Image from 'next/image'
-import {
-  SpotifyLogo,
-  ApplePodcastsLogo,
-  SoundcloudLogo,
-  MusicNote,
-} from '@phosphor-icons/react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDjData } from '@/lib/dj-context'
 import type { Release } from '@/lib/types'
+import { MUSIC_PLATFORM_ICON, MUSIC_PLATFORM_LABEL, type MusicPlatform } from '@/lib/music-platforms'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+
+// Mixcloud isn't a release-streaming link (only Spotify/SoundCloud/Apple Music/Beatport are)
+const RELEASE_PLATFORMS: Exclude<MusicPlatform, 'mixcloud'>[] = ['spotify', 'soundcloud', 'appleMusic', 'beatport']
+
+function ReleaseLinks({ links, className }: { links: Release['links']; className: string }) {
+  const active = RELEASE_PLATFORMS.filter(platform => links[platform])
+  if (!active.length) return null
+
+  return (
+    <div className={className}>
+      {active.map(platform => {
+        const Icon = MUSIC_PLATFORM_ICON[platform]
+        return (
+          <a
+            key={platform}
+            href={links[platform]}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={MUSIC_PLATFORM_LABEL[platform]}
+            className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          >
+            <Icon size={18} />
+          </a>
+        )
+      })}
+    </div>
+  )
+}
 
 function ReleaseCard({ release, index }: { release: Release; index: number }) {
   return (
@@ -41,34 +64,10 @@ function ReleaseCard({ release, index }: { release: Release; index: number }) {
           />
         )}
 
-        {/* Hover overlay with links */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-sm">
-          <div className="flex gap-3">
-            {release.links.spotify && (
-              <a href={release.links.spotify} target="_blank" rel="noopener noreferrer" aria-label="Spotify"
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
-                <SpotifyLogo size={18} />
-              </a>
-            )}
-            {release.links.soundcloud && (
-              <a href={release.links.soundcloud} target="_blank" rel="noopener noreferrer" aria-label="SoundCloud"
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
-                <SoundcloudLogo size={18} />
-              </a>
-            )}
-            {release.links.appleMusic && (
-              <a href={release.links.appleMusic} target="_blank" rel="noopener noreferrer" aria-label="Apple Music"
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
-                <ApplePodcastsLogo size={18} />
-              </a>
-            )}
-            {release.links.beatport && (
-              <a href={release.links.beatport} target="_blank" rel="noopener noreferrer" aria-label="Beatport"
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
-                <MusicNote size={18} />
-              </a>
-            )}
-          </div>
+        {/* Desktop: links appear on hover — there's no hover on touch devices, so
+            mobile gets its own always-visible row below instead (see ReleaseLinks below) */}
+        <div className="hidden md:flex absolute inset-0 items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-sm">
+          <ReleaseLinks links={release.links} className="flex gap-3" />
         </div>
 
         {/* Decorative ring — pointer-events-none so it never blocks link clicks */}
@@ -95,6 +94,8 @@ function ReleaseCard({ release, index }: { release: Release; index: number }) {
         </h3>
         <p className="font-mono text-xs text-slate-600">{release.year}</p>
       </div>
+
+      <ReleaseLinks links={release.links} className="flex md:hidden gap-2 mt-3" />
     </motion.article>
   )
 }
