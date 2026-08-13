@@ -12,9 +12,9 @@ function FlyerCard({ show, index, past }: { show: Show; index: number; past?: bo
   const { lang, t } = useLanguage()
   const locale = lang === 'es' ? 'es-AR' : 'en-US'
   const date = new Date(show.date)
-  const day   = date.toLocaleDateString(locale, { day: '2-digit' })
-  const month = date.toLocaleDateString(locale, { month: 'short' }).toUpperCase()
-  const year  = date.getFullYear()
+  const day   = date.toLocaleDateString(locale, { day: '2-digit', timeZone: 'UTC' })
+  const month = date.toLocaleDateString(locale, { month: 'short', timeZone: 'UTC' }).toUpperCase()
+  const year  = date.getUTCFullYear()
 
   return (
     <AnimatedSection delay={index * 0.05}>

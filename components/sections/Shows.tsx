@@ -15,9 +15,9 @@ const PAST_SHOWS_LIMIT = 5
 function formatDate(iso: string, locale: string) {
   const date = new Date(iso)
   return {
-    day:   date.toLocaleDateString(locale, { day: '2-digit' }),
-    month: date.toLocaleDateString(locale, { month: 'short' }).toUpperCase(),
-    year:  date.getFullYear(),
+    day:   date.toLocaleDateString(locale, { day: '2-digit', timeZone: 'UTC' }),
+    month: date.toLocaleDateString(locale, { month: 'short', timeZone: 'UTC' }).toUpperCase(),
+    year:  date.getUTCFullYear(),
   }
 }
 

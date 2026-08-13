@@ -65,7 +65,7 @@ export default function Countdown() {
   if (time.days === 0 && time.hours === 0 && time.minutes === 0 && time.seconds === 0) return null
 
   const dateStr = new Date(countdown.date).toLocaleDateString(undefined, {
-    weekday: 'long', day: 'numeric', month: 'long',
+    weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC',
   })
 
   return (
