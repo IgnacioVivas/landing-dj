@@ -26,7 +26,7 @@ export interface DjPageData {
   instagram: { username: string | null; profileUrl: string | null }
   social:    { instagram: string | null; spotify: string | null; soundcloud: string | null; youtube: string | null }
   contact:   { bookingEmail: string | null; pressEmail: string | null }
-  mix:       { urls: string[] }
+  mix:       { urls: string[]; pinnedUrl: string | null }
   pressKit:  { riderUrl: string | null; epkUrl: string | null; passwordRequired: boolean }
   countdown: { date: string; venue: string; city: string; country: string; address?: string; festival?: string } | null
   theme: {
@@ -90,7 +90,7 @@ function configToPageData(): DjPageData {
       bookingEmail: djConfig.contact.bookingEmail,
       pressEmail:   djConfig.contact.pressEmail,
     },
-    mix:       { urls: [] },
+    mix:       { urls: [], pinnedUrl: null },
     pressKit:  { riderUrl: null, epkUrl: null, passwordRequired: false },
     countdown: null,
     theme: {

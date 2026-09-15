@@ -29,6 +29,7 @@ export async function getUserSettings(userId: string) {
           bookingEmail:       true,
           pressEmail:         true,
           mixUrls:            true,
+          pinnedTrackUrl:     true,
           riderUrl:           true,
           epkUrl:             true,
           accentColor:            true,

@@ -213,6 +213,7 @@ model DjSettings {
 
   // Mix / Press Kit
   mixUrls           String[]
+  pinnedTrackUrl    String?
   riderUrl          String?
   epkUrl            String?
   pressKitPassword  String?

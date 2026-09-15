@@ -8,6 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { useDjData } from '@/lib/dj-context'
 import GlowButton from '@/components/ui/GlowButton'
 import HeroSocialLinks from '@/components/ui/HeroSocialLinks'
+import NavPlayerBar from '@/components/layout/NavPlayerBar'
 
 export default function Navbar() {
   const { t } = useLanguage()
@@ -119,6 +120,8 @@ export default function Navbar() {
           )}
         </div>
       </nav>
+
+      <NavPlayerBar />
 
       {/* Mobile menu */}
       <AnimatePresence>

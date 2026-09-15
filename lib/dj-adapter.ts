@@ -87,7 +87,7 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
       bookingEmail: dj.settings?.bookingEmail ?? null,
       pressEmail:   dj.settings?.pressEmail   ?? null,
     },
-    mix:      { urls: dj.settings?.mixUrls ?? [] },
+    mix:      { urls: dj.settings?.mixUrls ?? [], pinnedUrl: dj.settings?.pinnedTrackUrl ?? null },
     pressKit: {
       riderUrl:         dj.settings?.riderUrl ?? null,
       epkUrl:           dj.settings?.epkUrl   ?? null,

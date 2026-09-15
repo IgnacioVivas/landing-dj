@@ -42,6 +42,7 @@ function toDefaults(d: UserSettings): SettingsInput {
       d.settings?.mixUrls[1] ?? '',
       d.settings?.mixUrls[2] ?? '',
     ],
+    pinnedTrackUrl: d.settings?.pinnedTrackUrl ?? '',
     accentColor:       d.settings?.accentColor        ?? '#8b5cf6',
     accentColor2:      d.settings?.accentColor2       ?? '#22d3ee',
     heroTitle:         d.settings?.heroTitle           ?? '',

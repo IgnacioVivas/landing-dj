@@ -2,42 +2,13 @@
 
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDjData } from '@/lib/dj-context'
-import { MUSIC_PLATFORM_ICON, MUSIC_PLATFORM_HEX, MUSIC_PLATFORM_LABEL } from '@/lib/music-platforms'
+import {
+  MUSIC_PLATFORM_ICON, MUSIC_PLATFORM_HEX, MUSIC_PLATFORM_LABEL,
+  detectEmbeddablePlatform, toEmbedUrl, embedHeight,
+  type EmbeddableMusicPlatform as Platform,
+} from '@/lib/music-platforms'
 import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-
-type Platform = 'soundcloud' | 'spotify' | 'mixcloud'
-
-function detectPlatform(url: string): Platform | null {
-  if (url.includes('soundcloud.com'))   return 'soundcloud'
-  if (url.includes('open.spotify.com')) return 'spotify'
-  if (url.includes('mixcloud.com'))     return 'mixcloud'
-  return null
-}
-
-function toEmbedUrl(url: string, platform: Platform): string {
-  if (platform === 'soundcloud') {
-    // visual=false uses SoundCloud's compact list layout (small artwork + track list),
-    // matching the Spotify embed's look, instead of the big background-photo player.
-    return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23ff5500&auto_play=false&visual=false&hide_related=true&show_comments=false&show_user=true`
-  }
-  if (platform === 'spotify') {
-    const [base] = url.split('?')
-    const clean  = base.replace(/open\.spotify\.com\/intl-[a-z]+\//, 'open.spotify.com/')
-    return clean.replace('open.spotify.com/', 'open.spotify.com/embed/') + '?utm_source=generator&theme=0'
-  }
-  const path = url.replace(/^https?:\/\/(www\.)?mixcloud\.com/, '')
-  return `https://www.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&feed=${encodeURIComponent(path)}`
-}
-
-function embedHeight(platform: Platform): number {
-  // The classic/list SoundCloud layout needs more room than the old visual
-  // player to show artwork + track rows; 300 comfortably fits a handful of
-  // tracks and scrolls internally if there are more.
-  if (platform === 'soundcloud') return 300
-  if (platform === 'spotify')    return 152
-  return 120
-}
 
 function PlatformBadge({ platform }: { platform: Platform }) {
   const Icon = MUSIC_PLATFORM_ICON[platform]
@@ -60,7 +31,7 @@ export default function MixPlayer() {
 
   const validMixes = mix.urls
     .filter(Boolean)
-    .map(url => ({ url, platform: detectPlatform(url) }))
+    .map(url => ({ url, platform: detectEmbeddablePlatform(url) }))
     .filter((m): m is { url: string; platform: Platform } => m.platform !== null)
 
   if (validMixes.length === 0) return null

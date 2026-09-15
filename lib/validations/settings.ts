@@ -43,7 +43,8 @@ export const settingsSchema = z.object({
   pressEmail:   optionalEmail,
 
   // Mix
-  mixUrls:  z.array(optionalUrl).max(3),
+  mixUrls:        z.array(optionalUrl).max(3),
+  pinnedTrackUrl: optionalUrl,
 
   // Theme
   accentColor:  z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Color inválido'),

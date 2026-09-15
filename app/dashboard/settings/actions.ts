@@ -21,7 +21,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
     instagramUrl, instagramUsername, spotifyProfileUrl,
     soundcloudUrl, youtubeChannelUrl, youtubeVideoIds,
     bookingEmail, pressEmail,
-    mixUrls,
+    mixUrls, pinnedTrackUrl,
     accentColor, accentColor2, heroTitle, heroTitleEn, heroTitleSize, heroContentAlign, heroTextColor, heroOverlay, heroLayout, scrollMode, showStats,
   } = parsed.data
 
@@ -47,7 +47,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         spotifyProfileUrl: toNull(spotifyProfileUrl), soundcloudUrl: toNull(soundcloudUrl),
         youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds,
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
-        mixUrls: cleanMixUrls,
+        mixUrls: cleanMixUrls, pinnedTrackUrl: toNull(pinnedTrackUrl),
         accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroTitleSize, heroContentAlign, heroTextColor, heroOverlay, heroLayout, scrollMode, showStats,
       },
       create: {
@@ -56,7 +56,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         spotifyProfileUrl: toNull(spotifyProfileUrl), soundcloudUrl: toNull(soundcloudUrl),
         youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds,
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
-        mixUrls: cleanMixUrls,
+        mixUrls: cleanMixUrls, pinnedTrackUrl: toNull(pinnedTrackUrl),
         accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroTitleSize, heroContentAlign, heroTextColor, heroOverlay, heroLayout, scrollMode, showStats,
       },
     }),

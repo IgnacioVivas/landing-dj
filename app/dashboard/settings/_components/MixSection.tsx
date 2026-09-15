@@ -37,6 +37,23 @@ export default function MixSection({ register, errors }: Props) {
       <p className="font-mono text-xs text-slate-700">
         Plataformas soportadas: SoundCloud · Spotify (track, álbum, playlist) · Mixcloud
       </p>
+
+      <div className="pt-4 border-t border-slate-800">
+        <Field
+          label="Track fijado en el menú"
+          error={errors.pinnedTrackUrl?.message}
+        >
+          <input
+            {...register('pinnedTrackUrl')}
+            className={inputClass}
+            placeholder="https://soundcloud.com/artista/nombre-del-track"
+          />
+        </Field>
+        <p className="font-mono text-xs text-slate-700 mt-2">
+          Se muestra fijo arriba de todo, en el menú de la landing, para que se pueda
+          escuchar sin bajar hasta Mix / Podcast. Mismas plataformas soportadas.
+        </p>
+      </div>
     </div>
   )
 }
