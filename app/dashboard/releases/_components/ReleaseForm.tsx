@@ -8,7 +8,7 @@ import { releaseSchema, type ReleaseInput } from '@/lib/validations/release'
 import { Field, inputClass, selectClass, SelectWrapper } from '@/app/dashboard/_components/Field'
 import GradientPicker from './GradientPicker'
 import imageCompression from 'browser-image-compression'
-import { uploadFile } from '@/lib/uploadthing'
+import { uploadFile } from '@/lib/upload'
 
 const DEFAULT_GRADIENT = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'
 

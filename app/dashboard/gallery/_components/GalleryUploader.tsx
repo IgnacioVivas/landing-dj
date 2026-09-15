@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react'
 import { CloudArrowUp } from '@phosphor-icons/react'
 import imageCompression from 'browser-image-compression'
-import { uploadFile } from '@/lib/uploadthing'
+import { uploadFile } from '@/lib/upload'
 
 export type UploadResult = { url: string; mediaType: 'image' | 'video' }
 

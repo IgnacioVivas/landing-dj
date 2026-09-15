@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { showSchema, type ShowInput } from '@/lib/validations/show'
 import { Field, inputClass } from '@/app/dashboard/_components/Field'
 import imageCompression from 'browser-image-compression'
-import { uploadFile } from '@/lib/uploadthing'
+import { uploadFile } from '@/lib/upload'
 
 type Props = {
   defaultValues?: Partial<ShowInput>

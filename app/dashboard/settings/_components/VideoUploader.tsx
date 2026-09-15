@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { uploadFile } from '@/lib/uploadthing'
+import { uploadFile } from '@/lib/upload'
 
 type Props = {
   label: string

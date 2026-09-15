@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import imageCompression from 'browser-image-compression'
-import { uploadFile } from '@/lib/uploadthing'
+import { uploadFile } from '@/lib/upload'
 
 type Props = {
   label: string
