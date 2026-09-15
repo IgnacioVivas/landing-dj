@@ -8,7 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { useDjData } from '@/lib/dj-context'
 import GlowButton from '@/components/ui/GlowButton'
 import HeroSocialLinks from '@/components/ui/HeroSocialLinks'
-import NavPlayerBar from '@/components/layout/NavPlayerBar'
+import NavPlayerButton from '@/components/layout/NavPlayerButton'
 
 export default function Navbar() {
   const { t } = useLanguage()
@@ -92,20 +92,22 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Desktop right: social icons + CTA */}
+        {/* Desktop right: social icons + pinned player + CTA */}
         <div className="ml-auto hidden md:flex items-center gap-3 flex-shrink-0">
           {(dj.social.instagram || dj.social.spotify || dj.social.soundcloud || dj.social.youtube) && (
             <div className="pr-3 border-r border-white/10">
               <HeroSocialLinks social={dj.social} size={18} />
             </div>
           )}
+          <NavPlayerButton />
           <GlowButton href="#contact" variant="primary">
             {t.nav.bookNow}
           </GlowButton>
         </div>
 
-        {/* Mobile right: contact button + hamburger only at top */}
+        {/* Mobile right: pinned player + contact button + hamburger only at top */}
         <div className="ml-auto md:hidden flex items-center gap-2">
+          <NavPlayerButton />
           <GlowButton href="#contact" variant="primary" className="px-4 py-2 text-xs">
             {t.nav.bookNow}
           </GlowButton>
@@ -120,8 +122,6 @@ export default function Navbar() {
           )}
         </div>
       </nav>
-
-      <NavPlayerBar />
 
       {/* Mobile menu */}
       <AnimatePresence>
