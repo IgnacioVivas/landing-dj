@@ -3,6 +3,7 @@
 import { DjProvider, type DjPageData } from '@/lib/dj-context'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import PageBackground from '@/components/layout/PageBackground'
 import Hero from '@/components/sections/Hero'
 import Bio from '@/components/sections/Bio'
 import Releases from '@/components/sections/Releases'
@@ -22,7 +23,7 @@ import MetaPixel from '@/components/MetaPixel'
 import GoogleTagManager from '@/components/GoogleTagManager'
 
 export default function DjPageLayout({ data, userId }: { data: DjPageData; userId: string }) {
-  const { accentColor, accentColor2, pageBackgroundUrl, pageBackgroundOverlay } = data.theme
+  const { accentColor, accentColor2, pageBackgroundUrl } = data.theme
 
   return (
     <>
@@ -34,15 +35,7 @@ export default function DjPageLayout({ data, userId }: { data: DjPageData; userI
         }
       `}</style>
       <DjProvider data={data}>
-        {pageBackgroundUrl && (
-          <>
-            <div
-              className="fixed inset-0 -z-20 bg-cover bg-center"
-              style={{ backgroundImage: `url(${pageBackgroundUrl})` }}
-            />
-            {pageBackgroundOverlay && <div className="fixed inset-0 -z-10 bg-black/75" />}
-          </>
-        )}
+        <PageBackground />
         <PageLoader />
         <Navbar />
         <main>
