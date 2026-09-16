@@ -5,6 +5,8 @@ import { db } from '@/lib/db'
 import { settingsSchema } from '@/lib/validations/settings'
 import { deleteFile } from '@/lib/storage'
 import { extractYouTubeId } from '@/lib/youtube'
+import { detectEmbeddablePlatform } from '@/lib/music-platforms'
+import { fetchOembedTitle } from '@/lib/oembed'
 
 type ActionResult = { error: string } | { success: true }
 
@@ -25,12 +27,25 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
     accentColor, accentColor2, heroTitle, heroTitleEn, heroTitleSize, heroContentAlign, heroTextColor, heroOverlay, heroLayout, scrollMode, showStats, pageBackgroundOverlayOpacity, pageBackgroundBlur,
   } = parsed.data
 
-  const cleanMixUrls  = mixUrls.map(u => u.trim()).filter(Boolean)
-  const genresArray   = genres.split(',').map(g => g.trim()).filter(Boolean)
-  const toNull        = (v: string) => v || null
-  const cleanVideoIds = youtubeVideoIds
+  const cleanMixUrls    = mixUrls.map(u => u.trim()).filter(Boolean)
+  const genresArray     = genres.split(',').map(g => g.trim()).filter(Boolean)
+  const toNull          = (v: string) => v || null
+  const cleanVideoIds   = youtubeVideoIds
     .map(v => extractYouTubeId(v) ?? v)
     .filter(id => /^[a-zA-Z0-9_-]{11}$/.test(id))
+  const cleanPinnedTrackUrl = pinnedTrackUrl.trim()
+
+  // Only hit the platform's oEmbed endpoint when the pinned link actually
+  // changed — no point re-fetching the title on every unrelated save.
+  const current = await db.djSettings.findUnique({
+    where:  { userId: session.user.id },
+    select: { pinnedTrackUrl: true, pinnedTrackTitle: true },
+  })
+  let pinnedTrackTitle = current?.pinnedTrackTitle ?? null
+  if (cleanPinnedTrackUrl !== (current?.pinnedTrackUrl ?? '')) {
+    const platform = cleanPinnedTrackUrl ? detectEmbeddablePlatform(cleanPinnedTrackUrl) : null
+    pinnedTrackTitle = platform ? await fetchOembedTitle(cleanPinnedTrackUrl, platform) : null
+  }
 
   await db.$transaction([
     db.user.update({
@@ -47,7 +62,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         spotifyProfileUrl: toNull(spotifyProfileUrl), soundcloudUrl: toNull(soundcloudUrl),
         youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds,
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
-        mixUrls: cleanMixUrls, pinnedTrackUrl: toNull(pinnedTrackUrl),
+        mixUrls: cleanMixUrls, pinnedTrackUrl: toNull(cleanPinnedTrackUrl), pinnedTrackTitle,
         accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroTitleSize, heroContentAlign, heroTextColor, heroOverlay, heroLayout, scrollMode, showStats, pageBackgroundOverlayOpacity, pageBackgroundBlur,
       },
       create: {
@@ -56,7 +71,7 @@ export async function updateSettingsAction(data: unknown): Promise<ActionResult>
         spotifyProfileUrl: toNull(spotifyProfileUrl), soundcloudUrl: toNull(soundcloudUrl),
         youtubeChannelUrl: toNull(youtubeChannelUrl), youtubeVideoIds: cleanVideoIds,
         bookingEmail: toNull(bookingEmail), pressEmail: toNull(pressEmail),
-        mixUrls: cleanMixUrls, pinnedTrackUrl: toNull(pinnedTrackUrl),
+        mixUrls: cleanMixUrls, pinnedTrackUrl: toNull(cleanPinnedTrackUrl), pinnedTrackTitle,
         accentColor, accentColor2, heroTitle: toNull(heroTitle), heroTitleEn: toNull(heroTitleEn), heroTitleSize, heroContentAlign, heroTextColor, heroOverlay, heroLayout, scrollMode, showStats, pageBackgroundOverlayOpacity, pageBackgroundBlur,
       },
     }),

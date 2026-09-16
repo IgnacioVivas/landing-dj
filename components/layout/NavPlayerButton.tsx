@@ -4,7 +4,7 @@ import { useEffect, useSyncExternalStore, useCallback, useId } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Play, Pause } from '@phosphor-icons/react'
 import { useDjData } from '@/lib/dj-context'
-import { detectEmbeddablePlatform, toEmbedUrl, toSpotifyUri } from '@/lib/music-platforms'
+import { detectEmbeddablePlatform, toEmbedUrl, toSpotifyUri, MUSIC_PLATFORM_LABEL } from '@/lib/music-platforms'
 
 declare global {
   interface Window {
@@ -140,11 +140,12 @@ function toggle() {
 // Spotify's embed doesn't offer it either) — the pulsing ring invites the
 // one click that's needed instead. The real widget is mounted but visually
 // clipped to 0x0; this button only drives it through each platform's JS API.
-export default function NavPlayerButton({ size = 18 }: { size?: number }) {
+export default function NavPlayerButton({ size = 16 }: { size?: number }) {
   const { mix } = useDjData()
   const url      = mix.pinnedUrl
   const platform = url ? detectEmbeddablePlatform(url) : null
   const reactId  = useId()
+  const title    = mix.pinnedTitle || (platform ? MUSIC_PLATFORM_LABEL[platform] : null)
 
   const { ready, playing } = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
 
@@ -165,36 +166,44 @@ export default function NavPlayerButton({ size = 18 }: { size?: number }) {
         onClick={handleClick}
         disabled={!ready}
         aria-label={playing ? 'Pausar' : 'Reproducir'}
-        title={playing ? 'Pausar' : 'Reproducir'}
-        whileHover={ready ? { scale: 1.08 } : undefined}
-        whileTap={ready ? { scale: 0.92 } : undefined}
-        className="relative flex items-center justify-center w-10 h-10 rounded-full text-white glow-accent transition-opacity disabled:opacity-60"
+        title={title ?? (playing ? 'Pausar' : 'Reproducir')}
+        whileHover={ready ? { scale: 1.03 } : undefined}
+        whileTap={ready ? { scale: 0.97 } : undefined}
+        className="flex items-center gap-2 pl-1 pr-3 h-9 max-w-[200px] rounded-full text-white glow-accent transition-opacity disabled:opacity-60"
         style={{ backgroundColor: 'var(--dj-accent)' }}
       >
-        {/* Attention pulse while idle and ready to play */}
-        <AnimatePresence>
-          {ready && !playing && (
-            <motion.span
-              className="absolute inset-0 rounded-full"
-              style={{ backgroundColor: 'var(--dj-accent)' }}
-              initial={{ opacity: 0.5, scale: 1 }}
-              animate={{ opacity: 0, scale: 1.8 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeOut' }}
-            />
-          )}
-        </AnimatePresence>
+        <span className="relative flex items-center justify-center w-7 h-7 rounded-full shrink-0">
+          {/* Attention pulse while idle and ready to play */}
+          <AnimatePresence>
+            {ready && !playing && (
+              <motion.span
+                className="absolute inset-0 rounded-full"
+                style={{ backgroundColor: 'var(--dj-accent)' }}
+                initial={{ opacity: 0.5, scale: 1 }}
+                animate={{ opacity: 0, scale: 1.8 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: 'easeOut' }}
+              />
+            )}
+          </AnimatePresence>
 
-        {!ready ? (
-          <motion.span
-            className="w-3.5 h-3.5 rounded-full border-2 border-white/40 border-t-white"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-          />
-        ) : playing ? (
-          <Pause size={size} weight="fill" />
-        ) : (
-          <Play size={size} weight="fill" className="translate-x-[1px]" />
+          {!ready ? (
+            <motion.span
+              className="w-3.5 h-3.5 rounded-full border-2 border-white/40 border-t-white"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+            />
+          ) : playing ? (
+            <Pause size={size} weight="fill" />
+          ) : (
+            <Play size={size} weight="fill" className="translate-x-[1px]" />
+          )}
+        </span>
+
+        {title && (
+          <span className="hidden sm:inline font-body text-xs text-white/90 truncate">
+            {title}
+          </span>
         )}
       </motion.button>
 
