@@ -22,7 +22,7 @@ import MetaPixel from '@/components/MetaPixel'
 import GoogleTagManager from '@/components/GoogleTagManager'
 
 export default function DjPageLayout({ data, userId }: { data: DjPageData; userId: string }) {
-  const { accentColor, accentColor2, pageBackgroundUrl } = data.theme
+  const { accentColor, accentColor2, pageBackgroundUrl, pageBackgroundOverlay } = data.theme
 
   return (
     <>
@@ -40,7 +40,7 @@ export default function DjPageLayout({ data, userId }: { data: DjPageData; userI
               className="fixed inset-0 -z-20 bg-cover bg-center"
               style={{ backgroundImage: `url(${pageBackgroundUrl})` }}
             />
-            <div className="fixed inset-0 -z-10 bg-black/75" />
+            {pageBackgroundOverlay && <div className="fixed inset-0 -z-10 bg-black/75" />}
           </>
         )}
         <PageLoader />

@@ -30,6 +30,7 @@ export default function ThemeSection({ register, errors, watch, setValue, initia
   const accent        = watch('accentColor')
   const accent2       = watch('accentColor2')
   const heroOverlay   = watch('heroOverlay')
+  const pageBackgroundOverlay = watch('pageBackgroundOverlay')
   const heroLayout    = watch('heroLayout')
   const scrollMode    = watch('scrollMode')
   const heroTitleSize    = watch('heroTitleSize')
@@ -385,9 +386,27 @@ export default function ThemeSection({ register, errors, watch, setValue, initia
           />
         </div>
         <p className="font-mono text-xs text-slate-700">
-          Se aplica detrás de toda la landing (no solo el hero), fija mientras se hace scroll, con un filtro
-          oscuro encima para que el texto se siga leyendo bien. Recomendado: imagen horizontal, 1920×1080 o más grande.
-          Sin foto acá, la página usa el fondo oscuro de siempre.
+          Se aplica detrás de toda la landing (no solo el hero), fija mientras se hace scroll.
+          Recomendado: imagen horizontal, 1920×1080 o más grande. Sin foto acá, la página usa el fondo oscuro de siempre.
+        </p>
+
+        <label className="flex items-center gap-3 cursor-pointer w-fit">
+          <input {...register('pageBackgroundOverlay')} type="checkbox" className="sr-only" />
+          <div
+            className="w-10 h-5 rounded-full transition-colors relative flex-shrink-0"
+            style={{ background: pageBackgroundOverlay ? 'var(--dj-accent)' : 'rgba(255,255,255,0.1)' }}
+          >
+            <div
+              className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform"
+              style={{ transform: pageBackgroundOverlay ? 'translateX(1.25rem)' : 'translateX(0.125rem)' }}
+            />
+          </div>
+          <span className="font-mono text-xs text-slate-400">Filtro oscuro sobre el fondo</span>
+        </label>
+        <p className="font-mono text-xs text-slate-700">
+          {pageBackgroundOverlay
+            ? 'La imagen tiene un filtro oscuro para que el texto se lea bien.'
+            : 'La imagen se muestra limpia, sin filtro — el texto puede costar más de leer según la foto.'}
         </p>
       </div>
 

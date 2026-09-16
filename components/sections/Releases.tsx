@@ -107,7 +107,7 @@ export default function Releases() {
   if (!releases.length) return null
 
   return (
-    <section id="releases" className="py-24 md:py-32" style={{ background: '#050509' }}>
+    <section id="releases" className="py-24 md:py-32" style={{ background: 'var(--page-bg)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-12">
           <SectionHeading

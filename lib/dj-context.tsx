@@ -43,6 +43,7 @@ export interface DjPageData {
     heroVideoMobileUrl: string | null
     heroLogoUrl:        string | null
     pageBackgroundUrl:  string | null
+    pageBackgroundOverlay: boolean
     heroTitle:          string | null
     heroTitleEn:        string | null
     heroTitleSize:      HeroTitleSize
@@ -113,6 +114,7 @@ function configToPageData(): DjPageData {
       heroVideoMobileUrl: null,
       heroLogoUrl:        null,
       pageBackgroundUrl:  null,
+      pageBackgroundOverlay: true,
       heroTitle:          null,
       heroTitleEn:        null,
       heroTitleSize:      'md',

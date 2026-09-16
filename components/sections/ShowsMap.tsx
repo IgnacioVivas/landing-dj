@@ -90,7 +90,7 @@ export default function ShowsMap() {
   if (!shows.length || !showMapVisible) return null
 
   return (
-    <section id="showsmap" className="py-24 md:py-32" style={{ background: '#050509' }}>
+    <section id="showsmap" className="py-24 md:py-32" style={{ background: 'var(--page-bg)' }}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-10">
           <SectionHeading overline={t.showsMap.overline} title={t.showsMap.title} />

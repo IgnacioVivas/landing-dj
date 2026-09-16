@@ -81,7 +81,7 @@ export default function Instagram() {
   }, [])
 
   return (
-    <section id="instagram" className="py-24 md:py-32" style={{ background: '#050509' }}>
+    <section id="instagram" className="py-24 md:py-32" style={{ background: 'var(--page-bg)' }}>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-12">
           <SectionHeading overline={t.instagram.overline} title={t.instagram.title} align="center" />

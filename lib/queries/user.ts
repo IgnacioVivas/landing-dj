@@ -41,6 +41,7 @@ export async function getUserSettings(userId: string) {
           heroLogoUrl:            true,
           faviconUrl:             true,
           pageBackgroundUrl:      true,
+          pageBackgroundOverlay:  true,
           heroTitle:              true,
           heroTitleEn:            true,
           heroTitleSize:          true,

@@ -99,7 +99,7 @@ export default function Multimedia() {
   const togglePlay = (id: string) => setPlayingId(p => (p === id ? null : id))
 
   return (
-    <section id="media" className="py-24 md:py-32" style={{ background: '#050509' }}>
+    <section id="media" className="py-24 md:py-32" style={{ background: 'var(--page-bg)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-12">
           <SectionHeading

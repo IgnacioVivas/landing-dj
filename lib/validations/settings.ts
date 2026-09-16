@@ -55,6 +55,7 @@ export const settingsSchema = z.object({
   heroContentAlign: z.enum(HERO_ALIGNS),
   heroTextColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Color inválido').nullable(),
   heroOverlay:  z.boolean(),
+  pageBackgroundOverlay: z.boolean(),
   heroLayout:   z.enum(['center', 'integrated']),
   scrollMode:   z.enum(['free', 'snap']),
   showStats:    z.boolean(),

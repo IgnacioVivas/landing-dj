@@ -69,7 +69,7 @@ export default function Countdown() {
   })
 
   return (
-    <section className="py-16 md:py-20" style={{ background: '#06060d' }}>
+    <section className="py-16 md:py-20" style={{ background: 'var(--page-bg)' }}>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="text-center mb-10">
           <p

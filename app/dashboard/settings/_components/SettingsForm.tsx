@@ -51,6 +51,7 @@ function toDefaults(d: UserSettings): SettingsInput {
     heroContentAlign:  (d.settings?.heroContentAlign   ?? 'center') as HeroAlign,
     heroTextColor:     d.settings?.heroTextColor       ?? null,
     heroOverlay:       d.settings?.heroOverlay         ?? true,
+    pageBackgroundOverlay: d.settings?.pageBackgroundOverlay ?? true,
     heroLayout:        (d.settings?.heroLayout         ?? 'center') as 'center' | 'integrated',
     scrollMode:        (d.settings?.scrollMode         ?? 'free') as 'free' | 'snap',
     showStats:         d.settings?.showStats           ?? true,
