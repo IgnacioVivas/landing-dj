@@ -21,7 +21,7 @@ export default function YouTube() {
   const next = () => setCurrent(c => (c + 1) % videoIds.length)
 
   return (
-    <section id="youtube" className="py-24 md:py-32 bg-[#07070f]">
+    <section id="youtube" className="py-24 md:py-32 bg-[var(--page-bg)]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-12">
           <SectionHeading

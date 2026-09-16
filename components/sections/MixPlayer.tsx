@@ -37,7 +37,7 @@ export default function MixPlayer() {
   if (validMixes.length === 0) return null
 
   return (
-    <section id="mix" className="py-24 md:py-32" style={{ background: '#07070f' }}>
+    <section id="mix" className="py-24 md:py-32" style={{ background: 'var(--page-bg)' }}>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-10">
           <SectionHeading overline={t.mix.overline} title={t.mix.title} />

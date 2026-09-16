@@ -233,6 +233,7 @@ model DjSettings {
   heroVideoMobileUrl     String?
   heroLogoUrl            String?
   faviconUrl             String?
+  pageBackgroundUrl      String?
   heroTitle              String?
   heroTitleEn            String?
   heroTitleSize          String    @default("md")

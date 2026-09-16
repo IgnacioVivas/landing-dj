@@ -147,7 +147,7 @@ export default function Shows() {
   if (!shows.length) return null
 
   return (
-    <section id="shows" className="py-24 md:py-32 bg-[#07070f]">
+    <section id="shows" className="py-24 md:py-32 bg-[var(--page-bg)]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12">
           <SectionHeading overline={t.shows.overline} title={t.shows.title} />

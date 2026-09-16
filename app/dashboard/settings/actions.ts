@@ -141,6 +141,25 @@ export async function updateFaviconAction(url: string | null): Promise<ActionRes
   return { success: true }
 }
 
+export async function updatePageBackgroundAction(url: string | null): Promise<ActionResult> {
+  const session = await auth()
+  if (!session?.user.id) return { error: 'No autorizado.' }
+
+  const current = await db.djSettings.findUnique({
+    where: { userId: session.user.id },
+    select: { pageBackgroundUrl: true },
+  })
+  await deleteFile(current?.pageBackgroundUrl)
+
+  await db.djSettings.upsert({
+    where:  { userId: session.user.id },
+    update: { pageBackgroundUrl: url },
+    create: { userId: session.user.id, pageBackgroundUrl: url },
+  })
+
+  return { success: true }
+}
+
 export async function updateHeroVideoAction(url: string | null): Promise<ActionResult> {
   const session = await auth()
   if (!session?.user.id) return { error: 'No autorizado.' }

@@ -22,7 +22,7 @@ export default function Footer() {
   ].filter(s => !!s.href)
 
   return (
-    <footer className="border-t border-white/5 bg-[#07070f]">
+    <footer className="border-t border-white/5 bg-[var(--page-bg)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
         <span className="font-display text-xl text-white tracking-wider">
           {name}

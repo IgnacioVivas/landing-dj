@@ -164,7 +164,7 @@ export default function PressKit() {
   if (!hasContent) return null
 
   return (
-    <section id="presskit" className="py-24 md:py-32" style={{ background: '#07070f' }}>
+    <section id="presskit" className="py-24 md:py-32" style={{ background: 'var(--page-bg)' }}>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mb-10">
           <SectionHeading overline={t.pressKit.overline} title={t.pressKit.title} />

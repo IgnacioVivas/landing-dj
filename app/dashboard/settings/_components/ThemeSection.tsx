@@ -5,7 +5,7 @@ import type { SettingsInput } from '@/lib/validations/settings'
 import { SectionTitle, Field, inputClass } from '@/app/dashboard/_components/Field'
 import PhotoUploader from './PhotoUploader'
 import VideoUploader from './VideoUploader'
-import { updateHeroPhotoAction, updateHeroMobilePhotoAction, updateBioPhotoAction, updateHeroVideoAction, updateHeroVideoMobileAction, updateHeroLogoAction, updateFaviconAction } from '../actions'
+import { updateHeroPhotoAction, updateHeroMobilePhotoAction, updateBioPhotoAction, updateHeroVideoAction, updateHeroVideoMobileAction, updateHeroLogoAction, updateFaviconAction, updatePageBackgroundAction } from '../actions'
 import { HERO_TITLE_SIZES, HERO_SIZE_SCALE, HERO_SIZE_LABELS } from '@/lib/hero-size'
 import { HERO_ALIGNS, HERO_ALIGN_LABELS } from '@/lib/hero-align'
 
@@ -23,9 +23,10 @@ type Props = {
   initialHeroLogoUrl: string | null
   initialFaviconUrl: string | null
   initialBioUrl: string | null
+  initialPageBackgroundUrl: string | null
 }
 
-export default function ThemeSection({ register, errors, watch, setValue, initialHeroUrl, initialHeroMobileUrl, initialHeroVideoUrl, initialHeroVideoMobileUrl, initialHeroLogoUrl, initialFaviconUrl, initialBioUrl }: Props) {
+export default function ThemeSection({ register, errors, watch, setValue, initialHeroUrl, initialHeroMobileUrl, initialHeroVideoUrl, initialHeroVideoMobileUrl, initialHeroLogoUrl, initialFaviconUrl, initialBioUrl, initialPageBackgroundUrl }: Props) {
   const accent        = watch('accentColor')
   const accent2       = watch('accentColor2')
   const heroOverlay   = watch('heroOverlay')
@@ -367,6 +368,27 @@ export default function ThemeSection({ register, errors, watch, setValue, initia
           />
         </div>
         <p className="font-mono text-xs text-slate-700">Las fotos se aplican al instante, sin necesidad de guardar.</p>
+      </div>
+
+      {/* Page background upload (independent of form submit) */}
+      <div className="flex flex-col gap-4">
+        <p className="font-mono text-xs text-slate-600 tracking-widest uppercase">Fondo de toda la página</p>
+        <div className="flex flex-wrap gap-8">
+          <PhotoUploader
+            label="Fondo (opcional)"
+            initialUrl={initialPageBackgroundUrl}
+            onSave={updatePageBackgroundAction}
+            aspect="aspect-video"
+            maxSizeMB={4}
+            maxWidthOrHeight={2560}
+            objectFit="cover"
+          />
+        </div>
+        <p className="font-mono text-xs text-slate-700">
+          Se aplica detrás de toda la landing (no solo el hero), fija mientras se hace scroll, con un filtro
+          oscuro encima para que el texto se siga leyendo bien. Recomendado: imagen horizontal, 1920×1080 o más grande.
+          Sin foto acá, la página usa el fondo oscuro de siempre.
+        </p>
       </div>
 
       {/* Video uploads (independent of form submit) */}

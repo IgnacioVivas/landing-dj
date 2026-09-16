@@ -40,6 +40,7 @@ export async function getUserSettings(userId: string) {
           heroVideoMobileUrl:     true,
           heroLogoUrl:            true,
           faviconUrl:             true,
+          pageBackgroundUrl:      true,
           heroTitle:              true,
           heroTitleEn:            true,
           heroTitleSize:          true,
