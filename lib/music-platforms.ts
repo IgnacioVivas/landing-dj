@@ -71,17 +71,3 @@ export function embedHeight(platform: EmbeddableMusicPlatform): number {
   return 120
 }
 
-// Spotify's iFrame JS API (open.spotify.com/embed/iframe-api) takes a
-// `spotify:<type>:<id>` URI, not the regular web link — used by the hidden
-// nav play/pause button to control playback via its Embed Controller.
-export function toSpotifyUri(url: string): string | null {
-  try {
-    const clean = url.replace(/open\.spotify\.com\/intl-[a-z]+\//, 'open.spotify.com/')
-    const { pathname } = new URL(clean)
-    const [, type, id] = pathname.split('/')
-    if (!type || !id) return null
-    return `spotify:${type}:${id}`
-  } catch {
-    return null
-  }
-}
