@@ -91,6 +91,12 @@ export function dbToDjPageData(dj: DjWithData): DjPageData {
     pressKit: {
       riderUrl:         dj.settings?.riderUrl ?? null,
       epkUrl:           dj.settings?.epkUrl   ?? null,
+      promoFolderUrl:   dj.settings?.pressKitPromoFolderUrl ?? null,
+      equipment:        dj.settings?.pressKitEquipment   ?? null,
+      monitoring:       dj.settings?.pressKitMonitoring  ?? null,
+      ergonomics:       dj.settings?.pressKitErgonomics  ?? null,
+      hospitality:      dj.settings?.pressKitHospitality ?? null,
+      stagePlotUrl:     dj.settings?.pressKitStagePlotUrl ?? null,
       passwordRequired: !!dj.settings?.pressKitPassword,
     },
     countdown: (() => {

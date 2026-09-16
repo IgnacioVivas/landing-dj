@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation'
 import BackButton from '@/app/dashboard/_components/BackButton'
 import PressKitLinksSection from './_components/PressKitLinksSection'
 import PressKitPasswordSection from './_components/PressKitPasswordSection'
+import PressKitDetailsSection from './_components/PressKitDetailsSection'
+import PressKitStagePlotSection from './_components/PressKitStagePlotSection'
 
 export const metadata = { title: 'Press Kit — DJ Panel' }
 
@@ -13,7 +15,11 @@ export default async function PressKitPage() {
 
   const settings = await db.djSettings.findUnique({
     where:  { userId: session.user.id },
-    select: { pressKitPassword: true, riderUrl: true, epkUrl: true },
+    select: {
+      pressKitPassword: true, riderUrl: true, epkUrl: true,
+      pressKitEquipment: true, pressKitMonitoring: true, pressKitErgonomics: true, pressKitHospitality: true,
+      pressKitStagePlotUrl: true, pressKitPromoFolderUrl: true,
+    },
   })
 
   return (
@@ -33,7 +39,19 @@ export default async function PressKitPage() {
         <PressKitLinksSection
           initialRiderUrl={settings?.riderUrl ?? null}
           initialEpkUrl={settings?.epkUrl ?? null}
+          initialPromoFolderUrl={settings?.pressKitPromoFolderUrl ?? null}
         />
+        <div className="pt-10 border-t border-white/5">
+          <PressKitDetailsSection
+            initialEquipment={settings?.pressKitEquipment ?? ''}
+            initialMonitoring={settings?.pressKitMonitoring ?? ''}
+            initialErgonomics={settings?.pressKitErgonomics ?? ''}
+            initialHospitality={settings?.pressKitHospitality ?? ''}
+          />
+        </div>
+        <div className="pt-10 border-t border-white/5">
+          <PressKitStagePlotSection initialUrl={settings?.pressKitStagePlotUrl ?? null} />
+        </div>
         <div className="pt-10 border-t border-white/5">
           <PressKitPasswordSection initialPassword={settings?.pressKitPassword ?? null} />
         </div>

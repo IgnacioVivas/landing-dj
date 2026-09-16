@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FilePdf, ArrowSquareOut, LockSimple } from '@phosphor-icons/react'
+import { FilePdf, FolderOpen, ArrowSquareOut, LockSimple } from '@phosphor-icons/react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDjData } from '@/lib/dj-context'
@@ -9,7 +9,7 @@ import SectionHeading from '@/components/ui/SectionHeading'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { verifyPressKitPassword } from '@/lib/actions/presskit'
 
-function DownloadButton({ href, label }: { href: string; label: string }) {
+function DownloadButton({ href, label, icon: Icon = FilePdf }: { href: string; label: string; icon?: typeof FilePdf }) {
   return (
     <a
       href={href}
@@ -33,13 +33,37 @@ function DownloadButton({ href, label }: { href: string; label: string }) {
         className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
         style={{ background: 'color-mix(in srgb, var(--dj-accent) 12%, transparent)' }}
       >
-        <FilePdf size={20} style={{ color: 'var(--dj-accent)' }} />
+        <Icon size={20} style={{ color: 'var(--dj-accent)' }} />
       </div>
       <span className="flex-1 font-body text-sm text-slate-300 group-hover:text-white transition-colors">
         {label}
       </span>
       <ArrowSquareOut size={16} className="text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
     </a>
+  )
+}
+
+// One rider detail block (Equipamiento / Monitoreo / Ergonomía / Hospitality).
+// Each non-empty line the DJ typed in the dashboard becomes a bullet row.
+function DetailCard({ title, text }: { title: string; text: string }) {
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
+  if (lines.length === 0) return null
+
+  return (
+    <div
+      className="p-6 sm:p-7 rounded-2xl"
+      style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)' }}
+    >
+      <h3 className="font-display text-lg text-white tracking-wide mb-4">{title}</h3>
+      <ul className="flex flex-col gap-2.5">
+        {lines.map((line, i) => (
+          <li key={i} className="flex items-start gap-3 font-body text-sm text-slate-400">
+            <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--dj-accent)' }} />
+            {line}
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }
 
@@ -132,7 +156,12 @@ export default function PressKit() {
     }
   }, [slug, pressKit.passwordRequired])
 
-  if (!pressKit.riderUrl && !pressKit.epkUrl) return null
+  const hasContent =
+    pressKit.riderUrl || pressKit.epkUrl || pressKit.promoFolderUrl ||
+    pressKit.equipment || pressKit.monitoring || pressKit.ergonomics || pressKit.hospitality ||
+    pressKit.stagePlotUrl
+
+  if (!hasContent) return null
 
   return (
     <section id="presskit" className="py-24 md:py-32" style={{ background: '#07070f' }}>
@@ -145,12 +174,40 @@ export default function PressKit() {
           {!unlocked ? (
             <PasswordGate slug={slug} onVerified={() => setUnlocked(true)} />
           ) : (
-            <div className="flex flex-col gap-3">
-              {pressKit.riderUrl && (
-                <DownloadButton href={pressKit.riderUrl} label={t.pressKit.rider} />
+            <div className="flex flex-col gap-4">
+              {(pressKit.riderUrl || pressKit.epkUrl) && (
+                <div className="flex flex-col gap-3">
+                  {pressKit.riderUrl && (
+                    <DownloadButton href={pressKit.riderUrl} label={t.pressKit.rider} />
+                  )}
+                  {pressKit.epkUrl && (
+                    <DownloadButton href={pressKit.epkUrl} label={t.pressKit.epk} />
+                  )}
+                </div>
               )}
-              {pressKit.epkUrl && (
-                <DownloadButton href={pressKit.epkUrl} label={t.pressKit.epk} />
+
+              <DetailCard title={t.pressKit.equipment}   text={pressKit.equipment   ?? ''} />
+              <DetailCard title={t.pressKit.monitoring}  text={pressKit.monitoring  ?? ''} />
+              <DetailCard title={t.pressKit.ergonomics}  text={pressKit.ergonomics  ?? ''} />
+              <DetailCard title={t.pressKit.hospitality} text={pressKit.hospitality ?? ''} />
+
+              {pressKit.stagePlotUrl && (
+                <div
+                  className="p-6 sm:p-7 rounded-2xl"
+                  style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)' }}
+                >
+                  <h3 className="font-display text-lg text-white tracking-wide mb-4">{t.pressKit.stagePlot}</h3>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={pressKit.stagePlotUrl}
+                    alt={t.pressKit.stagePlot}
+                    className="w-full h-auto rounded-xl"
+                  />
+                </div>
+              )}
+
+              {pressKit.promoFolderUrl && (
+                <DownloadButton href={pressKit.promoFolderUrl} label={t.pressKit.promoFolder} icon={FolderOpen} />
               )}
             </div>
           )}

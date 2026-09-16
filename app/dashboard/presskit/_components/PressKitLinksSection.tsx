@@ -9,12 +9,15 @@ const inputClass =
 export default function PressKitLinksSection({
   initialRiderUrl,
   initialEpkUrl,
+  initialPromoFolderUrl,
 }: {
-  initialRiderUrl: string | null
-  initialEpkUrl:   string | null
+  initialRiderUrl:       string | null
+  initialEpkUrl:         string | null
+  initialPromoFolderUrl: string | null
 }) {
   const [riderUrl, setRiderUrl] = useState(initialRiderUrl ?? '')
   const [epkUrl,   setEpkUrl]   = useState(initialEpkUrl   ?? '')
+  const [promoFolderUrl, setPromoFolderUrl] = useState(initialPromoFolderUrl ?? '')
   const [loading,  setLoading]  = useState(false)
   const [success,  setSuccess]  = useState('')
   const [error,    setError]    = useState('')
@@ -23,7 +26,7 @@ export default function PressKitLinksSection({
     setSuccess('')
     setError('')
     setLoading(true)
-    const result = await updatePressKitLinksAction(riderUrl.trim(), epkUrl.trim())
+    const result = await updatePressKitLinksAction(riderUrl.trim(), epkUrl.trim(), promoFolderUrl.trim())
     setLoading(false)
     if ('error' in result) { setError(result.error); return }
     setSuccess('Links guardados.')
@@ -59,8 +62,18 @@ export default function PressKitLinksSection({
           />
         </div>
 
+        <div className="flex flex-col gap-1.5">
+          <label className="font-mono text-xs text-slate-400 tracking-wider uppercase">Material promocional (alta calidad)</label>
+          <input
+            value={promoFolderUrl}
+            onChange={e => { setPromoFolderUrl(e.target.value); setSuccess(''); setError('') }}
+            placeholder="https://drive.google.com/... (carpeta con fotos/videos en alta calidad)"
+            className={inputClass}
+          />
+        </div>
+
         <p className="font-mono text-xs text-slate-700">
-          Para compartir PDFs gratis: subí a Google Drive y copiá el link de &quot;Cualquier persona con el enlace&quot;.
+          Para compartir PDFs/carpetas gratis: subí a Google Drive y copiá el link de &quot;Cualquier persona con el enlace&quot;.
         </p>
       </div>
 
