@@ -59,7 +59,7 @@ function DetailCard({ title, text }: { title: string; text: string }) {
         {lines.map((line, i) => (
           <li key={i} className="flex items-start gap-3 font-body text-sm text-slate-400">
             <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--dj-accent)' }} />
-            {line}
+            <span className="min-w-0 flex-1 break-words">{line}</span>
           </li>
         ))}
       </ul>
