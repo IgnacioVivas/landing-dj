@@ -8,12 +8,18 @@ import { detectEmbeddablePlatform, toEmbedUrl } from '@/lib/music-platforms'
 // own embed, not a custom control. Sized to fit inside the existing header
 // row instead of adding a second bar below it.
 //
-// SoundCloud and Mixcloud render fine at a small height directly. Spotify's
-// compact embed has a fixed 80px minimum — smaller than that just gets cut
-// off — so it's rendered at natural size and visually shrunk with a scaled,
-// clipped wrapper instead.
-const BOX_WIDTH  = 160
-const BOX_HEIGHT = 40
+// SoundCloud and Mixcloud render fine at any height directly. Spotify's
+// compact embed has a fixed 300x80 layout that doesn't shrink below that —
+// asking for a smaller height just gets it cut off — so it's rendered at
+// natural size and visually shrunk (both dimensions, proportionally) with a
+// scaled, clipped wrapper instead.
+const BOX_WIDTH  = 220
+const BOX_HEIGHT = 46
+
+const SPOTIFY_NATURAL_WIDTH  = 300
+const SPOTIFY_NATURAL_HEIGHT = 80
+const SPOTIFY_SCALE  = BOX_WIDTH / SPOTIFY_NATURAL_WIDTH
+const SPOTIFY_HEIGHT = Math.round(SPOTIFY_NATURAL_HEIGHT * SPOTIFY_SCALE)
 
 export default function NavPlayerEmbed() {
   const { mix } = useDjData()
@@ -37,19 +43,15 @@ export default function NavPlayerEmbed() {
     )
   }
 
-  const naturalWidth  = 300
-  const naturalHeight = 80
-  const scale = BOX_WIDTH / naturalWidth
-
   return (
-    <div className="hidden sm:block rounded-lg overflow-hidden shrink-0" style={{ width: BOX_WIDTH, height: BOX_HEIGHT }}>
+    <div className="rounded-lg overflow-hidden shrink-0" style={{ width: BOX_WIDTH, height: SPOTIFY_HEIGHT }}>
       <iframe
         src={toEmbedUrl(url, platform)}
-        width={naturalWidth}
-        height={naturalHeight}
+        width={SPOTIFY_NATURAL_WIDTH}
+        height={SPOTIFY_NATURAL_HEIGHT}
         allow="autoplay"
         title={embedTitle}
-        style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}
+        style={{ transform: `scale(${SPOTIFY_SCALE})`, transformOrigin: 'top left' }}
       />
     </div>
   )
