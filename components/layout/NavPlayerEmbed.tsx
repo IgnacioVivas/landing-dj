@@ -5,21 +5,22 @@ import { detectEmbeddablePlatform, toEmbedUrl } from '@/lib/music-platforms'
 
 // Compact visible mini-player pinned to the nav, next to the social icons /
 // Book Now button — the widget itself (title, play button) is the platform's
-// own embed, not a custom control. Sized to fit inside the existing header
-// row instead of adding a second bar below it.
+// own embed, not a custom control.
 //
-// SoundCloud and Mixcloud render fine at any height directly. Spotify's
-// compact embed has a fixed 300x80 layout that doesn't shrink below that —
-// asking for a smaller height just gets it cut off — so it's rendered at
-// natural size and visually shrunk (both dimensions, proportionally) with a
-// scaled, clipped wrapper instead.
-const BOX_WIDTH  = 220
-const BOX_HEIGHT = 46
+// Each iframe renders at its real, unscaled size. An earlier version used
+// CSS transform: scale() to force Spotify's embed into a shorter box, but
+// scaling an <iframe> isn't reliably respected by every browser — some just
+// paint the untransformed content clipped to the wrapper, i.e. a crop, not
+// a shrink. Spotify's compact layout has a fixed 80px minimum height, so
+// its box is taller than SoundCloud/Mixcloud's; Navbar's row uses min-h-16
+// instead of a fixed height so it grows to fit without clipping.
+const WIDTH = 260
 
-const SPOTIFY_NATURAL_WIDTH  = 300
-const SPOTIFY_NATURAL_HEIGHT = 80
-const SPOTIFY_SCALE  = BOX_WIDTH / SPOTIFY_NATURAL_WIDTH
-const SPOTIFY_HEIGHT = Math.round(SPOTIFY_NATURAL_HEIGHT * SPOTIFY_SCALE)
+const HEIGHT: Record<'soundcloud' | 'spotify' | 'mixcloud', number> = {
+  soundcloud: 46,
+  mixcloud:   46,
+  spotify:    80,
+}
 
 export default function NavPlayerEmbed() {
   const { mix } = useDjData()
@@ -27,31 +28,16 @@ export default function NavPlayerEmbed() {
   const platform = url ? detectEmbeddablePlatform(url) : null
   if (!platform || !url) return null
 
-  const embedTitle = mix.pinnedTitle ?? 'Reproductor fijo'
-
-  if (platform !== 'spotify') {
-    return (
-      <div className="rounded-lg overflow-hidden shrink-0" style={{ width: BOX_WIDTH, height: BOX_HEIGHT }}>
-        <iframe
-          src={toEmbedUrl(url, platform)}
-          width={BOX_WIDTH}
-          height={BOX_HEIGHT}
-          allow="autoplay"
-          title={embedTitle}
-        />
-      </div>
-    )
-  }
+  const height = HEIGHT[platform]
 
   return (
-    <div className="rounded-lg overflow-hidden shrink-0" style={{ width: BOX_WIDTH, height: SPOTIFY_HEIGHT }}>
+    <div className="rounded-lg overflow-hidden shrink-0" style={{ width: WIDTH, height }}>
       <iframe
         src={toEmbedUrl(url, platform)}
-        width={SPOTIFY_NATURAL_WIDTH}
-        height={SPOTIFY_NATURAL_HEIGHT}
+        width={WIDTH}
+        height={height}
         allow="autoplay"
-        title={embedTitle}
-        style={{ transform: `scale(${SPOTIFY_SCALE})`, transformOrigin: 'top left' }}
+        title={mix.pinnedTitle ?? 'Reproductor fijo'}
       />
     </div>
   )

@@ -69,7 +69,7 @@ export default function Navbar() {
         translateClass,
       )}
     >
-      <nav className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
+      <nav className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 flex items-center">
         {/* Logo */}
         <a
           href="#"
