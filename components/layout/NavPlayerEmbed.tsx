@@ -11,10 +11,14 @@ import { detectEmbeddablePlatform, toEmbedUrl } from '@/lib/music-platforms'
 // CSS transform: scale() to force Spotify's embed into a shorter box, but
 // scaling an <iframe> isn't reliably respected by every browser — some just
 // paint the untransformed content clipped to the wrapper, i.e. a crop, not
-// a shrink. Spotify's compact layout has a fixed 80px minimum height, so
-// its box is taller than SoundCloud/Mixcloud's; Navbar's row uses min-h-16
-// instead of a fixed height so it grows to fit without clipping.
-const WIDTH = 260
+// a shrink. Spotify's compact layout needs at least ~300px of width and 80px
+// of height to fit without triggering its own internal scrollbars — going
+// narrower doesn't shrink the widget, it just makes Spotify's own layout
+// overflow inside the iframe. scrolling="no" is a second guard against that,
+// matching what SoundCloud's own embed code sets by default.
+// Navbar's row uses min-h-16 instead of a fixed height so it grows to fit
+// Spotify's taller box without clipping.
+const WIDTH = 300
 
 const HEIGHT: Record<'soundcloud' | 'spotify' | 'mixcloud', number> = {
   soundcloud: 46,
@@ -36,6 +40,7 @@ export default function NavPlayerEmbed() {
         src={toEmbedUrl(url, platform)}
         width={WIDTH}
         height={height}
+        scrolling="no"
         allow="autoplay"
         title={mix.pinnedTitle ?? 'Reproductor fijo'}
       />
