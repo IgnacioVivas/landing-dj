@@ -7,6 +7,11 @@ import DirectoryHero from './_components/DirectoryHero'
 import DjDirectoryCard from './_components/DjDirectoryCard'
 import EmptyDirectory from './_components/EmptyDirectory'
 
+// Queries the DB, so this can't be statically prerendered at Docker build
+// time (the db container isn't up yet during `docker build`) — force it to
+// render per-request instead, same as app/sitemap.ts.
+export const dynamic = 'force-dynamic'
+
 export async function generateMetadata(): Promise<Metadata> {
   const root        = apexOrigin()
   const title       = 'DJs — Hypear Agency'
