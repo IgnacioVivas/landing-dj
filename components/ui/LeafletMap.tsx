@@ -38,12 +38,17 @@ export default function LeafletMap({ pins, accentColor }: Props) {
         attributionControl:   false,
       })
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 18,
+      // CARTO's basemaps.cartocdn.com started requiring a paid API key in
+      // late Aug 2026 (keyless requests now return an "API KEY REQUIRED"
+      // placeholder image instead of a real tile). Esri's dark canvas is a
+      // free, keyless alternative with a similar look — note its REST tile
+      // path is z/y/x, not the usual z/x/y, hence the placeholder order below.
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 16,
       }).addTo(map)
 
       L.control.attribution({ prefix: false })
-        .addAttribution('© <a href="https://openstreetmap.org">OpenStreetMap</a> © <a href="https://carto.com">CARTO</a>')
+        .addAttribution('Tiles © <a href="https://www.esri.com">Esri</a>')
         .addTo(map)
 
       const upcoming = pins.filter(p => !p.isPast)
