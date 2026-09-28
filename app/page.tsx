@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import MarketingNav from '@/components/marketing/MarketingNav'
+import MarketingFooter from '@/components/marketing/MarketingFooter'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -48,18 +50,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#07070f] text-white">
 
-      {/* Nav */}
-      <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-6 py-4"
-        style={{ background: 'rgba(7,7,15,0.8)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <span className="font-display text-2xl tracking-widest text-white">HYPEK</span>
-        <Link
-          href="/login"
-          className="font-mono text-xs tracking-widest uppercase px-5 py-2.5 rounded-lg transition-colors"
-          style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#e2e8f0' }}
-        >
-          Ingresar
-        </Link>
-      </nav>
+      <MarketingNav />
 
       {/* Hero */}
       <section className="relative flex flex-col items-center justify-center min-h-screen text-center px-4 pt-20">
@@ -153,12 +144,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 px-4 text-center" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <p className="font-mono text-xs text-slate-700">
-          © {new Date().getFullYear()} Hypear Agency · hypear.agency@gmail.com
-        </p>
-      </footer>
+      <MarketingFooter />
 
     </div>
   )

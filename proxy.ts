@@ -17,6 +17,13 @@ function getDjSubdomain(hostname: string): string | null {
   return sub
 }
 
+// The bare domain (SEO/marketing entry point) and "www" both show the public
+// DJ directory — neither one is the DJ dashboard, that lives at app.<domain>.
+function isDirectoryHost(hostname: string): boolean {
+  if (!PLATFORM_DOMAIN) return false
+  return hostname === PLATFORM_DOMAIN || hostname === `www.${PLATFORM_DOMAIN}`
+}
+
 export const proxy = auth((req) => {
   const hostname  = (req.headers.get('host') ?? '').split(':')[0]
   const pathname  = req.nextUrl.pathname
@@ -28,6 +35,13 @@ export const proxy = auth((req) => {
   if (dj && pathname === '/') {
     const url      = req.nextUrl.clone()
     url.pathname   = `/dj/${dj}`
+    return NextResponse.rewrite(url)
+  }
+
+  // Bare domain / www → rewrite root to the public DJ directory
+  if (isDirectoryHost(hostname) && pathname === '/') {
+    const url    = req.nextUrl.clone()
+    url.pathname = '/directory'
     return NextResponse.rewrite(url)
   }
 
