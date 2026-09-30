@@ -58,13 +58,18 @@ export default function LeafletMap({ pins, accentColor }: Props) {
         const dateStr = new Date(pin.date).toLocaleDateString('es-AR', {
           day: 'numeric', month: 'long', year: 'numeric',
         })
+        // A light ring (instead of a same-hue stroke) is what actually keeps
+        // these visible against the map tiles — Esri's basemap is a mid-gray,
+        // not the near-black CARTO used before, so a colored dot with a
+        // same-color border used to blend into it far more than it did back then.
         const marker = L.circleMarker([pin.lat, pin.lng], {
-          radius:      pin.isPast ? 5 : 8,
-          fillColor:   pin.isPast ? '#334155' : accentColor,
-          color:       pin.isPast ? '#1e293b' : accentColor,
-          weight:      pin.isPast ? 1 : 2,
-          fillOpacity: pin.isPast ? 0.45 : 0.9,
-          opacity:     pin.isPast ? 0.5 : 1,
+          radius:      pin.isPast ? 6 : 10,
+          fillColor:   pin.isPast ? '#64748b' : accentColor,
+          color:       pin.isPast ? '#cbd5e1' : '#ffffff',
+          weight:      pin.isPast ? 1.5 : 2.5,
+          fillOpacity: pin.isPast ? 0.55 : 1,
+          opacity:     pin.isPast ? 0.7 : 1,
+          className:   pin.isPast ? 'dj-map-marker-past' : 'dj-map-marker-upcoming',
         })
         marker.bindPopup(
           `<div class="dj-popup">
@@ -132,6 +137,8 @@ export default function LeafletMap({ pins, accentColor }: Props) {
         .dj-popup-date    { font-size: 11px; color: ${accentColor}; }
         .dj-popup-festival { font-size: 10px; color: #94a3b8; margin-top: 2px; }
         .leaflet-container { background: #07070f; }
+        .dj-map-marker-upcoming { filter: drop-shadow(0 0 5px ${accentColor}); }
+        .dj-map-marker-past     { filter: drop-shadow(0 0 2px rgba(0,0,0,0.6)); }
       `}</style>
       <div ref={containerRef} style={{ height: '440px', width: '100%' }} />
     </>
